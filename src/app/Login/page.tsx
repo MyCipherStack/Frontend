@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { cache, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,6 +9,10 @@ import { authService } from "@/service/authService";
 import { useRouter } from "next/navigation";
 import EnterOtp from "@/components/PasswordComponent.tsx/EnteOtp";
 import { verifyOtpService } from "@/service/verifyOtpService";
+import { googleauthService } from "@/service/googleAuthService";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/features/auth/authSlice";
+import Link from "next/link";
 
 
 const signSchema = z.object({
@@ -41,17 +45,18 @@ const loginSchema=z.object({
 
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(false);
-  const [otpComponet,setOtpComponet]=useState(true)
+  const [isLogin, setIsLogin] = useState(true);
+  const [otpComponent,setotpComponent]=useState(false)
   const router=useRouter()
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   type LoginType= {
       username:string,
       email?:string,
-      password:string
-      confirmPassword?:string
+      password:string,
+      confirmPassword?:string,
+      TickBox:Boolean
     }
-
+    const dispatch=useDispatch()
 
 
     const{ register,handleSubmit,formState:{errors,isSubmitting},watch,setValue,reset}=useForm<LoginType>({resolver:zodResolver(!isLogin ? signSchema: loginSchema )})
@@ -66,7 +71,7 @@ export default function AuthPage() {
       const url="/api/user/verifyOtp"
       const response= await verifyOtpService(url,{otp,email:formData.email})
       
-        setOtpComponet(false)
+        setotpComponent(false)
         setIsLogin(true)
         toast.success(response.data.message,{
           position:"top-right",
@@ -100,7 +105,8 @@ export default function AuthPage() {
       }
     
     let submitForm=async(e:React.FormEvent)=>{
-          
+          if(formData.TickBox  || isLogin){
+      console.log(formData,"formdata");
       
       const url=isLogin ? "/api/user/login":"/api/user/register"
       const body=isLogin ?{name:formData.username,password:formData.password } :{name:formData.username ,email:formData.email,password:formData.password}
@@ -117,12 +123,12 @@ export default function AuthPage() {
           style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
         })
         if(isLogin){
-
+          dispatch(loginSuccess(response.data.user))
           console.log("redirect home");
           
           router.push("/Home")
         }else{
-          setOtpComponet(true)
+          setotpComponent(true)
         }
         
      
@@ -146,18 +152,32 @@ export default function AuthPage() {
           autoClose:3000,
           style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
           
-        })
-   
-        
-      }
-      
-      
-    }
+        }) 
+      } 
+    }    
+  }
+}
+
+
+const googleLogin=async(e:React.FormEvent)=>{
+  e.preventDefault()
+  try{
+    
+    console.log("google frond end");
+    
+    // const response=await googleauthService("/api/user/auth/google")
+    window.location.href = "http://localhost:5000/api/user/auth/google"; // ✅
     
 
-    
-    
+  }catch(error:any){
+    toast.error(error.message,{
+      position:"top-right",
+      autoClose:2000,
+      style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
+      
+    })
   }
+}
   return (
 
     <>
@@ -169,7 +189,7 @@ export default function AuthPage() {
 
         {/* Main Content with Adjusted Spacing */}
         <main className="container mx-auto px-4 pt-20 pb-16 flex-grow mt-2">
-    {!otpComponet && (
+    {!otpComponent && (
           <div className="max-w-sm mx-auto">
             {/* Compact Signup Card */}
             <div className="bg-[#111111] rounded-lg neon-border relative">
@@ -241,7 +261,7 @@ export default function AuthPage() {
                   <div className="flex items-center text-xs justify-between">
                     <label className="flex justify-between">
                       <input 
-                        type="checkbox"
+                        type="checkbox"  {...register("TickBox")} 
                         className="form-checkbox h-3 w-3 text-[#0ef] accent-[#0ef]"
                       />
                       <span className="ml-2 text-gray-300">
@@ -251,9 +271,11 @@ export default function AuthPage() {
 
                       {
                         isLogin && (
+                          <Link href={"/Forgotpassword"}>
                           <button className=" hover:underline text-sm cursor-pointer">
                            forgot password
                         </button>
+                          </Link>
                         )
                       }
                   </div>
@@ -263,6 +285,13 @@ export default function AuthPage() {
                   >
                     {isSubmitting ? "Please wait..." : (isLogin ? "Login" : "Create Account")}
                   </button>
+
+                  {isLogin &&(
+                        <button  onClick={(e)=>googleLogin(e)}
+                        className={`w-full py-2 text-sm bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 uppercase tracking-wider ${isSubmitting && 'opacity-50 cursor-not-allowed'} `}
+                      >
+                      Login with Google</button>)  }
+                  
                 </form>
 
                 <div className="text-center text-xs text-gray-400 mt-4">
@@ -302,11 +331,11 @@ export default function AuthPage() {
 
     
 
-              {otpComponet && (
+              {otpComponent && (
                   <div className=" flex flex-col flex-grow  items-center justify-center px-4 py-12">
                   <div className=" rounded-lg border neon-border  w-96 max-w-md overflow-hidden relative p-6">
 
-                  <EnterOtp setCurrentStep={VerifyOtp} setOTP={setOtp} />
+                  <EnterOtp setCurrentStep={VerifyOtp} setOTP={setOtp} email={formData.email}/>
 
 
                   </div>

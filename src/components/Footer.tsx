@@ -100,6 +100,7 @@ import { FaGithub, FaTwitter, FaLinkedin, FaDiscord, FaPaperPlane, FaTerminal } 
           </div>
         </div>
       </div>
+
     </footer>
   );
 }

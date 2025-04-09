@@ -1,24 +1,96 @@
 'use client';
 import Header from '@/components/Header';
 import VerificationInput from '@/components/PasswordComponent.tsx/EnteOtp';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { FaTerminal, FaEye, FaEyeSlash, FaCheck, FaCode } from 'react-icons/fa';
 import "../globals.css"
 import EnterOtp from '@/components/PasswordComponent.tsx/EnteOtp';
 import CreateNewPassword from '@/components/PasswordComponent.tsx/CreateNewPasswor';
+import { resendOtpService } from '@/service/resendOtp';
+import { toast } from 'react-toastify';
+import { verifyOtpService } from '@/service/verifyOtpService';
 export default function PasswordResetPage() {
   // State management
   const [currentStep, setCurrentStep] = useState(1);
+  const [email,setIsEmail]=useState("")
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 
+  // useEffect(()=>{
+
+  //   // console.log(email);
+  // },[email])
+  
+
+  let sentOtpHandler=async()=>{
+    try{
+        
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            let  validEmail=emailRegex.test(email)
+          if(!validEmail){
+            toast.error("enter valid email",{
+              position:"top-right",
+              autoClose:2000,
+              style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
+  })
+  return
+          }
+        
+            const response=await resendOtpService("/api/user/resendOtp",{email:email})
+            toast.success(response.data.message,{
+              position:"top-right",
+              autoClose:2000,
+              style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
+            })
+            setCurrentStep(2)
+          }catch(error:any){
+            console.log(error);
+            
+            toast.error(error.response.data.message,{
+                      position:"top-right",
+                      autoClose:2000,
+                      style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
+                      
+            
+          })
+          }
+
+  }
+
+  
+
+    let VerifyOtp=useCallback( async()=>{
+      try{
+        console.log(otp,"code");
+        const url="/api/user/forgotPasswordVerify"
+        const response= await verifyOtpService(url,{otp,email:email})
+          setCurrentStep(3)
+          toast.success(response.data.message,{
+            position:"top-right",
+            autoClose:2000,
+            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
+          })
+  
+        }
+        catch(error:any){
+          toast.error(error.response.data.message,{
+            position:"top-right",
+            autoClose:2000,
+            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
+            
+  
+        })
+      }
+          
+    },[otp,email])
 
 
   return (
     <>
       <Header></Header>
-      <div className="min-h-screen flex flex-col  ">
+      <div className="min-h-screen flex flex-col">
 
         {/* Main Content */}
-        <main className="flex-grow flex items-center justify-center px-4 py-12">
+        <main className="flex-grow flex items-center justify-center px-4 py-12 mt-9">
 
           <div className="bg-[#111111] rounded-lg border  neon-border  w-96 max-w-md overflow-hidden relative">
 
@@ -60,8 +132,8 @@ export default function PasswordResetPage() {
 
                   <div className="mb-6">
                     <label className="block text-gray-400 mb-2">Email Address</label>
-                    <input
-                      type="email"
+                    <input required
+                      type="email" onChange={(e)=>setIsEmail(e.target.value)}
                       className="w-full bg-black border border-gray-800 text-white px-4 py-3 rounded focus:border-[#00eeff] focus:outline-none"
                       placeholder="your.email@example.com"
                     />
@@ -69,7 +141,8 @@ export default function PasswordResetPage() {
 
 
                   <button
-                    onClick={() => setCurrentStep(2)}
+                    onClick={() =>sentOtpHandler()
+                    }
                     className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300">
                     Send Verification Code
                   </button>
@@ -82,12 +155,9 @@ export default function PasswordResetPage() {
 
 
 
+              {currentStep === 2 && (<EnterOtp setCurrentStep={VerifyOtp} setOTP={setOtp} email={email} />)}
 
-
-
-              {currentStep === 2 && (<EnterOtp setCurrentStep={setCurrentStep} />)}
-
-              {currentStep === 3 && (<CreateNewPassword setCurrentStep={setCurrentStep} />)}
+              {currentStep === 3 && (<CreateNewPassword setCurrentStep={setCurrentStep} email={email}   />)}
 
 
             </div>

@@ -1,13 +1,15 @@
 "use client"
+import {  resendOtpService } from "@/service/resendOtp";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
-const EnterOtp=({setCurrentStep,setOTP})=>{
+const EnterOtp=({setCurrentStep,setOTP,email})=>{
 
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   //   const [currentStep, setCurrentStep] = useState(2);
   const [isEmail, setIsEmail] = useState(true);
-  const [timer, setTimer] = useState(300); // 5 minutes in seconds
-  const [resentTimer, setsentTimer] = useState(30); // 5 minutes in seconds
+  const [timer, setTimer] = useState(300); // 5 minutes 
+  const [resentTimer, setsentTimer] = useState(30); // 
 
 let currentStep=2  //// remove this
 
@@ -69,11 +71,31 @@ let currentStep=2  //// remove this
     return `${mins}:${secs}`;
   };
 
-    let resendHandler=()=>{
+    let resendHandler=async()=>{
+      try{
+
+        const response=await resendOtpService("/api/user/resendOtp",{email,otp:code})
+        console.log(response);
+        setsentTimer(30)
+        toast.success(response.data.message,{
+          position:"top-right",
+          autoClose:2000,
+          style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
+        })
+      }catch(error:any){
+        console.log(error);
+        
+        toast.error(error.response.data.message,{
+                  position:"top-right",
+                  autoClose:2000,
+                  style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
+                  
+        
+      })
+      }
+
 
     }
-
-    
     return (
         <>
                       <div>

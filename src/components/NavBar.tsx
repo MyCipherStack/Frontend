@@ -6,6 +6,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ title, links }: NavbarProps) {
+  
   return (
     <nav className="w-full bg-black bg-opacity-90 border-b border-[#0ef] fixed top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
