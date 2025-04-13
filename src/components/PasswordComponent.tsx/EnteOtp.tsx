@@ -3,7 +3,7 @@ import {  resendOtpService } from "@/service/resendOtp";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-const EnterOtp=({setCurrentStep,setOTP,email})=>{
+const EnterOtp=({VerifyOtp,setOTP,email})=>{
 
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   //   const [currentStep, setCurrentStep] = useState(2);
@@ -16,7 +16,6 @@ let currentStep=2  //// remove this
 
   const codeInputs = useRef<(HTMLInputElement | null)[]>([]);
   
-
 
 
 
@@ -131,7 +130,7 @@ let currentStep=2  //// remove this
                         <button
                           onClick={() => {
                              setOTP(code)
-                            setCurrentStep(3)
+                             VerifyOtp()
                           }}
                           className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300"
                           >
@@ -139,9 +138,8 @@ let currentStep=2  //// remove this
                         </button>
         
                         <div className="text-center mt-6">
-                          <button onClick={() =>{ setCurrentStep(1)
-                           }
-                          } className="text-[#00eeff] hover:underline">Back</button>
+                          <button 
+                          className="text-[#00eeff] hover:underline">Back</button>
                         </div>
                       </div>
         

@@ -16,7 +16,6 @@ console.log(token,"middleware");
 //Configure where the middleware should run
 export const config = {
   matcher: [
-    "/profile",           // exact path
-    // "/dashboard/:path*",  // wildcard path (e.g., /dashboard/settings)
+    "/Login",           // exact path
   ],
 };

@@ -11,19 +11,15 @@ import { toast } from 'react-toastify';
 import { verifyOtpService } from '@/service/verifyOtpService';
 export default function PasswordResetPage() {
   // State management
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(3);
   const [email,setIsEmail]=useState("")
+
+
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 
-  // useEffect(()=>{
-
-  //   // console.log(email);
-  // },[email])
-  
 
   let sentOtpHandler=async()=>{
-    try{
-        
+    try{        
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             let  validEmail=emailRegex.test(email)
           if(!validEmail){
@@ -35,7 +31,7 @@ export default function PasswordResetPage() {
   return
           }
         
-            const response=await resendOtpService("/api/user/resendOtp",{email:email})
+            const response=await resendOtpService("/api/user/forgotPasswordOtp",{email:email})
             toast.success(response.data.message,{
               position:"top-right",
               autoClose:2000,
@@ -155,9 +151,9 @@ export default function PasswordResetPage() {
 
 
 
-              {currentStep === 2 && (<EnterOtp setCurrentStep={VerifyOtp} setOTP={setOtp} email={email} />)}
+              {currentStep === 2 && (<EnterOtp VerifyOtp={VerifyOtp} setOTP={setOtp} email={email} />)}
 
-              {currentStep === 3 && (<CreateNewPassword setCurrentStep={setCurrentStep} email={email}   />)}
+              {currentStep === 3 && (<CreateNewPassword setCurrentStep={setCurrentStep}/>)}
 
 
             </div>

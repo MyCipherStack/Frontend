@@ -1,38 +1,63 @@
 "use client"
 
+
+
+
+
 import { resetPassword } from "@/service/resetPassword";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import React from "react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { resetPasswordSchema } from "@/validations/authSchemas";
 
-const CreateNewPassword=({setCurrentStep,email}:any)=>{
 
-      const [showPassword, setShowPassword] = useState({
-        new: false,
-        confirm: false
-      });
 
+
+const CreateNewPassword=({setCurrentStep})=>{
+
+      const [showPassword, setShowPassword] = useState({new: false,confirm: false});
       const [password,setPassword]=useState("")
       const [conformPassword,setConfromPassword]=useState("")
+      const router=useRouter()
+    const{ register,handleSubmit,formState:{errors,isSubmitting},watch,setValue,reset}=useForm({resolver:zodResolver( resetPasswordSchema )})
+    const formData=watch()
 
       const togglePassword = (field: 'new' | 'confirm') => {
         setShowPassword(prev => ({ ...prev, [field]: !prev[field] }));
       };
     
       let resetHandler=async()=>{
-        if(password!==conformPassword){
-           toast.error("password not match",{
-                      position:"top-right",
-                      autoClose:2000,
-                      style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},    
-                  })
+        try{
+
+          console.log(formData);
+   
+          
+          
+          const response= await  resetPassword("/api/user/resetPassword",{password:formData.password})
+          console.log(response);
+          router.push("Login")
+         
+          toast.success(response.data.message,{
+            position:"top-right",
+            autoClose:2000,
+            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
+          })
+      
+        }catch(error:any){
+          console.log(error);
+          
+          toast.error(error.response.data.message,{
+            position:"top-right",
+            autoClose:2000,
+            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},    
+        })
+
+        setCurrentStep(1)
         }
-
-
-      const reset= await  resetPassword("/api/user/resetPassword",{email,password})
-
-
-
       }
 
   
@@ -46,11 +71,12 @@ const CreateNewPassword=({setCurrentStep,email}:any)=>{
           <div className="mb-6">
             <label className="block text-gray-400 mb-2">New Password</label>
             <div className="relative">
-              <input
-                type={showPassword.new ? 'text' : 'password'}  onChange={(e)=>setPassword(e.target.value)}
+              <input {...register("password")}
+                type={showPassword.new ? 'text' : 'password'} 
                 className="w-full bg-black border border-gray-800 text-white px-4 py-3 rounded focus:border-[#00eeff] focus:outline-none"
                 placeholder="Enter new password"
                 />
+                 {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
               <button
                 type="button"
                 onClick={() => togglePassword('new')}
@@ -64,11 +90,12 @@ const CreateNewPassword=({setCurrentStep,email}:any)=>{
           <div className="mb-4">
             <label className="block text-gray-400 mb-2">Confirm Password</label>
             <div className="relative">
-              <input  onChange={(e)=>setConfromPassword(e.target.value)}
-                type={showPassword.confirm ? 'text' : 'password'}
+              <input   {...register("confirmPassword")}  
+                type={showPassword.confirm ? 'text' : 'password'}  
                 className="w-full bg-black border border-gray-800 text-white px-4 py-3 rounded focus:border-[#00eeff] focus:outline-none"
                 placeholder="Confirm new password"
                 />
+                     {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>}
               <button
                 type="button"
                 onClick={() => togglePassword('confirm')}
@@ -91,7 +118,7 @@ const CreateNewPassword=({setCurrentStep,email}:any)=>{
             </ul>
           </div>
 
-          <button onClick={resetHandler} className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300">
+          <button onClick={handleSubmit(resetHandler)} className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300">
             Reset Password
           </button>
         </div>

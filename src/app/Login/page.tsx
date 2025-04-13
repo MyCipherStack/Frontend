@@ -13,34 +13,7 @@ import { googleauthService } from "@/service/googleAuthService";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/features/auth/authSlice";
 import Link from "next/link";
-
-
-const signSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Invalid email format"),
-  password:z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number")
-  .regex(/[@$!%*?&]/, "Password must contain at least one special character"),
-  confirmPassword: z.string(),
-})
-.refine((data)=>data.password===data.confirmPassword,{
-  message:"Password do not match",
-  path:["confirmPassword"] // Error will be attached to confirmPassword
-})
-
-
-
-
-
-const loginSchema=z.object({
-  username: z.string().min(1, "Username is required"),
-  password:z.string().min(1,"Password is required")
-})
-
+import { loginSchema, signSchema } from "@/validations/authSchemas";
 
 
 
@@ -253,7 +226,7 @@ const googleLogin=async(e:React.FormEvent)=>{
                       <input  {...register("confirmPassword")} 
                         className="login-input w-full px-3 py-2 text-sm rounded-md"
                         placeholder={"Confirm password"} />
-                     {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>}
+                     {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>} 
 
                     </div>
                   )}
@@ -335,7 +308,7 @@ const googleLogin=async(e:React.FormEvent)=>{
                   <div className=" flex flex-col flex-grow  items-center justify-center px-4 py-12">
                   <div className=" rounded-lg border neon-border  w-96 max-w-md overflow-hidden relative p-6">
 
-                  <EnterOtp setCurrentStep={VerifyOtp} setOTP={setOtp} email={formData.email}/>
+                  <EnterOtp VerifyOtp={VerifyOtp} setOTP={setOtp} email={formData.email}/>
 
 
                   </div>
