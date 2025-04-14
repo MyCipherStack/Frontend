@@ -1,6 +1,6 @@
 "use client"
 
-import { loginSuccess } from "@/features/auth/authSlice"
+import { loginSuccess } from "@/features/auth/userAuthSlice"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"

@@ -1,0 +1,47 @@
+/* Add these to your existing global.css
+.badge {
+    @apply inline-flex items-center justify-center rounded-full bg-[#111] border-2 border-[#0ef] border-opacity-30 overflow-hidden transition-all duration-300;
+  }
+  
+  .badge:hover {
+    @apply border-opacity-100 shadow-[0_0_15px_var(--neon-blue)] transform scale-105;
+  }
+  
+  .timeline-container {
+    @apply relative pl-5;
+  }
+  
+  .timeline-container::before {
+    content: "";
+    @apply absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#0ef] to-transparent;
+  }
+  
+  .timeline-item {
+    @apply relative pb-4;
+  }
+  
+  .timeline-item::before {
+    content: "";
+    @apply absolute left-[-4px] top-[6px] w-2 h-2 rounded-full bg-[#0ef] shadow-[0_0_5px_var(--neon-blue)];
+  }
+  
+  .chart-bar {
+    @apply h-24 flex items-end;
+  }
+  
+  .chart-fill {
+    @apply bg-[#0ef] bg-opacity-30 w-full mx-[2px] relative overflow-hidden transition-all duration-500;
+  }
+  
+  .chart-fill:hover {
+    @apply bg-opacity-70;
+  }
+  
+  .chart-fill::after {
+    content: "";
+    @apply absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[rgba(14,255,255,0.2)] to-transparent;
+  }
+  
+  .tab-active {
+    @apply text-[#0ef] border-b-2 border-[#0ef];
+  } */

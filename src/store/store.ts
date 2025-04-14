@@ -1,6 +1,7 @@
 import {configureStore} from "@reduxjs/toolkit"
 import rootReducer from "./rootReducer"
-import storage from "redux-persist/lib/storage"
+import storage from "redux-persist/lib/storage"                  //data is saved in  localStorage (default):  
+                                                                // redux-persist/lib/storage/session for sessionStorage
 import { persistReducer, persistStore } from "redux-persist";
 
 
@@ -13,8 +14,7 @@ const persistedReducer=persistReducer(persistConfiq,rootReducer)
 
 export const store=configureStore({
     reducer:persistedReducer,
-    middleware:(getDefaultMiddleware)=>
-        getDefaultMiddleware({serializableCheck:false}),
+    middleware:(getDefaultMiddleware)=> getDefaultMiddleware({serializableCheck:false}),
     
 })
 

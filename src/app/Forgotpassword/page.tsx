@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { verifyOtpService } from '@/service/verifyOtpService';
 export default function PasswordResetPage() {
   // State management
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(1);
   const [email,setIsEmail]=useState("")
 
 

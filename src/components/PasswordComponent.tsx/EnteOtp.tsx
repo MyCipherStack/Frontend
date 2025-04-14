@@ -1,5 +1,6 @@
 "use client"
 import {  resendOtpService } from "@/service/resendOtp";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -10,7 +11,7 @@ const EnterOtp=({VerifyOtp,setOTP,email})=>{
   const [isEmail, setIsEmail] = useState(true);
   const [timer, setTimer] = useState(300); // 5 minutes 
   const [resentTimer, setsentTimer] = useState(30); // 
-
+  const route=useRouter()
 let currentStep=2  //// remove this
 
 
@@ -138,7 +139,7 @@ let currentStep=2  //// remove this
                         </button>
         
                         <div className="text-center mt-6">
-                          <button 
+                          <button  onClick={()=>{route.back()}}
                           className="text-[#00eeff] hover:underline">Back</button>
                         </div>
                       </div>

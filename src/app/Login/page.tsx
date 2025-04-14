@@ -11,7 +11,7 @@ import EnterOtp from "@/components/PasswordComponent.tsx/EnteOtp";
 import { verifyOtpService } from "@/service/verifyOtpService";
 import { googleauthService } from "@/service/googleAuthService";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "@/features/auth/authSlice";
+import { loginSuccess } from "@/features/auth/userAuthSlice";
 import Link from "next/link";
 import { loginSchema, signSchema } from "@/validations/authSchemas";
 

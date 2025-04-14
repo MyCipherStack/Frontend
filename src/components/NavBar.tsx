@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 
 interface NavbarProps {
@@ -26,7 +27,7 @@ export default function Navbar({ title, links }: NavbarProps) {
           </div>
         ) : (
           /* Login/Signup Button */
-          <Link href={title === "Login" ? "/signup" : "/login"} className="neon-text hover:text-[#0ef] transition-colors">
+          <Link href={title === "Login" ? "/signup" : "/login"} className="neon-text hover:text-[#0ef] transition-colors"> 
             <i className={`fas ${title === "Login" ? "fa-user-plus" : "fa-sign-in-alt"} mr-2`}></i>
             {title === "Login" ? "Sign Up" : "Login"}
           </Link>
