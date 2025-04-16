@@ -1,3 +1,4 @@
+"use client"
 import {
   FaTerminal,
   FaCode,
@@ -66,7 +67,7 @@ const ProfileDropdown = ({ user }: { user: any }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-neutral-950 neon-border rounded-md shadow-lg border border-gray-950 z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-46 bg-neutral-950 neon-border rounded-md shadow-lg border border-gray-950 z-50 overflow-hidden">
           <div className="flex items-center px-4 py-3 border-b border-gray-900 bg-neutral-950">
             <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3">
               {user?.avatar ? (
@@ -91,8 +92,10 @@ const ProfileDropdown = ({ user }: { user: any }) => {
               href="#"
               className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
             >
-              <FaUser className="mr-3 text-gray-400" /> 
+              <FaUser className="mr-3 text-gray-400" />
+              <Link href={"/Profile"}>
               <span>My Profile</span>
+              </Link>
             </a>
             <a
               href="#"
@@ -124,12 +127,16 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-8">
             <div className="text-xl font-bold text-[#0ef] flex items-center">
+              <Link  href={"/Home"}>
               CipherStack
+              </Link>
               <FaTerminal className="ml-1 mt-1" />
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
+              <button className="text-gray-300 hover:text-[#0ef] transition duration-300 " >
+               <Link href={"/problems"}>
                 <FaCode className="inline w-7" /> Problems 
+               </Link>
               </button>
               <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
                 <FaTrophy className="inline mr-2" /> Compete

@@ -139,7 +139,7 @@ const googleLogin=async(e:React.FormEvent)=>{
     console.log("google frond end");
     
     // const response=await googleauthService("/api/user/auth/google")
-    window.location.href = "http://localhost:5000/api/user/auth/google"; // ✅
+    window.location.href = "http://localhost:5000/api/user/auth/google"; //
     
 
   }catch(error:any){

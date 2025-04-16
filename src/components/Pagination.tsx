@@ -10,10 +10,10 @@ interface PaginationProps {
 
 export const Pagination = ({
   currentPage,
-  totalPages,
-  totalData,
   limit,
   onPageChange,
+  totalData,
+  totalPages,
 }: PaginationProps) => {
   const getPageNumbers = () => {
     const pages = [];

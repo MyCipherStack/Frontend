@@ -1,11 +1,11 @@
 "use client"
 
 import { getDataService } from "@/service/getDataService";
-import Link from "next/link";
-import { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH } from "react-icons/fa";
-import { number, set } from "zod";
 import { Pagination } from "../Pagination";
+import { actionServiceUpdate } from "@/service/actionServiceUpdate";
+import Swal from 'sweetalert2';
 
 const UserManagement = () => {
 const [search,setSearch]=useState("")
@@ -15,7 +15,10 @@ const [page,setPage]=useState("1")
 const [limit,setLimit]=useState("10")
 const [totalUsers,setTotalUsers]=useState(0)
 const [totalPages,setTotalPages]=useState(0)
-const [users,setUsers]=useState([])
+const [users,setUsers]=useState([{_id:"",image:"",name:"",email:"",role:"",status:"",createdAt:""}])
+const [trigger,setTrigger]=useState(false)
+
+
 
   useEffect(()=>{
     const params=new URLSearchParams({page, role,status,search})
@@ -28,10 +31,47 @@ const [users,setUsers]=useState([])
     };
   
   fetchData();
-  },[page,role,status,search])
+  },[page,role,status,search,trigger])
 
-  let pageChange=(page)=>{
-    setPage(page)
+  let pageChange=(page:number)=>{
+    setPage(page+"")
+  }
+  
+  const actionHandler=async(id:string,status:string)=>{  
+    if(status=="active"){
+      status="banned"
+    }else status="active"
+    console.log(status);
+    
+    
+    
+    const result = await Swal.fire({
+  title: 'Are you sure?',
+  text: `Are you sure you want to change the status to ${status}?`,
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Yes, change it!',
+  cancelButtonText: 'No, keep it',
+  background: '#000', // black background
+  color: '#00f0ff',
+  buttonsStyling: false,
+  customClass: {
+    popup: 'bg-black text-cyan-500', // Black background for the popup with cyan text
+    title: 'text-white', // White title text
+    confirmButton: ' hover:bg-neon-purple-dark text-white font-semibold px-5 py-2 rounded-lg', // Neon purple button
+    cancelButton: 'bg-neon-red hover:bg-neon-red-dark text-white font-semibold px-5 py-2 rounded-lg' // Neon red cancel button
+  }
+  
+});
+
+if(result.isConfirmed){
+  
+  
+  const data= await actionServiceUpdate(`/api/admin/users/${id}`,{status})
+  console.log(data);
+  setTrigger(!trigger)
+  }
+    
   }
 
   return (
@@ -120,20 +160,21 @@ const [users,setUsers]=useState([])
                       <span className={`px-2 py-1 ${user.role=="regular" ? "text-yellow-500" :"text-red-500"} text-xs rounded`}>{user.role}</span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1 ${user.statusColor} text-xs rounded`}>{user.status}</span>
+                      <span className={`px-2 py-1  text-xs rounded`}>{user.status}</span>
                     </td>
                     <td className="py-3 px-4">{new Date(user.createdAt).toDateString()}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        <button className="p-1 text-gray-400 hover:text-neon-blue" title="Edit">
+                        {/* <button className="p-1 text-gray-400 hover:text-neon-blue" title="Edit">
                           <FaEdit />
+                        </button> */}
+                        <button>  {user.status === "banned" ? "Unban" : "ban"}</button>
+                        <button className="p-1 text-gray-400 hover:text-red-500" onClick={()=>actionHandler(user._id,user.status)} title={user.status === "Banned" ? "Unban" : "Ban"}>
+                          {user.status === "banned" ? <FaCheck /> : <FaBan />}
                         </button>
-                        <button className="p-1 text-gray-400 hover:text-red-500" title={user.status === "Banned" ? "Unban" : "Ban"}>
-                          {user.status === "Banned" ? <FaCheck /> : <FaBan />}
-                        </button>
-                        <button className="p-1 text-gray-400 hover:text-yellow-500" title="Reset Password">
+                        {/* <button className="p-1 text-gray-400 hover:text-yellow-500"  title="Reset Password">
                           <FaKey />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>

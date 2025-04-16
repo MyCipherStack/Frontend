@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 
 
 
-const AdminNavbar=()=>{
+const AdminNavbar=({status})=>{
   let dispatch=useDispatch()
   let router=useRouter()
 
@@ -48,15 +48,15 @@ const AdminNavbar=()=>{
                   <div className="text-sm text-gray-400 mt-1">Admin Panel</div>
                 </div>
                 <div className="mt-6">
-                  <Link href="/admin/dashboard" className="sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue hover:text-neon-blue transition-all duration-300">
+                  <Link href="/admin/dashboard" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="dashboard"  ? "active":""} hover:text-neon-blue transition-all duration-300`}>
                     <FaChartLine className="w-6" />
                     <span className="ml-3">Dashboard</span>
                   </Link>
-                  <Link href="/admin/users" className="sidebar-link active flex items-center px-4 py-3 bg-opacity-20 bg-neon-blue text-neon-blue border-l-4 border-neon-blue">
+                  <Link href="/admin/users" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="users"  ? "active":""} hover:text-neon-blue transition-all duration-300`}>
                     <FaUsers className="w-6" />
                     <span className="ml-3">User Management</span>
                   </Link>
-                  <Link href="/admin/problems" className="sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue hover:text-neon-blue transition-all duration-300">
+                  <Link href="/admin/problems" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="problems"  ? "active":""} hover:text-neon-blue transition-all duration-300`}>
                     <FaCode className="w-6" />
                     <span className="ml-3">Problem Management</span>
                   </Link>

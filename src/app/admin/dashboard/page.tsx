@@ -5,7 +5,7 @@ import AdminNavbar from "@/components/Admin/NavBar"
 let AdminDashBoard=()=>{
     return (
         <>
-        <AdminNavbar></AdminNavbar>
+        <AdminNavbar status={"dashboard"}></AdminNavbar>
         <DashBoard></DashBoard>
         
         </>

@@ -48,18 +48,6 @@
 
 
 
-.neon-text {
-  color: var(--neon-blue);
-  text-shadow: 0 0 1px var(--neon-blue);
-}
-
-
-
-.neon-border {
-  border: 1px solid var(--neon-blue);
-  box-shadow: 0 0 8px var(--neon-blue);
-}
-
 
   .terminal-dots::before {
     content: "● ● ●";
@@ -120,3 +108,111 @@
     border-radius: 0.5rem;
     padding: 1rem;
   }
+
+
+
+
+
+
+
+
+.neon-border {
+  box-shadow: 0 0 10px var(--neon-blue);
+  border: 1px solid var(--neon-blue);
+}
+
+.neon-text {
+  color: var(--neon-blue);
+  text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.terminal-dots::before {
+  content: "● ● ●";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neon-blue);
+  letter-spacing: 2px;
+}
+
+.sidebar {
+  background-color: var(--darker-bg);
+  height: 100vh;
+  position: fixed;
+  width: 250px;
+  border-right: 1px solid var(--neon-blue);
+}
+
+.sidebar-link {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(14, 255, 255, 0.1);
+  color: var(--neon-blue);
+}
+
+.sidebar-link.active {
+  background-color: rgba(14, 255, 255, 0.2);
+  color: var(--neon-blue);
+  border-left: 4px solid var(--neon-blue);
+}
+
+.content-area {
+  margin-left: 250px;
+  padding: 2rem;
+}
+
+.input-field {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(14, 255, 255, 0.2);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+  outline: none;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button.active {
+  color: var(--neon-blue);
+  border-bottom: 2px solid var(--neon-blue);
+}
+
+.test-case-card {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(14, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.test-case-card:hover {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px rgba(14, 255, 255, 0.2);
+}
+
+.markdown-preview {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(14, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.preview-field {
+  height: 300px;
+  overflow-y: auto;
+}

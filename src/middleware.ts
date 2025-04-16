@@ -4,7 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(req: NextRequest) {
 
 
-  const token = req.cookies.get("accessToken")
+  const token = req.cookies.get("refreshToken")
+  // const token = req.cookies.get("refreshToken")
   const adminToken = req.cookies.get("adminAccessToken")
   const url=req.nextUrl.pathname
 console.log(token,"middleware");

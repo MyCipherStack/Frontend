@@ -3,16 +3,62 @@
 "use client"
 
 
-import { FaTerminal, FaCode, FaUsers, FaTrophy, FaLaptopCode, FaBell, 
-    FaCaretDown, FaEdit, FaChartLine, FaFire, FaBolt, FaBug, FaUserCircle ,FaCog ,FaSignOutAlt ,FaChartPie ,FaProjectDiagram,FaSitemap,FaTable ,
+import {  FaCode, FaUsers, FaTrophy, 
+     FaEdit, FaChartLine, FaFire, FaBolt, FaBug ,FaChartPie ,FaProjectDiagram,FaSitemap,FaTable ,
     FaTrophy as FaTrophyBadge, FaBrain, FaCheckCircle, FaTimesCircle, 
     FaExclamationCircle, FaFistRaised } from 'react-icons/fa';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import "@/app/Profile/page"
+import Navbar from '@/components/NavBar';
+import Header from '@/components/Header';
+import { useSelector } from 'react-redux';
+import EditProfileModal from '@/components/EditProfile';
+import { authMiddlware } from '@/service/AuthMiddleWare';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { logOut } from '@/features/auth/userAuthSlice';
+import { useRouter } from 'next/navigation';
+
 const ProfilePage = () => {
-return (
-<>
+const dispatch=  useDispatch()
+const router=useRouter()
+    useEffect(()=>{
+          let validate=async()=>{
+            try{
+            console.log("checking");
+            
+              const url="/api/user/validateUser"
+              const response= await authMiddlware(url)
+    
+                toast.success(response.data.message,{
+                  position:"top-right",
+                  autoClose:2000,
+                  style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
+                })
+        
+              }
+              catch(error:any){
+
+                toast.error(error.response.data.message,{
+                  position:"top-right",
+                  autoClose:2000,
+                  style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
+    
+              })
+              router.push("/Login")
+              // dispatch(logOut())
+
+            }
+              
+
+          }
+
+          // validate()
+    },[])
+
+  return (
+    <>
  <Head>
    <title>Profile - CipherStack</title>
  </Head>
@@ -22,70 +68,7 @@ return (
    <div className="fixed inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,255,255,0.03)_0px,rgba(0,255,255,0.03)_1px,transparent_1px,transparent_2px)] pointer-events-none z-10" />
    
    {/* Navigation Bar */}
-   <nav className="navbar bg-black border-b border-gray-800 fixed w-full z-20">
-     <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-       <div className="flex items-center space-x-8">
-         <div className="text-xl font-bold text-[#0ef] flex items-center">
-           <FaTerminal className="mr-2" />
-           CipherStack
-         </div>
-         <div className="hidden md:flex items-center space-x-8">
-           <a href="#" className="text-gray-300 hover:text-[#0ef] transition duration-300">
-             <FaCode className="inline mr-2" /> Practice
-           </a>
-           <a href="#" className="text-gray-300 hover:text-[#0ef] transition duration-300">
-             <FaTrophy className="inline mr-2" /> Arena
-           </a>
-           <a href="#" className="text-gray-300 hover:text-[#0ef] transition duration-300">
-             <FaLaptopCode className="inline mr-2" /> Codepanel
-           </a>
-         </div>
-       </div>
-       
-       {/* User Profile Dropdown */}
-       <div className="flex items-center space-x-4">
-         <button className="p-2 text-gray-400 hover:text-[#0ef] relative">
-           <FaBell />
-           <span className="absolute top-0 right-0 bg-red-500 rounded-full w-2 h-2"></span>
-         </button>
-         
-         <div className="relative group">
-           <div className="flex items-center cursor-pointer">
-             <div className="w-8 h-8 rounded-full bg-[#111] border-2 border-[#0ef] overflow-hidden">
-               <img src="https://via.placeholder.com/40" alt="Profile" className="w-full h-full object-cover" />
-             </div>
-             <span className="ml-2 text-gray-300 group-hover:text-[#0ef]">Akhiil_42</span>
-             <FaCaretDown className="ml-1 text-gray-500 group-hover:text-[#0ef]" />
-           </div>
-           
-           {/* Dropdown Menu */}
-           <div className="absolute right-0 mt-2 w-48 bg-[#111] rounded-md shadow-lg border border-[#0ef] hidden group-hover:block z-30">
-             <div className="p-3 border-b border-gray-800">
-               <div className="flex">
-                 <div className="mr-3">
-                   <div className="text-[#0ef] font-bold">1425</div>
-                   <div className="text-gray-500 text-xs">Rank</div>
-                 </div>
-                 <div>
-                   <div className="text-[#0ef] font-bold">214</div>
-                   <div className="text-gray-500 text-xs">Solved</div>
-                 </div>
-               </div>
-             </div>
-             <a href="#" className="block px-4 py-2 text-sm text-[#0ef] hover:bg-black">
-               <FaUserCircle className="inline mr-2" /> My Profile
-             </a>
-             <a href="#" className="block px-4 py-2 text-sm text-gray-300 hover:bg-black hover:text-[#0ef]">
-               <FaCog className="inline mr-2" /> Settings
-             </a>
-             <a href="#" className="block px-4 py-2 text-sm text-gray-300 hover:bg-black hover:text-[#0ef] border-t border-gray-800">
-               <FaSignOutAlt className="inline mr-2" /> Logout
-             </a>
-           </div>
-         </div>
-       </div>
-     </div>
-   </nav>
+   <Header></Header>
 
    {/* Main Content */}
    <main className="container mx-auto px-4 pt-24 pb-8 flex-grow z-0">
@@ -104,6 +87,7 @@ return (
 };
 
 const ProfileHeader = () => {
+  const userData = useSelector((state: any) => state.auth.user);
 return (
 <div className="bg-[#111] rounded-lg neon-border overflow-hidden mb-6">
  <div className="bg-black px-6 py-3 border-b border-[#0ef] flex items-center">
@@ -121,7 +105,7 @@ return (
      
      {/* Profile Info */}
      <div className="flex-grow text-center md:text-left">
-       <h1 className="text-2xl font-bold neon-text">Akhiil_42</h1>
+       <h1 className="text-2xl font-bold neon-text">{userData?.name}</h1>
        <p className="text-gray-400 text-sm">Member since October 2023</p>
        
        <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-4">
@@ -135,8 +119,10 @@ return (
      {/* Action Buttons */}
      <div className="flex-shrink-0 mt-4 md:mt-0 space-y-2">
        <button className="px-4 py-2 bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 w-full">
-         <FaEdit className="inline mr-2" /> Edit Profile
+         <FaEdit className="inline mr-2" /> Edit Profile 
+
        </button>
+         {/* <EditProfileModal></EditProfileModal> */}
        <button className="px-4 py-2 bg-transparent border border-gray-700 text-gray-400 rounded-md hover:border-[#0ef] hover:text-[#0ef] transition duration-300 w-full">
          <FaChartLine className="inline mr-2" /> Battle Results
        </button>

@@ -6,7 +6,7 @@ import UserManagement from "@/components/Admin/UserManagement"
 let Users=()=>{
     return (
         <>
-        <AdminNavbar></AdminNavbar>
+        <AdminNavbar status={"users"}></AdminNavbar>
         <UserManagement></UserManagement>
         </>
     )
