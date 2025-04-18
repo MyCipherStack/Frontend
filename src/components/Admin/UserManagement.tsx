@@ -6,6 +6,7 @@ import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevron
 import { Pagination } from "../Pagination";
 import { actionServiceUpdate } from "@/service/actionServiceUpdate";
 import Swal from 'sweetalert2';
+import { confirmationAlert } from "@/utils/confirmationAlert";
 
 const UserManagement = () => {
 const [search,setSearch]=useState("")
@@ -37,37 +38,18 @@ const [trigger,setTrigger]=useState(false)
     setPage(page+"")
   }
   
-  const actionHandler=async(id:string,status:string)=>{  
+  const actionHandler=async(email:string,status:string)=>{  
     if(status=="active"){
       status="banned"
     }else status="active"
     console.log(status);
     
-    
-    
-    const result = await Swal.fire({
-  title: 'Are you sure?',
-  text: `Are you sure you want to change the status to ${status}?`,
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonText: 'Yes, change it!',
-  cancelButtonText: 'No, keep it',
-  background: '#000', // black background
-  color: '#00f0ff',
-  buttonsStyling: false,
-  customClass: {
-    popup: 'bg-black text-cyan-500', // Black background for the popup with cyan text
-    title: 'text-white', // White title text
-    confirmButton: ' hover:bg-neon-purple-dark text-white font-semibold px-5 py-2 rounded-lg', // Neon purple button
-    cancelButton: 'bg-neon-red hover:bg-neon-red-dark text-white font-semibold px-5 py-2 rounded-lg' // Neon red cancel button
-  }
-  
-});
+    const alert=await confirmationAlert(`change the status to Active${status}`)
+   
 
-if(result.isConfirmed){
+if(alert){
   
-  
-  const data= await actionServiceUpdate(`/api/admin/users/${id}`,{status})
+  const data= await actionServiceUpdate(`/api/admin/users/${email}`,{status})
   console.log(data);
   setTrigger(!trigger)
   }
@@ -169,7 +151,7 @@ if(result.isConfirmed){
                           <FaEdit />
                         </button> */}
                         <button>  {user.status === "banned" ? "Unban" : "ban"}</button>
-                        <button className="p-1 text-gray-400 hover:text-red-500" onClick={()=>actionHandler(user._id,user.status)} title={user.status === "Banned" ? "Unban" : "Ban"}>
+                        <button className="p-1 text-gray-400 hover:text-red-500" onClick={()=>actionHandler(user.email,user.status)} title={user.status === "Banned" ? "Unban" : "Ban"}>
                           {user.status === "banned" ? <FaCheck /> : <FaBan />}
                         </button>
                         {/* <button className="p-1 text-gray-400 hover:text-yellow-500"  title="Reset Password">

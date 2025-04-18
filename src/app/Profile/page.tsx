@@ -13,7 +13,7 @@ import "@/app/Profile/page"
 import Navbar from '@/components/NavBar';
 import Header from '@/components/Header';
 import { useSelector } from 'react-redux';
-import EditProfileModal from '@/components/EditProfile';
+import EditProfileModal from '@/components/UserProfile/EditProfile/EditProfile';
 import { authMiddlware } from '@/service/AuthMiddleWare';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
@@ -21,6 +21,7 @@ import { logOut } from '@/features/auth/userAuthSlice';
 import { useRouter } from 'next/navigation';
 
 const ProfilePage = () => {
+
 const dispatch=  useDispatch()
 const router=useRouter()
     useEffect(()=>{
@@ -67,12 +68,11 @@ const router=useRouter()
    {/* Scanline overlay */}
    <div className="fixed inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,255,255,0.03)_0px,rgba(0,255,255,0.03)_1px,transparent_1px,transparent_2px)] pointer-events-none z-10" />
    
-   {/* Navigation Bar */}
    <Header></Header>
 
-   {/* Main Content */}
+
    <main className="container mx-auto px-4 pt-24 pb-8 flex-grow z-0">
-     {/* Profile Header */}
+
      <ProfileHeader />
      
      {/* Tabbed Content */}
@@ -87,6 +87,10 @@ const router=useRouter()
 };
 
 const ProfileHeader = () => {
+
+
+  const [isEditProfile,SetisEditProfile]=useState(false)
+  
   const userData = useSelector((state: any) => state.auth.user);
 return (
 <div className="bg-[#111] rounded-lg neon-border overflow-hidden mb-6">
@@ -118,11 +122,20 @@ return (
      
      {/* Action Buttons */}
      <div className="flex-shrink-0 mt-4 md:mt-0 space-y-2">
-       <button className="px-4 py-2 bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 w-full">
-         <FaEdit className="inline mr-2" /> Edit Profile 
+       <button onClick={()=>SetisEditProfile(!isEditProfile)} className="px-4 py-2 bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 w-full">
+         <FaEdit className="inline mr-2" /> Edit Profile  
 
        </button>
-         {/* <EditProfileModal></EditProfileModal> */}
+
+        {isEditProfile &&
+          <EditProfileModal onClose={()=>SetisEditProfile(!isEditProfile)}></EditProfileModal>
+        
+
+        }
+
+
+
+
        <button className="px-4 py-2 bg-transparent border border-gray-700 text-gray-400 rounded-md hover:border-[#0ef] hover:text-[#0ef] transition duration-300 w-full">
          <FaChartLine className="inline mr-2" /> Battle Results
        </button>
