@@ -4,21 +4,29 @@ import { actionServiceUpdate } from "@/service/actionServiceUpdate";
 import { useForm } from "react-hook-form";
 import { resetPasswordSchema, signSchema } from "@/validations/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toastError, toastSuccess } from "@/utils/toast";
+import { useSelector } from "react-redux";
 
 
  export function SecurityTab() {
 
     const{ register,handleSubmit,formState:{errors,isSubmitting},watch,setValue,reset}=useForm({resolver:zodResolver(resetPasswordSchema )})
+    const userData=useSelector((state:any)=>state.auth.user)
 
     
     const formData=watch()
     let submit=async(e:React.FormEvent)=>{
-      // e.preventDefault()
-      console.log(watch());
-      
-      const response =await actionServiceUpdate("/api/user/profile/resetPassword",formData)
-      console.log(response);
-      
+      try{
+        // e.preventDefault()
+        const response =await actionServiceUpdate("/api/user/profile/resetPassword",{formData,email:userData.email})
+        console.log(response);
+          toastSuccess("password updated")
+      }catch(error){
+        console.log(error);
+        
+          toastError(error.response.data.message)
+      }
+        
       
     }
 
