@@ -3,9 +3,8 @@
 import { getDataService } from "@/service/getDataService";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH, FaCircleNotch, FaCheckCircle } from "react-icons/fa";
-import { actionServiceUpdate } from "@/service/actionServiceUpdate";
-import Swal from 'sweetalert2';
-import { Pagination } from "./Pagination";
+import { Pagination } from "../Pagination";
+import { useRouter } from "next/navigation";
 
 const ProblemTable = () => {
 const [search,setSearch]=useState("")
@@ -19,6 +18,8 @@ const [totalPages,setTotalPages]=useState(0)
 const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",status:"",category:""}])
 const [trigger,setTrigger]=useState(false)
 
+
+const router=useRouter()
 
 
   useEffect(()=>{
@@ -40,42 +41,19 @@ const [trigger,setTrigger]=useState(false)
     setPage(page+"")
   }
   
-  const actionHandler=async(id:string,status:string)=>{  
-    if(status=="active"){
-      status="banned"
-    }else status="active"
-    console.log(status);
-    
-    
-    
-    const result = await Swal.fire({
-  title: 'Are you sure?',
-  text: `Are you sure you want to change the status to ${status}?`,
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonText: 'Yes, change it!',
-  cancelButtonText: 'No, keep it',
-  background: '#000', // black background
-  color: '#00f0ff',
-  buttonsStyling: false,
-  customClass: {
-    popup: 'bg-black text-cyan-500', // Black background for the popup with cyan text
-    title: 'text-white', // White title text
-    confirmButton: ' hover:bg-neon-purple-dark text-white font-semibold px-5 py-2 rounded-lg', // Neon purple button
-    cancelButton: 'bg-neon-red hover:bg-neon-red-dark text-white font-semibold px-5 py-2 rounded-lg' // Neon red cancel button
-  }
-  
-});
+  const openProblem=async(name:string)=>{  
+   
+    router.push(`/problemDetails/${name}`)
 
-if(result.isConfirmed){
-  
-  
-  const data= await actionServiceUpdate(`/api/admin/Problem/${id}`,{status})
-  console.log(data);
-  setTrigger(!trigger)
+  // const problemData=await getDataService("/p")
+
+
+
   }
+
+
     
-  }
+  
 
   return (
     <div className="flex">
@@ -132,12 +110,12 @@ if(result.isConfirmed){
           </div>
           <div className="p-4 overflow-x-auto">
             <table className="w-full">
-              <thead>
+              <thead >
                 <tr>
-                  <th>status</th>
-                  <th>No</th>
+                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">status</th>
+                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">No</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Title</th>
-                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Difficaulty</th>
+                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Difficulty</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Acceptance</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Tags</th>
                   {/* <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Joined Date</th>
@@ -146,7 +124,7 @@ if(result.isConfirmed){
               </thead>
               <tbody>
                 {Problem.map((problem) => (
-                  <tr key={problem._id} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue">
+                  <tr key={problem._id} onClick={()=>openProblem(problem.title)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
                     <td className="py-3 px-4 ">
                       <FaCheckCircle />
                     </td>

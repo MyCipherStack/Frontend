@@ -4,13 +4,16 @@
 
 import React from 'react'
 import { FaBug, FaExpandAlt, FaPlay, FaRedoAlt } from 'react-icons/fa'
-import CodeEditorMonaco from './codeEditorMonaco'
+import CodeEditorMonaco from './Problems/CodeEditorMonaco'
 
-const CodeEditorPanel = (language,setLanguage,darkMode,setDarkMode,lineNumbersRef,codeEditorRef,code,handleCodeChange,handleRunCode,handleSubmitCode) => {
+
+const CodeEditorPanel = ({language,setLanguage,darkMode,setDarkMode,code,setCode,handleRunCode,handleSubmitCode}) => {
+
+
   return (
     <>
       {/* Code Editor Panel */}
-              <div className="w-full md:w-7/12 bg-card-bg rounded-lg neon-border relative overflow-hidden">
+              <div className="w-full md:w-7/12 bg-card-bg rounded-lg neon-border relative overflow-hidden flex-1">
                 <div className="bg-black px-6 py-3 border-b border-neon-blue">
                   <div className="flex justify-between items-center">
                     <div className="flex space-x-4">
@@ -19,10 +22,12 @@ const CodeEditorPanel = (language,setLanguage,darkMode,setDarkMode,lineNumbersRe
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
                       >
-                        <option value="python">Python3</option>
                         <option value="javascript">JavaScript</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="python">Python</option>
                         <option value="java">Java</option>
                         <option value="cpp">C++</option>
+                        <option value="c">C</option>
                       </select>
                       <button className="text-gray-400 hover:text-neon-blue text-sm flex items-center">
                         <FaRedoAlt className="mr-1" /> Reset
@@ -49,7 +54,7 @@ const CodeEditorPanel = (language,setLanguage,darkMode,setDarkMode,lineNumbersRe
     
                 {/* Code Editor */}
                 <div className="flex ">
-                <CodeEditorMonaco></CodeEditorMonaco>
+                <CodeEditorMonaco code={code}  language={language} setCode={setCode}></CodeEditorMonaco>
                 </div>
     
 

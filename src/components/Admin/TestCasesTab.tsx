@@ -74,6 +74,18 @@ export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }
                     onChange={(e) => updateTestCase(index, 'output', e.target.value)}
                   ></textarea>
                 </div>
+                {testCase.isSample &&(
+                <div>
+                  <label className="block text-gray-400 mb-2">Explanation</label>
+                  <textarea 
+                    className="input-field w-full px-4 py-2 rounded h-12" 
+                    placeholder="Enter Explanation..."
+                    value={testCase.explanation}
+                    onChange={(e) => updateTestCase(index, 'explanation', e.target.value)}
+                  ></textarea>
+                </div>)}
+
+
               </div>
               <div className="mt-4">
                 <label className="flex items-center cursor-pointer">

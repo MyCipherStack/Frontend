@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import PreviewTab from '@/components/Admin/PreviewTab';
 import Head from 'next/head';
 import BasicInfoTab from '@/components/Admin/BasicInfoTab';
@@ -10,6 +10,8 @@ import Link from 'next/link';
 import AdminNavbar from '@/components/Admin/NavBar';
 import { toast } from 'react-toastify';
 import { problemService } from '@/service/problemService';
+import FunctionSignatureTab from '@/components/Admin/FunctionSignatureTab ';
+import { toastError } from '@/utils/toast';
 
 export default function ProblemManagement() {
   const [activeTab, setActiveTab] = useState('basic-info');
@@ -25,10 +27,16 @@ export default function ProblemManagement() {
     inputFormat: '',
     outputFormat: '',
     constraints: '',
+    hint:'',
     testCases: [
       { input: '', output: '', isSample: false },
       { input: '', output: '', isSample: true }
-    ]
+    ],
+    functionSignatureMeta:{
+        name: "",
+        parameters: [],
+        returnType: ""
+      }
   });
   
 
@@ -39,12 +47,22 @@ export default function ProblemManagement() {
   const errHandler=(error)=>{
 
     toast.error(error,{
+      
       position:"top-right",
       autoClose:2000,
       style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
       
     })
   }
+
+
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log("Updated errors inside useEffect:", errors);
+      toastError(Object.values(errors)[0])
+    }
+  }, [errors]);
+  
 const validateForm = (tab) => {
   const newErrors = {};
   
@@ -65,19 +83,28 @@ const validateForm = (tab) => {
   
   if (tab === 'test-cases') {
     formData.testCases.forEach((testCase, index) => {
-      if (!testCase.input) newErrors[`testCaseInput-${index}`] = 'Input is required';
+      if (!testCase.input) return
       if (!testCase.output) newErrors[`testCaseOutput-${index}`] = 'Output is required';
     });
   }
-  
+
+    
+  if (tab === 'function-signature') {
+    if (!formData.functionSignatureMeta.name) return
+    if (!formData.functionSignatureMeta.parameters)  return
+    if (!formData.functionSignatureMeta.returnType)  return  }
   setErrors(newErrors);
+  console.log(newErrors);
+  console.log(errors);
+  
   return Object.keys(newErrors).length === 0;
 };
 
   const handleTabChange = (tab) => {
-    if (activeTab === 'basic-info' && !validateForm('basic-info')) return  errHandler("Please fill out all the required fields.");
-    if (activeTab === 'problem-desc' && !validateForm('problem-desc')) return  errHandler("Please fill out all the required fields.");
-    if (activeTab === 'test-cases' && !validateForm('test-cases')) return  errHandler("Please fill out all the required fields.");
+    if (activeTab === 'basic-info' && !validateForm('basic-info')) return 
+    if (activeTab === 'problem-desc' && !validateForm('problem-desc')) return  
+    if (activeTab === 'test-cases' && !validateForm('test-cases')) return  
+    if (activeTab === 'function-signature' && !validateForm('function-signature')) return  toastError("Please fill out all the required fields.")
     setActiveTab(tab);
     
   };
@@ -87,9 +114,7 @@ const validateForm = (tab) => {
     try{
 
       const response=await problemService("/api/admin/problem",formData)
-      alert('Problem saved successfully!');
-      // Here you would typically send the formData to your API
-      console.log('Form submitted:', formData);
+     
          toast.success(response.data.message,{
                 position:"top-right",
                 autoClose:2000,
@@ -142,6 +167,12 @@ const validateForm = (tab) => {
               Problem Description
             </button>
             <button 
+              className={`tab-button ${activeTab === 'function-signature' ? 'active' : ''}`} 
+              onClick={() => handleTabChange('function-signature')}
+            >
+             function-signature
+            </button>
+            <button 
               className={`tab-button ${activeTab === 'test-cases' ? 'active' : ''}`} 
               onClick={() => handleTabChange('test-cases')}
             >
@@ -189,6 +220,15 @@ const validateForm = (tab) => {
                 submitForm={handleSubmit}
               />
             )}
+
+    {activeTab === 'function-signature' && (
+      <FunctionSignatureTab
+        formData={formData} 
+        setFormData={setFormData}
+        prevTab={handleTabChange}
+        nextTab={handleTabChange}
+      />
+    )}
           </form>
         </div>
       </div>

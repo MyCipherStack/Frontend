@@ -3,14 +3,15 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
 
-const CodeEditorMonaco= () => {
+const CodeEditorMonaco= ({code,language,setCode}) => {
+  
   return (
     <Editor
       height="300px"
-      defaultLanguage="javascript"
-      defaultValue="// Start coding here"
+      language={language}
+      value={code}
       theme="vs-dark"
-      onChange={(value) => console.log(value)}
+      onChange={(value) => setCode(value)}
     />
   );
 };

@@ -42,6 +42,15 @@ export default function ProblemDescTab({ formData, setFormData, prevTab, nextTab
               onChange={(e) => setFormData({...formData, constraints: e.target.value})}
             ></textarea>
           </div>
+          <div className="mb-6">
+            <label className="block text-gray-400 mb-2">Hint</label>
+            <textarea 
+              className="input-field w-full px-4 py-2 rounded h-20" 
+              placeholder="List constraints..."
+              value={formData.hint}
+              onChange={(e) => setFormData({...formData, hint: e.target.value})}
+            ></textarea>
+          </div>
   
           <div className="flex justify-between mt-6">
             <button 
@@ -54,7 +63,7 @@ export default function ProblemDescTab({ formData, setFormData, prevTab, nextTab
             <button 
               type="button" 
               className="next-tab px-6 py-2 bg-[#0ef] text-black rounded hover:bg-[#0df] transition duration-300" 
-              onClick={() => nextTab('test-cases')}
+              onClick={() => nextTab('function-signature')}
             >
               Next: Test Cases <i className="fas fa-arrow-right ml-2"></i>
             </button>
