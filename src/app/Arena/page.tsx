@@ -5,9 +5,7 @@
 import Header from '@/components/Header';
 import ProblemTable from '@/components/Problems/ProblemTable';
 import { createGroupChallengeService } from '@/service/createChallenges';
-import { problemService } from '@/service/problemService';
 import { toastSuccess } from '@/utils/toast';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Arena() {

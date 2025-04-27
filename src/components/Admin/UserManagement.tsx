@@ -1,10 +1,10 @@
 "use client"
 
-import { getDataService } from "@/service/getDataService";
+import { getAllUsers } from "@/service/getDataService";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH } from "react-icons/fa";
 import { Pagination } from "../Pagination";
-import { actionServiceUpdate } from "@/service/actionServiceUpdate";
+import { usersDataUpdate } from "@/service/postUpdateService";
 import Swal from 'sweetalert2';
 import { confirmationAlert } from "@/utils/confirmationAlert";
 
@@ -24,7 +24,7 @@ const [trigger,setTrigger]=useState(false)
   useEffect(()=>{
     const params=new URLSearchParams({page, role,status,search})
     const fetchData = async () => {
-    const response = await getDataService(`/api/admin/users?${params.toString()}`);
+    const response = await getAllUsers(params.toString());
      setTotalPages(response.data.usersData.totalPages,)
      setTotalUsers(response.data.usersData.totalUsers)
      setUsers(response.data.usersData.users)
@@ -49,7 +49,7 @@ const [trigger,setTrigger]=useState(false)
 
 if(alert){
   
-  const data= await actionServiceUpdate(`/api/admin/users/${email}`,{status})
+  const data= await usersDataUpdate(`/api/admin/users/${email}`,{status})
   console.log(data);
   setTrigger(!trigger)
   }

@@ -29,4 +29,14 @@ export const editProblemService=async(data:{})=>{
 
 
 
+export const runProblemService=async(data:{})=>{
+    const url="/api/user/problem/run"
+    try{
+        const response= await axios.post(url,data,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
 

@@ -1,20 +1,19 @@
 "use client"
 
-import { getDataService } from "@/service/getDataService";
+import { getAllProblems } from "@/service/getDataService";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH, FaCircleNotch, FaCheckCircle, FaPlus, FaTrash } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 import { useRouter } from "next/navigation";
-import { problemService } from "@/service/problemService";
+import { editProblemService } from "@/service/problemService";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { confirmationAlert } from "@/utils/confirmationAlert";
-import { boolean } from "zod";
 
 
 
 
 
-const Allproblems = ({formData,setFormData,showEditProblem,showAddProblem}) => {
+const Allproblems = ({showEditProblem,showAddProblem}) => {
 const [search,setSearch]=useState("")
 const [difficulty,setDifficulty]=useState("")
 const [status,setStatus]=useState("")
@@ -33,7 +32,7 @@ const router=useRouter()
   useEffect(()=>{
     const params=new URLSearchParams({page,limit,difficulty,status,search,category})
     const fetchData = async () => {
-    const response = await getDataService(`/api/user/problems?${params.toString()}`);
+    const response = await getAllProblems(params.toString());
      setTotalPages(response.data.problemData.totalPages,)
      setTotalProblem(response.data.problemData.totalProblems)
      console.log(response.data.problemData.problems);
@@ -68,7 +67,7 @@ const router=useRouter()
         }
 
         try{
-            const response=await problemService("/api/admin/editProblem",problem)
+            const response=await editProblemService(problem)
             setLimit("10")
 
             toastSuccess(response.data.message)

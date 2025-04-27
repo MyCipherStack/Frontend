@@ -1,15 +1,13 @@
 "use client";
-import React, { cache, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import "@/app/Login/page.css"
 import {toast} from "react-toastify"
-import { authService } from "@/service/authService";
+import {  userLogin, userRegister } from "@/service/authService";
 import { useRouter } from "next/navigation";
 import EnterOtp from "@/components/PasswordComponent.tsx/EnteOtp";
 import { verifyOtpService } from "@/service/verifyOtpService";
-import { googleauthService } from "@/service/googleAuthService";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/features/auth/userAuthSlice";
 import Link from "next/link";
@@ -73,28 +71,23 @@ export default function AuthPage() {
           if(formData.TickBox  || isLogin){
       console.log(formData,"formdata");
       
-      const url=isLogin ? "/api/user/login":"/api/user/register"
+      // const url=isLogin ? "/api/user/login":"/api/user/register"
       const body=isLogin ?{name:formData.username,password:formData.password } :{name:formData.username ,email:formData.email,password:formData.password}
       try{
-
-        
-        const response= await authService(url,body)
-
-
-        console.log(response.data);
-        toast.success(response.data.message,{
-          position:"top-right",
-          autoClose:2000,
-          style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-        })
+  
         if(isLogin){
+          const response= await userLogin(body)
+          toastSuccess(response.data.message)
           dispatch(loginSuccess(response.data.user))
-          console.log("redirect home");
-          
           router.push("/Home")
         }else{
+          
+          const response= await userRegister(body)
+          toastSuccess(response.data.message)
           setotpComponent(true)
         }
+
+ 
         
      
       }
@@ -102,22 +95,9 @@ export default function AuthPage() {
         console.log(error);
         
         if(error.response && error.response.data && error.response.data.message){
-          
-          toast.error(error.response.data.message,{
-            position:"top-right",
-            autoClose:2000,
-            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-            
-          })
-          console.log(error.response.data.error);
+            toastError(error.response.data.message)
         }else{
-          
-          toast.error("Something went wrong.Please try again",{
-            position:"top-right",
-          autoClose:3000,
-          style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-          
-        }) 
+          toastError("Something went wrong.Please try again")
       } 
     }    
   }
@@ -129,8 +109,7 @@ const googleLogin=async(e:React.FormEvent)=>{
   try{
     
     console.log("google frond end");
-    
-    // const response=await googleauthService("/api/user/auth/google")
+  
     window.location.href = "http://localhost:5000/api/user/auth/google"; //
     
 

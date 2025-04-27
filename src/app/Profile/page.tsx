@@ -13,11 +13,10 @@ import "@/app/Profile/page"
 import Header from '@/components/Header';
 import { useSelector } from 'react-redux';
 import EditProfileModal from '@/components/UserProfile/EditProfile/EditProfile';
-import { authMiddlware } from '@/service/AuthMiddleWare';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { getDataService } from '@/service/getDataService';
+import { getUserProfie } from '@/service/getDataService';
 
 const ProfilePage = () => {
 
@@ -29,7 +28,7 @@ const router=useRouter()
             console.log("checking");
             
               const url="/api/user/validateUser"
-              const response= await authMiddlware(url)
+           
     
                 toast.success(response.data.message,{
                   position:"top-right",
@@ -124,7 +123,7 @@ const [formData, setFormData] = useState<FormData>({
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
-        const response = await getDataService(`/api/user/profile?email=${userData.email}`)
+        const response = await getUserProfie(userData.email)
         console.log(response);
         
         const data=response.data.user   

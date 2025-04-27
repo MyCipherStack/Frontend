@@ -1,14 +1,12 @@
 "use client";
 
-import { actionServiceUpdate } from "@/service/actionServiceUpdate";
+import { actionServiceUpdate, userProfileDataUpdate } from "@/service/postUpdateService";
 import { useState, useEffect } from "react";
 import {FaTimes} from "react-icons/fa";
 import { PersonalTab } from "./Tabs/PersonalTab";
 import { AppearanceTab } from "./Tabs/AppearanceTab";
 import { SecurityTab } from "./Tabs/SecurityTab";
 import { PreferencesTab } from "./Tabs/PreferencesTab";
-import { getDataService } from "@/service/getDataService";
-import { useSelector } from "react-redux";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError } from "@/utils/toast";
 
@@ -47,7 +45,7 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
       let confirm=await confirmationAlert("save the changes")
     if(confirm){
 
-        const response =await actionServiceUpdate("/api/user/profile",formData)
+        const response =await userProfileDataUpdate(formData)
         console.log(response);
         
         

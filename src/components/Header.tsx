@@ -11,10 +11,9 @@ import {
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useState, useRef, useEffect } from "react";
-import defaultAvatar from './path-to-default-avatar.png'; //  default avatar image
 import { logOut } from "@/features/auth/userAuthSlice";
 import { useDispatch } from "react-redux";
-import { logOutService } from "@/service/logoutService";
+import { logOutService } from "@/service/logoutServices";
 import Link from "next/link";
 
 const ProfileDropdown = ({ user }: { user: any }) => {
@@ -39,7 +38,7 @@ const ProfileDropdown = ({ user }: { user: any }) => {
   const dispatch=useDispatch()
   let logOutHandler=()=>{
     dispatch(logOut())
-    const logoutService=logOutService("api/user/logOut")
+    logOutService()
 
  
   }

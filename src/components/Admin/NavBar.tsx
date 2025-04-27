@@ -2,7 +2,8 @@
 "use client"
 import { AdminLogOut } from "@/features/auth/adminAuthSlice";
 import { logOut } from "@/features/auth/userAuthSlice";
-import { logOutService } from "@/service/logoutService";
+import { logOutService } from "@/service/logoutServices";
+import { toastError, toastSuccess } from "@/utils/toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaTerminal, FaChartLine, FaUsers, FaCode, FaTrophy, FaFlag, FaCog, FaSignOutAlt } from "react-icons/fa";
@@ -19,23 +20,16 @@ const AdminNavbar=({status})=>{
 
   let LogoutHandler=async()=>{
     try{
-    const response=await logOutService("api/admin/logout")
-         toast.success(response.data.message,{
-                position:"top-right",
-                autoClose:2000,
-                style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-              })
-              router.push("/admin")
+    const response=await AdminLogOut()
+        toastSuccess(response.data.message)
+
+           router.push("/admin")
         
     }catch(error){
-       toast.error(error.response.data.message,{
-                position:"top-right",
-                autoClose:2000,
-                style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}})
+
+      toastError(error.response.data.message)
+     
     }
-
-
-
   }
     return (
         <>

@@ -7,8 +7,8 @@ import Solutions from '@/components/Problems/Discussion';
 import Results from '@/components/Problems/Results';
 import Submissions from '@/components/Problems/Submissions';
 import TestCases from '@/components/Problems/TestCases';
-import { getDataService } from '@/service/getDataService';
-import { problemService } from '@/service/problemService';
+import { getAllProblems } from '@/service/getDataService';
+import { problemService, runProblemService } from '@/service/problemService';
 import { useParams } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { FaTerminal, FaCompressAlt, FaPlay, FaBug, FaCheckCircle, FaExclamationCircle, FaBookmark, FaThumbsUp, FaThumbsDown, FaEdit, FaTrash, FaPlusCircle, FaExpandAlt, FaCode, FaRedoAlt, FaUserSecret, FaUserPlus, FaLaptopCode, FaTrophy, FaCompass, FaHistory, FaBook, FaLightbulb } from 'react-icons/fa';
@@ -53,7 +53,7 @@ const ProblemPage = () => {
     
     const params=new URLSearchParams({search})
 
-        const response = await getDataService(`/api/user/problems?${params.toString()}`);
+        const response = await getAllProblems(params.toString());
         let problem=response.data.problemData.problems
         console.log(problem[0])
         SetProgramDetails(problem[0])
@@ -77,7 +77,7 @@ const ProblemPage = () => {
     // Simulate running code
     console.log("code ");
 
-    const response=await problemService("/api/user/problem/run",{code,testCases,language,programDetails})
+    const response=await runProblemService({code,testCases,language,programDetails})
     setShow(false)
     console.log(response);
     console.log(response.data.testResult);

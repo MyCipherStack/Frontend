@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { adminLoginSuccess } from "@/features/auth/adminAuthSlice";
 import { loginSchema } from "@/validations/authSchemas";
-import { authService } from "@/service/authService";
+import { adminLogin } from "@/service/authService";
 import "@/app/Login/page.css";
+import { toastSuccess } from "@/utils/toast";
 
 type LoginType = {
   username: string;
@@ -34,21 +35,13 @@ export default function AdminLoginPage() {
   const submitForm = async (data: LoginType) => {
     try {
       setIsSubmitting(true);
-      const response = await authService("/api/admin/login", {
+      const response = await adminLogin( {
         name: data.username,
         password: data.password,
       });
 
-      toast.success("Admin login successful", {
-        position: "top-right",
-        autoClose: 2000,
-        style: {
-          color: " #0ef",
-          textShadow: "0 0 8px #0ef",
-          backgroundColor: "#000",
-          border: "1px solid #0ef",
-        },
-      });
+      toastSuccess("Admin login successful")
+
       console.log(response,"loged data");
       
       dispatch(adminLoginSuccess(response.data.admin));

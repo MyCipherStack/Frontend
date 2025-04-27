@@ -10,6 +10,8 @@ import { resendOtpService } from '@/service/resendOtp';
 import { toast } from 'react-toastify';
 import { verifyOtpService } from '@/service/verifyOtpService';
 import { toastError, toastSuccess } from '@/utils/toast';
+import { forgotPasswordOtp } from '@/service/forgotPasswordOtp';
+import { forgotPasswordVerify } from '@/service/forgotPasswordVerify';
 export default function PasswordResetPage() {
   // State management
   const [currentStep, setCurrentStep] = useState(1);
@@ -21,30 +23,21 @@ export default function PasswordResetPage() {
 
   let sentOtpHandler=async()=>{
     try{        
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            let  validEmail=emailRegex.test(email)
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          let  validEmail=emailRegex.test(email)
           if(!validEmail){
             toastError("enter valid email")
-  return
+              return
           }
         
-            const response=await resendOtpService("/api/user/forgotPasswordOtp",{email:email})
-            toast.success(response.data.message,{
-              position:"top-right",
-              autoClose:2000,
-              style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-            })
-            setCurrentStep(2)
+            const response=await forgotPasswordOtp({email:email})
+
+              toastSuccess(response.data.message)
+              setCurrentStep(2)
           }catch(error:any){
             console.log(error);
-            
-            toast.error(error.response.data.message,{
-                      position:"top-right",
-                      autoClose:2000,
-                      style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-                      
-            
-          })
+
+            toastError(error.response.data.message)
           }
 
   }
@@ -53,7 +46,7 @@ export default function PasswordResetPage() {
 
     let VerifyOtp=useCallback( async()=>{
       try{
-        const url1="/api/user/forgotPasswordVerify"
+        // const url1="/api/user/forgotPasswordVerify"
 
         const response= await forgotPasswordVerify({otp,email:email})
           setCurrentStep(3)

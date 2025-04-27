@@ -1,8 +1,9 @@
 "use client"
 import {  resendOtpService } from "@/service/resendOtp";
+import { toastError, toastSuccess } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+
 
 const EnterOtp=({VerifyOtp,setOTP,email})=>{
 
@@ -74,24 +75,14 @@ let currentStep=2  //// remove this
     let resendHandler=async()=>{
       try{
 
-        const response=await resendOtpService("/api/user/resendOtp",{email,otp:code})
+        const response=await resendOtpService({email,otp:code})
         console.log(response);
         setsentTimer(30)
-        toast.success(response.data.message,{
-          position:"top-right",
-          autoClose:2000,
-          style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-        })
+        toastSuccess(response.data.message)
+  
       }catch(error:any){
         console.log(error);
-        
-        toast.error(error.response.data.message,{
-                  position:"top-right",
-                  autoClose:2000,
-                  style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-                  
-        
-      })
+        toastError(error.response.data.message)
       }
 
 

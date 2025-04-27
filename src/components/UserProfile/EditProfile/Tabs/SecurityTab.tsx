@@ -1,6 +1,6 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
-import { actionServiceUpdate } from "@/service/actionServiceUpdate";
+import { actionServiceUpdate } from "@/service/postUpdateService";
 import { useForm } from "react-hook-form";
 import { resetPasswordSchema, signSchema } from "@/validations/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";

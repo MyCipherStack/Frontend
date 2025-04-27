@@ -4,15 +4,15 @@
 
 
 
-import { resetPassword } from "@/service/resetPassword";
+import { resetPasswordService } from "@/service/resetPassword";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
-import { toast } from "react-toastify";
 import { resetPasswordSchema } from "@/validations/authSchemas";
+import { toastError, toastSuccess } from "@/utils/toast";
 
 
 
@@ -34,29 +34,16 @@ const CreateNewPassword=({setCurrentStep})=>{
         try{
 
           console.log(formData);
-   
-          
-          
-          const response= await  resetPassword("/api/user/resetPassword",{password:formData.password})
+  
+          const response= await  resetPasswordService({password:formData.password})
           console.log(response);
           router.push("Login")
-         
-          toast.success(response.data.message,{
-            position:"top-right",
-            autoClose:2000,
-            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-          })
-      
+         toastSuccess(response.data.message)
+     
         }catch(error:any){
           console.log(error);
-          
-          toast.error(error.response.data.message,{
-            position:"top-right",
-            autoClose:2000,
-            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},    
-        })
-
-        setCurrentStep(1)
+          toastError(error.response.data.message)
+          setCurrentStep(1)
         }
       }
 

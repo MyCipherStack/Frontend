@@ -2,8 +2,37 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const authService=async(url:string,body:Object)=>{
+export const userLogin=async(body:Object)=>{
     try{
+
+      const url="/api/user/login"
+        const response= await axios.post(url,body,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+export const userRegister=async(body:Object)=>{
+    try{
+
+      const url="/api/user/register"
+        const response= await axios.post(url,body,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+
+export const adminLogin=async(body:Object)=>{
+    try{
+
+      const url="/api/admin/login"
         const response= await axios.post(url,body,{withCredentials:true}) 
         return response
     }
