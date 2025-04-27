@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/features/auth/userAuthSlice";
 import Link from "next/link";
 import { loginSchema, signSchema } from "@/validations/authSchemas";
+import { toastError, toastSuccess } from "@/utils/toast";
 
 
 
@@ -41,26 +42,17 @@ export default function AuthPage() {
   let VerifyOtp=useCallback( async()=>{
     try{
       console.log(otp,"code");
-      const url="/api/user/verifyOtp"
-      const response= await verifyOtpService(url,{otp,email:formData.email})
+      // const url="/api/user/verifyOtp"
+      
+      const response= await verifyOtpService({otp,email:formData.email})
       
         setotpComponent(false)
         setIsLogin(true)
-        toast.success(response.data.message,{
-          position:"top-right",
-          autoClose:2000,
-          style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-        })
+        toastSuccess(response.data.message)
 
       }
       catch(error:any){
-        toast.error(error.response.data.message,{
-          position:"top-right",
-          autoClose:2000,
-          style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-          
-
-      })
+        toastError(error.response.data.message)
     }
         
   },[otp,formData.email])

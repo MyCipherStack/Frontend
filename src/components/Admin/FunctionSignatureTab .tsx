@@ -88,7 +88,7 @@ export default function FunctionSignatureTab({ formData, setFormData, prevTab, n
                 <div className="text-gray-400 text-sm italic">No parameters added yet</div>
               ) : (
                 <div className="space-y-3">
-                  {localSignature.parameters?.map((param, index) => (
+                  {localSignature.parameters.map((param, index) => (
                     <div key={index} className="flex gap-3 items-center">
                       <input
                         type="text"

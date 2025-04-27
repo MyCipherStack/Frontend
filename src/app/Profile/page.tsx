@@ -10,15 +10,14 @@ import {  FaCode, FaUsers, FaTrophy,
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import "@/app/Profile/page"
-import Navbar from '@/components/NavBar';
 import Header from '@/components/Header';
 import { useSelector } from 'react-redux';
 import EditProfileModal from '@/components/UserProfile/EditProfile/EditProfile';
 import { authMiddlware } from '@/service/AuthMiddleWare';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { logOut } from '@/features/auth/userAuthSlice';
 import { useRouter } from 'next/navigation';
+import { getDataService } from '@/service/getDataService';
 
 const ProfilePage = () => {
 
@@ -58,10 +57,143 @@ const router=useRouter()
           // validate()
     },[])
 
+
+
+
+    
+    
+    type FormData = {
+      personal: {
+        displayName: string;
+        username: string;
+        email: string;
+        phone: string;
+        bio: string;
+        github: string;
+        linkedin: string;
+        avatar: string;
+      };
+      appearance: {
+        theme: string;
+      };
+      preferences: {
+        emailNotifications: boolean;
+        interviewReminders: boolean;
+        contestReminders: boolean;
+        language: string;
+        timezone: string;
+        publicProfile: boolean;
+        showActivity: boolean;
+      };
+    };
+    
+    
+    
+    
+    const [isLoading, setIsLoading] = useState(false);
+    
+const [formData, setFormData] = useState<FormData>({
+    personal: {
+      displayName: "",
+      username: "",
+      email: "",
+      phone: "",
+      bio: "",
+      github: "",
+      linkedin: "",
+      avatar:"http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
+    },
+    appearance: {
+      theme: "cyberpunk",
+    },
+    preferences: {
+      emailNotifications: true,
+      interviewReminders: true,
+      contestReminders: true,
+      language: "english",
+      timezone: "gmt-8",
+      publicProfile: true,
+      showActivity: false,
+    },
+  });
+
+
+  let userData=useSelector((state:any)=>state.auth.user)
+  // Load user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getDataService(`/api/user/profile?email=${userData.email}`)
+        console.log(response);
+        
+        const data=response.data.user   
+        console.log(data);
+         
+        setFormData({
+          personal: {
+            displayName: data.displayName || "",
+            username: data.name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            bio: data.bio || "",
+            github: data.github || "",
+            linkedin: data.linkedin || "",
+            avatar: data.image || "/default-avatar.jpg",
+          },
+          appearance: {
+            theme: data.theme || "cyberpunk"
+          },
+          preferences: {
+            emailNotifications: data.preferences.emailNotifications ,
+            interviewReminders: data.preferences.interviewReminders,
+            contestReminders: data.preferences.contestReminders,
+            language: data.preferences.language,
+            timezone: data.preferences.timezone ,
+            publicProfile: data.preferences.publicProfile,
+            showActivity: data.preferences.showActivity ,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+    console.log(formData,"form data");
+    
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <>
  <Head>
    <title>Profile - CipherStack</title>
+   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript">  
+   </script>
+
+   
  </Head>
  
  <div className="min-h-screen text-gray-100 flex flex-col relative">
@@ -73,7 +205,7 @@ const router=useRouter()
 
    <main className="container mx-auto px-4 pt-24 pb-8 flex-grow z-0">
 
-     <ProfileHeader />
+     <ProfileHeader   setIsLoading={setIsLoading}  isLoading={isLoading} setFormData={setFormData}    formData={formData}/>
      
      {/* Tabbed Content */}
      <ProfileTabs />
@@ -86,7 +218,7 @@ const router=useRouter()
 );
 };
 
-const ProfileHeader = () => {
+const ProfileHeader = ({setIsLoading, isLoading,setFormData,formData}) => {
 
 
   const [isEditProfile,SetisEditProfile]=useState(false)
@@ -103,13 +235,13 @@ return (
      {/* Profile Picture */}
      <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
        <div className="w-24 h-24 rounded-full bg-[#111] border-2 border-[#0ef] overflow-hidden">
-         <img src="https://via.placeholder.com/150" alt="Profile" className="w-full h-full object-cover" />
+         <img src={formData.personal.avatar} alt="Profile" className="w-full h-full object-cover" />
        </div>
      </div>
      
      {/* Profile Info */}
      <div className="flex-grow text-center md:text-left">
-       <h1 className="text-2xl font-bold neon-text">{userData?.name}</h1>
+       <h1 className="text-2xl font-bold neon-text">{formData.personal.displayName ? formData.personal.displayName :formData.personal.username}</h1>
        <p className="text-gray-400 text-sm">Member since October 2023</p>
        
        <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-4">
@@ -128,7 +260,7 @@ return (
        </button>
 
         {isEditProfile &&
-          <EditProfileModal onClose={()=>SetisEditProfile(!isEditProfile)}></EditProfileModal>
+          <EditProfileModal  setIsLoading={setIsLoading}  isLoading={isLoading} setFormData={setFormData}    formData={formData} onClose={()=>SetisEditProfile(!isEditProfile)}></EditProfileModal>
         
 
         }
@@ -178,6 +310,13 @@ return (
 </div>
 );
 };
+
+
+
+
+
+
+
 
 const ProfileTabs = () => {
 const [activeTab, setActiveTab] = useState('overview');

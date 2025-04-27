@@ -6,10 +6,10 @@ import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevron
 import { Pagination } from "../Pagination";
 import { useRouter } from "next/navigation";
 
-const ProblemTable = () => {
+const ProblemTable = ({openProblem}) => {
 const [search,setSearch]=useState("")
 const [difficulty,setDifficulty]=useState("")
-const [status,setStatus]=useState("")
+const [status,setStatus]=useState("true")
 const [category,setCategory]=useState("")
 const [page,setPage]=useState("1")
 const [limit,setLimit]=useState("10")
@@ -19,7 +19,6 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
 const [trigger,setTrigger]=useState(false)
 
 
-const router=useRouter()
 
 
   useEffect(()=>{
@@ -41,15 +40,15 @@ const router=useRouter()
     setPage(page+"")
   }
   
-  const openProblem=async(name:string)=>{  
+  // const openProblem=async(name:string)=>{  
    
-    router.push(`/problemDetails/${name}`)
+  //   router.push(`/problemDetails/${name}`)
 
-  // const problemData=await getDataService("/p")
+  // // const problemData=await getDataService("/p")
 
 
 
-  }
+  // }
 
 
     

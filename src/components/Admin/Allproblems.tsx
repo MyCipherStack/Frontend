@@ -5,12 +5,16 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH, FaCircleNotch, FaCheckCircle, FaPlus, FaTrash } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 import { useRouter } from "next/navigation";
+import { problemService } from "@/service/problemService";
+import { toastError, toastSuccess } from "@/utils/toast";
+import { confirmationAlert } from "@/utils/confirmationAlert";
+import { boolean } from "zod";
 
 
 
 
 
-const Allproblems = ({showEditProblem,showAddProblem}) => {
+const Allproblems = ({formData,setFormData,showEditProblem,showAddProblem}) => {
 const [search,setSearch]=useState("")
 const [difficulty,setDifficulty]=useState("")
 const [status,setStatus]=useState("")
@@ -34,7 +38,7 @@ const router=useRouter()
      setTotalProblem(response.data.problemData.totalProblems)
      console.log(response.data.problemData.problems);
      
-     setProblem(response.data.problemData.problems)
+     setProblem(response.data.problemData.problems,)
      
     };
   
@@ -52,7 +56,28 @@ const router=useRouter()
   }
 
     
-  
+  const handleSubmit =async (e:React.ChangeEvent,problem) => {
+    e.stopPropagation()
+    setLimit("0")
+    const alert=await confirmationAlert(`change this program ${problem.status ? "active" :"block"}`)
+    if(alert){
+        if(problem.status){
+            problem.status=false
+        }else{
+            problem.status=true
+        }
+
+        try{
+            const response=await problemService("/api/admin/editProblem",problem)
+            setLimit("10")
+
+            toastSuccess(response.data.message)
+            
+        }catch(error){
+            toastError("Something went wrong.Please try again")
+        }
+    }
+    };
 
   return (
     <div className="flex">
@@ -91,9 +116,8 @@ const router=useRouter()
             </select>
             <select  value={status} onChange={(e)=>setStatus(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">Any Status</option>
-              <option value="active">Solved</option>
-              <option value="inactive">Attempted</option>
-              <option value="banned">Unsolved</option>
+              <option value="true">Active</option>
+              <option value="false">Blocked</option>
             </select>
             <select  value={category} onChange={(e)=>setCategory(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">All Categories</option>
@@ -154,10 +178,17 @@ const router=useRouter()
                     <td className="py-3 px-4">{problem.tags}</td>
                     <td className="py-3 px-4">{new Date(problem.updatedAt).toLocaleDateString()}</td>
                     <td className="py-3 px-4">
-                      <div className="flex gap-2">
+                      <div className="flex gap-5">
                       <button onClick={(e)=>showEditProblem(e,problem)}><FaEdit></FaEdit></button>
-                      <button><FaTrash/></button>
-                       
+       
+                        <div className="flex gap-1" onClick={(e)=>handleSubmit(e,problem)}>
+                                       <button>  {problem.status  ? "block" : "Unblock"}</button>
+                                               <button className="p-1 text-gray-400 hover:text-red-500"  title={problem.status === "Banned" ? "Unban" : "Ban"}>
+                                                 {problem.status  ? <FaCheck /> : <FaBan />}
+                                               </button>
+                                            
+                                             </div>
+                            
                       </div>
                     </td>
                   </tr>

@@ -9,6 +9,7 @@ import CreateNewPassword from '@/components/PasswordComponent.tsx/CreateNewPassw
 import { resendOtpService } from '@/service/resendOtp';
 import { toast } from 'react-toastify';
 import { verifyOtpService } from '@/service/verifyOtpService';
+import { toastError, toastSuccess } from '@/utils/toast';
 export default function PasswordResetPage() {
   // State management
   const [currentStep, setCurrentStep] = useState(1);
@@ -23,11 +24,7 @@ export default function PasswordResetPage() {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             let  validEmail=emailRegex.test(email)
           if(!validEmail){
-            toast.error("enter valid email",{
-              position:"top-right",
-              autoClose:2000,
-              style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-  })
+            toastError("enter valid email")
   return
           }
         
@@ -56,25 +53,17 @@ export default function PasswordResetPage() {
 
     let VerifyOtp=useCallback( async()=>{
       try{
-        console.log(otp,"code");
-        const url="/api/user/forgotPasswordVerify"
-        const response= await verifyOtpService(url,{otp,email:email})
+        const url1="/api/user/forgotPasswordVerify"
+
+        const response= await forgotPasswordVerify({otp,email:email})
           setCurrentStep(3)
-          toast.success(response.data.message,{
-            position:"top-right",
-            autoClose:2000,
-            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-          })
-  
+
+          toastSuccess(response.data.message)
+     
         }
         catch(error:any){
-          toast.error(error.response.data.message,{
-            position:"top-right",
-            autoClose:2000,
-            style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-            
-  
-        })
+          toastError((error.response.data.message))
+      
       }
           
     },[otp,email])

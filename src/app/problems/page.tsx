@@ -4,9 +4,22 @@ import { useState } from 'react';
 import Navbar from '@/components/NavBar';
 import Header from '@/components/Header';
 import ProblemTable from '@/components/Problems/ProblemTable';
+import { useRouter } from 'next/navigation';
 
 const ProblemsPage = () => {
 
+
+   const router=useRouter()
+   
+  const openProblem=async(name:string)=>{  
+   
+    router.push(`/problemDetails/${name}`)
+
+  // const problemData=await getDataService("/p")
+
+
+
+  }
 
   return (
     <div className="min-h-screen ">
@@ -18,7 +31,7 @@ const ProblemsPage = () => {
       
       </div>
       <main>
-        <ProblemTable></ProblemTable>
+        <ProblemTable openProblem={openProblem}></ProblemTable>
       </main>
 
       <footer className="w-ful border-t border-[#0ef]">

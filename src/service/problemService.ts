@@ -3,7 +3,8 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const problemService=async(url:string,data:{})=>{
+export const addProblemService=async(data:{})=>{
+    const url="/api/admin/addProblem"
     try{
         const response= await axios.post(url,data,{withCredentials:true}) 
         return response
@@ -12,3 +13,20 @@ export const problemService=async(url:string,data:{})=>{
         throw error
     }
 }
+
+
+
+export const editProblemService=async(data:{})=>{
+    const url="/api/admin/editProblem"
+    try{
+        const response= await axios.post(url,data,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+
+

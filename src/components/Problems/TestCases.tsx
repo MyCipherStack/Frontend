@@ -1,27 +1,28 @@
+import { tree } from 'next/dist/build/templates/app-page'
 import React, { useState } from 'react'
 import { FaEdit, FaPlusCircle, FaTrash, FaCheck, FaTimes } from 'react-icons/fa'
 
 const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAddTestCase, setTestCases }) => {
   const [editingCase, setEditingCase] = useState(null)
-  const [editedValues, setEditedValues] = useState({ nums: '', target: '', output: '' })
+  const [editedValues, setEditedValues] = useState({ input: '',  output: '' })
 
   const handleEditClick = (testCase) => {
-    setEditingCase(testCase.id)
+    setEditingCase(testCase._id)
     setEditedValues({
-      nums: testCase.nums.join(','),
-      target: testCase.target.toString(),
-      output: testCase.output.join(',')
+      input: testCase.input,
+      output: testCase.output,
+      // output: testCase.output
     })
   }
 
   const handleSaveEdit = (id) => {
     const updatedTestCases = testCases.map(tc => {
-      if (tc.id === id) {
+      if (tc._id === id) {
         return {
           ...tc,
-          nums: editedValues.nums.split(',').map(num => parseInt(num.trim())),
-          target: parseInt(editedValues.target),
-          output: editedValues.output.split(',').map(num => parseInt(num.trim())),
+          input: editedValues.input,
+          // target:editedValues.output,
+          output: editedValues.output,
           status: 'not-run' // Reset status when edited
         }
       }
@@ -51,6 +52,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
     }))
   }
 
+
   return (
     <div className="w-full md">
       <div className="mb-3 flex items-center justify-between">
@@ -65,20 +67,20 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
       
       {testCases.map(testCase => (
         <div 
-          key={testCase.id}
+          key={testCase._id}
           className={`test-case-card mb-2 p-3 rounded border ${
             selectedTestCase === testCase.id ? 'border-neon-blue' : 'border-gray-800'
           } ${testCase.status === 'passed' ? 'bg-green-900 bg-opacity-20' : ''}`}
           onClick={() => !editingCase && setSelectedTestCase(testCase.id)}
         >
-          {editingCase === testCase.id ? (
+          {editingCase === testCase._id ? (
             <div className="space-y-2">
               <div>
-                <label className="text-xs text-gray-400">nums (comma separated)</label>
+                <label className="text-xs text-gray-400">nums</label>
                 <input
                   type="text"
-                  name="nums"
-                  value={editedValues.nums}
+                  name="input"
+                  value={editedValues.input}
                   onChange={handleInputChange}
                   className="w-full bg-gray-800 border border-gray-700 rounded p-1 text-sm"
                 />
@@ -86,15 +88,15 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
               <div>
                 <label className="text-xs text-gray-400">target</label>
                 <input
-                  type="number"
-                  name="target"
-                  value={editedValues.target}
+                  type="text"
+                  name="output"
+                  value={editedValues.output}
                   onChange={handleInputChange}
                   className="w-full bg-gray-800 border border-gray-700 rounded p-1 text-sm"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-400">output (comma separated)</label>
+                <label className="text-xs text-gray-400">output</label>
                 <input
                   type="text"
                   name="output"
@@ -111,7 +113,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                   <FaTimes />
                 </button>
                 <button 
-                  onClick={() => handleSaveEdit(testCase.id)}
+                  onClick={() => handleSaveEdit(testCase._id)}
                   className="text-neon-blue hover:text-neon-blue-light p-1"
                 >
                   <FaCheck />
@@ -144,11 +146,12 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                 </div>
               </div>
               <div className="text-gray-300 text-sm">
-                <p>nums = [{testCase.nums.join(', ')}]</p>
-                <p>target = {testCase.target}</p>
+                
+                <p>input= {testCase.input}</p>
+                <p>target = {testCase.output}</p>
                 <p className="text-xs mt-1">
-                  Output: [{testCase.output.join(', ')}]
-                  {testCase.status === 'passed' && (
+                  {/* Output: {testCase.output} */}
+                  {testCase.status ===true&& (
                     <span className="ml-2 text-green-400">✓ Passed</span>
                   )}
                 </p>

@@ -9,16 +9,35 @@ export function PersonalTab({
   data: FormData["personal"];
   onChange: (field: string, value: string) => void;
 }) {
+
+ const showWidget = () => {
+    
+    let widget = window.cloudinary.createUploadWidget({ 
+       cloudName: `dmvffxx3d`,
+       uploadPreset: `cipherStack`}, 
+    (error, result) => {
+      if (!error && result && result.event === "success") { 
+      console.log(result.info.url); 
+      onChange("avatar",result.info.url)
+    }
+    console.log(error);
+    
+  });
+    widget.open()
+  }
+
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6">
         <div className="relative self-start">
-          <img
+          <img src={data.avatar}
 
             className="w-24 h-24 rounded-full border-2 border-[#0ef] object-cover"
             alt="Profile"
           />
-          <button
+
+          <button onClick={()=>showWidget()}
             type="button"
             className="absolute bottom-0 right-0 bg-[#0ef] rounded-full p-2 hover:bg-opacity-90 transition-opacity"
           >

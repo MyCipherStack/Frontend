@@ -19,7 +19,7 @@ export default function BasicInfoTab({ formData, setFormData, nextTab }) {
                 type="text" 
                 className="input-field w-full px-4 py-2 rounded" 
                 placeholder="e.g. two-sum"
-                value={formData.problemId}
+                value={formData.problemId ?? ""} 
                 onChange={(e) => setFormData({...formData, problemId: e.target.value})}
               />
             </div>

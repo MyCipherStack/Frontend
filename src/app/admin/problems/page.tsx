@@ -8,7 +8,7 @@ import ProblemDetails from '@/components/Admin/ProblemDetails';
 import Allproblems from '@/components/Admin/Allproblems';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { problemService } from '@/service/problemService';
+import { addProblemService, editProblemService, problemService } from '@/service/problemService';
 import { toastError, toastSuccess } from '@/utils/toast';
 
 
@@ -81,11 +81,11 @@ const handleSubmit =async (e:FormEvent) => {
   e.preventDefault();
   try{
     if(Addproblem){
-      const response=await problemService("/api/admin/addProblem",formData)
+      const response=await addProblemService(formData)
       toastSuccess(response.data.message)
     }
     if(editproblem){
-      const response=await problemService("/api/admin/editProblem",formData)
+      const response=await editProblemService(formData)
       toastSuccess(response.data.message)
     }
 
@@ -106,7 +106,7 @@ const handleSubmit =async (e:FormEvent) => {
 
    { allProblems &&(
      <>
-    <Allproblems  showAddProblem={showAddProblem} showEditProblem={showEditProblem}></Allproblems>
+    <Allproblems formData={formData} setFormData={setFormData} showAddProblem={showAddProblem} showEditProblem={showEditProblem}></Allproblems>
     </>
    )}
    { editproblem  &&(

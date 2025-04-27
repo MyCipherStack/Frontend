@@ -8,6 +8,7 @@ import Results from '@/components/Problems/Results';
 import Submissions from '@/components/Problems/Submissions';
 import TestCases from '@/components/Problems/TestCases';
 import { getDataService } from '@/service/getDataService';
+import { problemService } from '@/service/problemService';
 import { useParams } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import { FaTerminal, FaCompressAlt, FaPlay, FaBug, FaCheckCircle, FaExclamationCircle, FaBookmark, FaThumbsUp, FaThumbsDown, FaEdit, FaTrash, FaPlusCircle, FaExpandAlt, FaCode, FaRedoAlt, FaUserSecret, FaUserPlus, FaLaptopCode, FaTrophy, FaCompass, FaHistory, FaBook, FaLightbulb } from 'react-icons/fa';
@@ -27,30 +28,28 @@ const ProblemPage = () => {
 # target = 9
 # Output: [0,1]`);
   const [testCases, setTestCases] = useState([
-    { id: 1, nums: [2,7,11,15], target: 9, output: [0,1], status: 'passed' },
-    { id: 2, nums: [3,2,4], target: 6, output: [1,2], status: 'not-run' }
+    { id: 1, nums: "[2,7,11,15]", target: 9, output: "[0,1]", status: 'passed' },
+    { id: 2, nums: "[3,2,4]", target: 6, output: "[1,2", status: 'not-run' }
   ]);
   const [selectedTestCase, setSelectedTestCase] = useState(1);
   const codeEditorRef = useRef(null);
   const lineNumbersRef = useRef(null);
-
+  const [activeTab, setActiveTab] = useState('description');
+  const [showHint, setShowHint] = useState(false);
+  
+  const [show,setShow]=useState(true)
+  
+  
   const [programDetails,SetProgramDetails]=useState({starterCode:"javascript"})
-
-
-  // Sync line numbers with code editor
-  useEffect(() => {
-    if (codeEditorRef.current && lineNumbersRef.current) {
-      const lineCount = code.split('\n').length;
-      lineNumbersRef.current.innerHTML = Array(lineCount).fill('<span></span>').join('');
-    }
-  }, [code]);
+  
+  
 
   let params:{name:string}=useParams()
   let search=decodeURIComponent(params.name)
+
   useEffect(()=>{
     let getProblemData=async()=>{
     // const params=new URLSearchParams({page,limit,difficulty,status,search,category})
-    console.log(search,"ASDfasdfasdf");
     
     const params=new URLSearchParams({search})
 
@@ -58,7 +57,9 @@ const ProblemPage = () => {
         let problem=response.data.problemData.problems
         console.log(problem[0])
         SetProgramDetails(problem[0])
-        
+        const testCase=problem[0].testCases.filter(testCase=> testCase.isSample)
+        console.log(testCase);
+        setTestCases(testCase)
         
 
     
@@ -70,14 +71,26 @@ const ProblemPage = () => {
     setCode(e.target.value);
   };
 
-  const handleRunCode = () => {
+
+  
+  const handleRunCode =async() => {
     // Simulate running code
     console.log("code ");
+
+    const response=await problemService("/api/user/problem/run",{code,testCases,language,programDetails})
+    setShow(false)
+    console.log(response);
+    console.log(response.data.testResult);
+    setTestCases(response.data.testResult);
     
-    const updatedTestCases = [...testCases];
-    updatedTestCases[0].status = 'passed';
-    setTestCases(updatedTestCases);
+    setActiveTab("testresult")
+    // const updatedTestCases = [...response.data.testCase];
+    // updatedTestCases[0].status = 'passed';
   };
+
+
+
+
 
   const handleSubmitCode = () => {
     // Simulate submission
@@ -85,6 +98,9 @@ const ProblemPage = () => {
     updatedTestCases.forEach(tc => tc.status = 'passed');
     setTestCases(updatedTestCases);
   };
+
+
+
 
   const handleAddTestCase = () => {
     const newId = testCases.length > 0 ? Math.max(...testCases.map(tc => tc.id)) + 1 : 1;
@@ -102,12 +118,9 @@ const ProblemPage = () => {
       setCode(programDetails.starterCode['javascript'])
   },[programDetails])
   useEffect(()=>{
-    
       setCode(programDetails.starterCode[language])
   },[language])
 
-  const [activeTab, setActiveTab] = useState('description');
-  const [showHint, setShowHint] = useState(false);
   
   return (
     <div className="min-h-screen text-gray-100 flex flex-col relative">
@@ -329,7 +342,7 @@ const ProblemPage = () => {
 
           <div className="p-4 flex flex-col md:flex-row gap-4">
             {/* Test Cases */}
-    <TestCases  testCases={testCases}  setSelectedTestCase={setSelectedTestCase} selectedTestCase={selectedTestCase}  handleAddTestCase={handleAddTestCase}  />
+    <TestCases  testCases={testCases} setTestCases={setTestCases} setSelectedTestCase={setSelectedTestCase} selectedTestCase={selectedTestCase}  handleAddTestCase={handleAddTestCase}  />
             {/* Results */}
           
           {/* <Results testCases={testCases}></Results> */}
@@ -349,7 +362,7 @@ const ProblemPage = () => {
             {/* Test Cases */}
             {/* Results */}
           
-          <Results testCases={testCases}></Results>
+          <Results testCases={testCases} show={show}></Results>
           </div>
         </div>
 

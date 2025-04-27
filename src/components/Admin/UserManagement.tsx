@@ -132,7 +132,7 @@ if(alert){
                       <div className="flex items-center gap-2">
                         <img src={user.image} className="w-8 h-8 rounded-full" alt="User" />
                         <div>
-                          <div>{user.name}</div>
+                          <div>{user?.name}</div>
                           <div className="text-xs text-gray-400">#{user._id}</div>
                         </div>
                       </div>

@@ -2,9 +2,9 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const verifyOtpService=async(body:object)=>{
+export const forgotPasswordVerify=async(body:object)=>{
     try{
-        const url="/api/user/verifyOtp"
+        const url="/api/user/forgotPasswordVerify"
         const response= await axios.post(url,body,{withCredentials:true}) 
         return response
     }
