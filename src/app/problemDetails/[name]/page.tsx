@@ -1,32 +1,25 @@
 "use client"
 
 
-import CodeEditorPanel from '@/components/CodeEditorPanel';
+
 import Header from '@/components/Header';
+import ProblemDescription from '@/components/ProblemDescription';
 import Solutions from '@/components/Problems/Discussion';
 import Results from '@/components/Problems/Results';
 import Submissions from '@/components/Problems/Submissions';
 import TestCases from '@/components/Problems/TestCases';
 import { getAllProblems } from '@/service/getDataService';
-import { problemService, runProblemService } from '@/service/problemService';
+import {runProblemService } from '@/service/problemService';
 import { useParams } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { FaTerminal, FaCompressAlt, FaPlay, FaBug, FaCheckCircle, FaExclamationCircle, FaBookmark, FaThumbsUp, FaThumbsDown, FaEdit, FaTrash, FaPlusCircle, FaExpandAlt, FaCode, FaRedoAlt, FaUserSecret, FaUserPlus, FaLaptopCode, FaTrophy, FaCompass, FaHistory, FaBook, FaLightbulb } from 'react-icons/fa';
+import {FaBookmark, FaThumbsUp, FaThumbsDown, FaHistory, FaBook, FaLightbulb } from 'react-icons/fa';
 import Split from 'react-split'
-import { inflateRaw } from 'zlib';
+
 
 const ProblemPage = () => {
   const [language, setLanguage] = useState('javascript');
   const [darkMode, setDarkMode] = useState(true);
-  const [code, setCode] = useState(`class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        # Your code here
-        pass
-        
-# Example usage:
-# nums = [2,7,11,15]
-# target = 9
-# Output: [0,1]`);
+  const [code, setCode] = useState();
   const [testCases, setTestCases] = useState([
     { id: 1, nums: "[2,7,11,15]", target: 9, output: "[0,1]", status: 'passed' },
     { id: 2, nums: "[3,2,4]", target: 6, output: "[1,2", status: 'not-run' }
@@ -192,133 +185,14 @@ const ProblemPage = () => {
 
 
           {activeTab==="description"&& (
-        <div className="flex flex-col md:flex-row gap-4  pb-5">
 
-    <Split className='split' sizes={[45,60]} direction='horizontal' minSize={100} gutterSize={10}>
-                                  
-
-          {/* Problem Description Panel */}
-
-
-            <div className="w-full md:w-4/12 bg-card-bg rounded-lg neon-border relative overflow-hidden left-pane">
-            <div className="bg-black px-6 py-3 border-b border-neon-blue flex justify-between items-center">
-              <div className="text-neon-blue font-bold">Problem #1337</div>
-              <div className="flex gap-2">
-                <span className="px-2 py-1 bg-green-900 text-green-400 text-xs rounded">Easy</span>
-                <span className="text-gray-400 text-xs">Acceptance: 67.8%</span>
-              </div>
-            </div>
-            {/* Problem Content */}
-            <div className="p-6 relative z-10 h-[calc(100vh-130px)] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-4 neon-text">{programDetails.title}</h2>
-              
-              <div className="mb-6 text-gray-300 w-fit ">
-                <p className="mb-4">{programDetails.statement}</p>
-              </div>
-              
-
-              {programDetails.testCases && (
-              
-              
-                programDetails.testCases.map((example,index)=>
-                  
-                  example.isSample &&(
-                    <div key={example._id} className="mb-6">
-                <h3 className="terxt-lg font-semibold text-neon-blue mb-2">Example {index+1}:</h3>
-                <div className="bg-black bg-opacity-50 p-4 rounded">
-                  <p className="mb-1"><span className="text-gray-400">Input:</span>{example.input}</p>
-                  <p className="mb-1"><span className="text-gray-400">Output:</span>{example.output}</p>
-                 { example.explanation &&(
-                  <p className="mb-1"><span className="text-gray-400">Explanation:</span>{example.explanation}</p>
-
-                  )}
-                </div>
-              </div>
-                  )
-                )
-              
-                )}
-             
-              
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-neon-blue mb-2">Constraints:</h3>
-                <ul className="list-disc list-inside pl-4 space-y-1 text-gray-300">
-                  {programDetails.constraints?.split(',').map((constraints, index) => (
-
-                    <li key={index}>  {constraints.trim()}</li>
-))}
-                  {/* <li>-10<sup>9</sup> ≤ target ≤ 10<sup>9</sup></li>
-                  <li>Only one valid answer exists.</li> */}
-                </ul>
-              </div>
-              
-              <div className="mb-6">
-      <button
-        onClick={() => setShowHint(!showHint)}
-        className="flex items-center gap-2 text-neon-blue hover:text-neon-blue-light transition-colors"
-      >
-        <FaLightbulb />
-
-        {showHint ? 'Hide Hint' : 'Show Hint'}
-      </button>
-
-      {showHint && (
-        <div className="mt-2 p-3 bg-gray-800 border border-neon-blue rounded-md">
-          <p className="text-gray-300">{programDetails.hint}</p>
-        </div>
-      )}
-    </div>
-              
-              <div className="border-t pb-18 border-gray-700 pt-4 flex justify-between">
-
-           
-
-            {programDetails.tags && (
-                <div>
-                  <span className="text-gray-400 text-sm">Related Topics:</span>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                  {programDetails.tags.split(',').map((tag, index) => (
-
-                    <span key={index} className="px-2 py-1 bg-gray-800 text-xs rounded">   {tag.trim()}</span>
-                  ))}
-
-                  </div>
-                </div>
-            )}
-
-
-
-
-
-
-                <div className="flex items-center gap-3">
-                  <button className="text-gray-400 hover:text-neon-blue">
-                    <FaBookmark />
-                  </button>
-                  <button className="text-gray-400 hover:text-neon-blue">
-                    <FaThumbsUp />
-                  </button>
-                  <button className="text-gray-400 hover:text-neon-blue">
-                    <FaThumbsDown />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-        
-          {/* Code Editor Panel */}
-        <CodeEditorPanel language={language} setLanguage={setLanguage}
-          darkMode={darkMode} setDarkMode={setDarkMode} lineNumbersRef={lineNumbersRef}
-          codeEditorRef={codeEditorRef} handleCodeChange={handleCodeChange} 
-          code={code} setCode={setCode} handleSubmitCode={handleSubmitCode} handleRunCode={handleRunCode}
-       > </CodeEditorPanel>
-
-
-
-            </Split> 
-        </div>
+            <ProblemDescription
+            programDetails={programDetails} setShowHint={setShowHint} showHint={showHint}
+            language={language} setLanguage={setLanguage}
+            darkMode={darkMode} setDarkMode={setDarkMode} 
+            code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} 
+            ></ProblemDescription>
+       
           )}
 
         {activeTab==="solution"&& (
@@ -333,7 +207,6 @@ const ProblemPage = () => {
           )}
 
 
-        {/* Test Cases and Results */}
         {activeTab==="testcase" && (
         <div className=" h-[calc(100vh-100px)] bg-card-bg rounded-lg neon-border relative overflow-hidden scroll-top" >
           <div className="bg-black px-6 py-3 border-b border-neon-blue">
@@ -342,26 +215,20 @@ const ProblemPage = () => {
 
           <div className="p-4 flex flex-col md:flex-row gap-4">
             {/* Test Cases */}
-    <TestCases  testCases={testCases} setTestCases={setTestCases} setSelectedTestCase={setSelectedTestCase} selectedTestCase={selectedTestCase}  handleAddTestCase={handleAddTestCase}  />
-            {/* Results */}
-          
-          {/* <Results testCases={testCases}></Results> */}
+           <TestCases  testCases={testCases} setTestCases={setTestCases} setSelectedTestCase={setSelectedTestCase} selectedTestCase={selectedTestCase}  handleAddTestCase={handleAddTestCase}  />
           </div>
         </div>
         )}
 
 
-        {activeTab==="testresult" && (
 
+        {activeTab==="testresult" && (
         <div className=" h-[calc(100vh-100px)] bg-card-bg rounded-lg neon-border relative overflow-hidden scroll-top" >
           <div className="bg-black px-6 py-3 border-b border-neon-blue">
             <div className="text-neon-blue font-bold">Test Results</div>
           </div>
 
-          <div className="p-4 flex flex-col md:flex-row gap-4">
-            {/* Test Cases */}
-            {/* Results */}
-          
+          <div className="p-4 flex flex-col md:flex-row gap-4">      
           <Results testCases={testCases} show={show}></Results>
           </div>
         </div>

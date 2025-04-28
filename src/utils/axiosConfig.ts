@@ -1,10 +1,10 @@
 import axios, { InternalAxiosRequestConfig } from "axios"
 import { toastError } from "./toast"
-import { useDispatch } from "react-redux"
 import { logOut } from "@/features/auth/userAuthSlice"
+import { store } from "@/store/store"
+import { error } from "console"
 
 
-const dispatch=useDispatch()
 
 
 axios.interceptors.request.use(
@@ -18,11 +18,16 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
     (response)=>response,
     (error)=>{
+console.log(error);
+        
         if(error.response && error.response.status===401){
-            dispatch(logOut())
-            toastError(error.response.message)
+            console.log(error.response);
+            
+            store.dispatch(logOut())
+            toastError(error.response.message || "Unauthorized access")
         }
-    }
+        return Promise.reject(error)
+    },
 )
 
 

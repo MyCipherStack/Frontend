@@ -13,8 +13,8 @@ import { useSelector } from "react-redux";
 import { useState, useRef, useEffect } from "react";
 import { logOut } from "@/features/auth/userAuthSlice";
 import { useDispatch } from "react-redux";
-import { logOutService } from "@/service/logoutServices";
 import Link from "next/link";
+import { userLogOutService } from "@/service/logoutServices";
 
 const ProfileDropdown = ({ user }: { user: any }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,9 +36,9 @@ const ProfileDropdown = ({ user }: { user: any }) => {
 
 
   const dispatch=useDispatch()
-  let logOutHandler=()=>{
+  let logOutHandler=async()=>{
     dispatch(logOut())
-    logOutService()
+   await userLogOutService()
 
  
   }

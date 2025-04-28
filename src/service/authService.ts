@@ -7,9 +7,13 @@ export const userLogin=async(body:Object)=>{
 
       const url="/api/user/login"
         const response= await axios.post(url,body,{withCredentials:true}) 
+        console.log(response,"upated login");
+        
         return response
     }
     catch(error){
+        console.log(error,"Errrrrrr");
+        
         throw error
     }
 }

@@ -12,3 +12,18 @@ export const forgotPasswordOtp=async(body:object)=>{
         throw error
     }
 }
+
+
+
+export const userResetPassword=async(body:object)=>{
+    try{
+        const url="/api/user/profile/resetPassword"
+        const response= await axios.post(url,body,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+

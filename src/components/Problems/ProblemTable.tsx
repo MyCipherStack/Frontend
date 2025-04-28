@@ -1,6 +1,6 @@
 "use client"
 
-import { getAllUsers } from "@/service/getDataService";
+import { getAllProblems, getAllUsers } from "@/service/getDataService";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH, FaCircleNotch, FaCheckCircle } from "react-icons/fa";
 import { Pagination } from "../Pagination";
@@ -24,7 +24,7 @@ const [trigger,setTrigger]=useState(false)
   useEffect(()=>{
     const params=new URLSearchParams({page,limit,difficulty,status,search,category})
     const fetchData = async () => {
-    const response = await getAllUsers(`/api/user/problems?${params.toString()}`);
+    const response = await getAllProblems(params.toString());
      setTotalPages(response.data.problemData.totalPages,)
      setTotalProblem(response.data.problemData.totalProblems)
      console.log(response.data.problemData.problems);

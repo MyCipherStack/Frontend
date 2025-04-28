@@ -77,9 +77,11 @@ export default function AuthPage() {
   
         if(isLogin){
           const response= await userLogin(body)
+          console.log(response,"response");
+  
+          router.push("/Home")
           toastSuccess(response.data.message)
           dispatch(loginSuccess(response.data.user))
-          router.push("/Home")
         }else{
           
           const response= await userRegister(body)

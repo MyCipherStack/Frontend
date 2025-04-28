@@ -5,7 +5,7 @@ export function InputField({
     value,
     rows = 1,
     onChange,
-    ...props
+    ...props 
   }: {
     label: string;
     type?: string;

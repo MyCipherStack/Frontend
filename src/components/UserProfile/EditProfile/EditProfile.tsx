@@ -1,6 +1,6 @@
 "use client";
 
-import { actionServiceUpdate, userProfileDataUpdate } from "@/service/postUpdateService";
+import { userProfileDataUpdate } from "@/service/postUpdateService";
 import { useState, useEffect } from "react";
 import {FaTimes} from "react-icons/fa";
 import { PersonalTab } from "./Tabs/PersonalTab";
@@ -32,9 +32,9 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
     e.preventDefault();
     setIsLoading(true);
     try {
-      const anyPhoneRegex = /^\+?[\d\s\-().]{7,20}$/;
+      const phoneRegex = /^(?:\+?(\d{1,3}))?[-.\s]?\(?(\d{1,4})\)?[-.\s]?\(?(\d{1,4})\)?[-.\s]?\d{1,4}$/;
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
-      if( !anyPhoneRegex.test(formData.personal.phone) && formData.personal.phone!==""){
+      if( !phoneRegex.test(formData.personal.phone) && formData.personal.phone!==""){
       return  toastError("enter valid phonenumber")
     }
     if(!usernameRegex.test(formData.personal.username) ){

@@ -19,7 +19,7 @@ export const usersDataUpdate=async(email:string,update:{})=>{
 
 export const userProfileDataUpdate=async(update:{})=>{
     try{
-        const url=`"/api/user/profile"`
+        const url="/api/user/profile"
         const response= await axios.patch(url,update,{withCredentials:true}) 
         return response 
     }

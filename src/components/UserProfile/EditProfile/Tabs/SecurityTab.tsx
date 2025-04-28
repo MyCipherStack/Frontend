@@ -1,11 +1,12 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
-import { actionServiceUpdate } from "@/service/postUpdateService";
+import {actionServiceUpdate } from "@/service/postUpdateService";
 import { useForm } from "react-hook-form";
 import { resetPasswordSchema, signSchema } from "@/validations/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { useSelector } from "react-redux";
+import { userResetPassword } from "@/service/passwordServices";
 
 
  export function SecurityTab() {
@@ -18,7 +19,7 @@ import { useSelector } from "react-redux";
     let submit=async(e:React.FormEvent)=>{
       try{
         // e.preventDefault()
-        const response =await actionServiceUpdate("/api/user/profile/resetPassword",{formData,email:userData.email})
+        const response =await userResetPassword({formData,email:userData.email})
         console.log(response);
           toastSuccess("password updated")
       }catch(error){

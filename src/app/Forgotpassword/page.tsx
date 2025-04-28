@@ -10,7 +10,7 @@ import { resendOtpService } from '@/service/resendOtp';
 import { toast } from 'react-toastify';
 import { verifyOtpService } from '@/service/verifyOtpService';
 import { toastError, toastSuccess } from '@/utils/toast';
-import { forgotPasswordOtp } from '@/service/forgotPasswordOtp';
+import { forgotPasswordOtp } from '@/service/passwordServices';
 import { forgotPasswordVerify } from '@/service/forgotPasswordVerify';
 export default function PasswordResetPage() {
   // State management

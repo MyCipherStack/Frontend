@@ -3,10 +3,12 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const getUserProfile=async(email:string)=>{
+export const getUserProfile=async()=>{
     try{
-        const url=`/api/user/profile?email=${email}`
-        const response= await axios.get(url) 
+        console.log("get profile");
+        
+        const url='/api/user/profile'
+        const response= await axios.get(url,{withCredentials:true}) 
         return response
     }
     catch(error){

@@ -82,7 +82,6 @@ const CodeEditorPanel = ({language,setLanguage,darkMode,setDarkMode,code,setCode
                   </button>
                 </div>
               </div>
-    
     </>
   )
 }

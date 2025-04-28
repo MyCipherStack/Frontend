@@ -1,4 +1,3 @@
-// pages/profile.js
 
 "use client"
 
@@ -16,50 +15,13 @@ import EditProfileModal from '@/components/UserProfile/EditProfile/EditProfile';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { getUserProfie } from '@/service/getDataService';
+import {getUserProfile } from '@/service/getDataService';
 
 const ProfilePage = () => {
 
 const dispatch=  useDispatch()
 const router=useRouter()
-    useEffect(()=>{
-          let validate=async()=>{
-            try{
-            console.log("checking");
-            
-              const url="/api/user/validateUser"
-           
-    
-                toast.success(response.data.message,{
-                  position:"top-right",
-                  autoClose:2000,
-                  style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"}
-                })
-        
-              }
-              catch(error:any){
 
-                toast.error(error.response.data.message,{
-                  position:"top-right",
-                  autoClose:2000,
-                  style:{color:" #0ef", textShadow: "0 0 8px #0ef", backgroundColor:"#000",border: "1px solid #0ef"},
-    
-              })
-              router.push("/Login")
-              // dispatch(logOut())
-
-            }
-              
-
-          }
-
-          // validate()
-    },[])
-
-
-
-
-    
     
     type FormData = {
       personal: {
@@ -123,7 +85,7 @@ const [formData, setFormData] = useState<FormData>({
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
-        const response = await getUserProfie(userData.email)
+        const response = await getUserProfile()
         console.log(response);
         
         const data=response.data.user   
@@ -164,24 +126,6 @@ const [formData, setFormData] = useState<FormData>({
     console.log(formData,"form data");
     
   }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -260,8 +204,6 @@ return (
 
         {isEditProfile &&
           <EditProfileModal  setIsLoading={setIsLoading}  isLoading={isLoading} setFormData={setFormData}    formData={formData} onClose={()=>SetisEditProfile(!isEditProfile)}></EditProfileModal>
-        
-
         }
 
 

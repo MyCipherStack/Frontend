@@ -61,6 +61,7 @@ export function PersonalTab({
             type="email"
             value={data.email}
             onChange={(e) => onChange("email", e.target.value)}
+            readOnly
           />
           <InputField
             label="Phone (optional)"
