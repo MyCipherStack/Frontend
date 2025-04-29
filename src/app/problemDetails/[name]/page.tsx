@@ -13,7 +13,7 @@ import {runProblemService } from '@/service/problemService';
 import { useParams } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 import {FaBookmark, FaThumbsUp, FaThumbsDown, FaHistory, FaBook, FaLightbulb } from 'react-icons/fa';
-import Split from 'react-split'
+
 
 
 const ProblemPage = () => {
