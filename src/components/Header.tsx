@@ -138,7 +138,11 @@ const Header = () => {
                </Link>
               </button>
               <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
-                <FaTrophy className="inline mr-2" /> Compete
+               <Link href={"/Arena"}>
+                
+                <FaTrophy className="inline mr-2" /> compete
+               </Link>
+
               </button>
               <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
                 <FaUsers className="inline mr-2" /> Community

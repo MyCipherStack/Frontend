@@ -8,7 +8,7 @@ export const confirmationAlert=async(status:string)=>{
       text: `Are you sure you want to  ${status}?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, change it!',
+      confirmButtonText: 'Yes!',
       cancelButtonText: 'No, keep it',
       background: '#000', // black background
       color: '#00f0ff',

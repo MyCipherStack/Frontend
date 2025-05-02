@@ -4,11 +4,11 @@
 import React, { useState } from 'react'
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
 
-const Results = ({testCases,show}) => {
+const Results = ({testCases,showTestCase}) => {
   console.log(testCases,"results");
   return (
     <>
-  {show ?(
+  {showTestCase ?(
 
 <div className='text-2xl'>First run code</div>
   ):(

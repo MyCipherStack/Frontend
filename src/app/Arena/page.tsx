@@ -1,6 +1,3 @@
-// pages/arena.js
-
-
 "use client"
 import Header from '@/components/Header';
 import ProblemTable from '@/components/Problems/ProblemTable';

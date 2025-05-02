@@ -30,7 +30,7 @@ export default function ProblemManagement() {
     constraints: '',
     hint:'',
     testCases: [
-      { input: '', output: '', isSample: false },
+      {testCaseNo:1 , input: '', output: '', isSample: false },
       { input: '', output: '', isSample: true }
     ],
     functionSignatureMeta:{

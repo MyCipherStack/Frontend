@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
 export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }) {
@@ -8,7 +8,7 @@ export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }
   ]);
 
   const addTestCase = () => {
-    const newTestCases = [...testCases, { input: '', output: '', isSample: false }];
+    const newTestCases = [...testCases, { input: '', output: '', isSample: false,testCaseNo:1}];
     setTestCases(newTestCases);
     setFormData({...formData, testCases: newTestCases});
   };
@@ -26,6 +26,8 @@ export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }
     setFormData({...formData, testCases: newTestCases});
   };
 
+
+
   return (
     <div id="test-cases" className="tab-content">
       <div className="bg-[#111111] rounded-lg neon-border p-6 mb-6">
@@ -40,10 +42,21 @@ export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }
         </div>
 
         <div id="test-cases-container">
+          {/* updateTestCase(index,'testCaseNo'index+1) */}
           {testCases.map((testCase, index) => (
             <div key={index} className="test-case-card p-4 mb-4">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">Test Case #{index + 1}</h3>
+              <div>
+                  <label className=" text-gray-400 mb-2 text-2xl">Testcase No:</label>
+                  <input type='number'
+                    className="input-field  px-4 py-2 rounded h-8" 
+                    placeholder="test case no"
+                    value={testCase.testCaseNo}
+                    onChange={(e) => updateTestCase(index,'testCaseNo',e.target.value)}
+                  ></input>
+                </div>
+
+                {/* <h3 className="text-lg font-semibold">Test Case #{index + 1}</h3> */}
                 <div className="flex gap-2">
                   <button 
                     type="button" 
@@ -55,6 +68,7 @@ export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }
                   </button>
                 </div>
               </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-gray-400 mb-2">Input</label>

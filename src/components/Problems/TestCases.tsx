@@ -67,7 +67,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
       
       {testCases.map(testCase => (
         <div 
-          key={testCase._id}
+          key={testCase.id}
           className={`test-case-card mb-2 p-3 rounded border ${
             selectedTestCase === testCase.id ? 'border-neon-blue' : 'border-gray-800'
           } ${testCase.status === 'passed' ? 'bg-green-900 bg-opacity-20' : ''}`}
@@ -76,7 +76,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
           {editingCase === testCase._id ? (
             <div className="space-y-2">
               <div>
-                <label className="text-xs text-gray-400">nums</label>
+                <label className="text-xs text-gray-400">input</label>
                 <input
                   type="text"
                   name="input"
@@ -123,7 +123,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
           ) : (
             <>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm">Case {testCase.id}</span>
+                <span className="text-sm">Case {testCase.testCaseNo}</span>
                 <div className="flex gap-2">
                   <button 
                     className="text-gray-400 hover:text-neon-blue text-xs"
@@ -138,7 +138,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                     className="text-gray-400 hover:text-red-500 text-xs"
                     onClick={(e) => {
                       e.stopPropagation()
-                      handleDeleteCase(testCase.id)
+                      handleDeleteCase(testCase._id)
                     }}
                   >
                     <FaTrash />

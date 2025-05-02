@@ -54,8 +54,10 @@ if (tab === 'problem-desc') {
 
 if (tab === 'test-cases') {
   formData.testCases.forEach((testCase, index) => {
-      if (!testCase.input) return
-    if (!testCase.output) newErrors[`testCaseOutput-${index}`] = 'Output is required';
+      if (!testCase.input) return newErrors.testCase="testcase input is required"
+    if (!testCase.output) newErrors.testCase = 'Output is required';
+    if (!testCase.testCaseNo) newErrors.testCase = 'testCase no is required';
+
   });
 }
 

@@ -1,12 +1,11 @@
 "use client"
 import { useState } from 'react';
-
 import Navbar from '@/components/NavBar';
 import Header from '@/components/Header';
 import ProblemTable from '@/components/Problems/ProblemTable';
 import { useRouter } from 'next/navigation';
 
-const ProblemsPage = () => {
+const ProblemsPage = () => {  
 
 
    const router=useRouter()

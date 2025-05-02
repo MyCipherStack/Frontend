@@ -5,7 +5,7 @@ import Split from 'react-split'
 import CodeEditorPanel from './CodeEditorPanel'
 import { FaBookmark, FaLightbulb, FaThumbsDown, FaThumbsUp } from 'react-icons/fa'
 
-const ProblemDescription = ({programDetails,setShowHint,showHint,language,setLanguage,darkMode,setDarkMode,code,setCode,handleRunCode,handleSubmitCode}) => {
+const ProblemDescription = ({problemDetails,setShowHint,showHint,language,setLanguage,darkMode,setDarkMode,code,setCode,handleRunCode,handleSubmitCode}) => {
   return (
         <>
          <div className="flex flex-col md:flex-row gap-4  pb-5">
@@ -26,17 +26,17 @@ const ProblemDescription = ({programDetails,setShowHint,showHint,language,setLan
         </div>
         {/* Problem Content */}
         <div className="p-6 relative z-10 h-[calc(100vh-130px)] overflow-y-auto">
-          <h2 className="text-2xl font-bold mb-4 neon-text">{programDetails.title}</h2>
+          <h2 className="text-2xl font-bold mb-4 neon-text">{problemDetails.title}</h2>
           
           <div className="mb-6 text-gray-300 w-fit ">
-            <p className="mb-4">{programDetails.statement}</p>
+            <p className="mb-4">{problemDetails.statement}</p>
           </div>
           
 
-          {programDetails.testCases && (
+          {problemDetails.testCases && (
           
           
-            programDetails.testCases.map((example,index)=>
+            problemDetails.testCases.map((example,index)=>
               
               example.isSample &&(
                 <div key={example._id} className="mb-6">
@@ -59,7 +59,7 @@ const ProblemDescription = ({programDetails,setShowHint,showHint,language,setLan
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-neon-blue mb-2">Constraints:</h3>
             <ul className="list-disc list-inside pl-4 space-y-1 text-gray-300">
-              {programDetails.constraints?.split(',').map((constraints, index) => (
+              {problemDetails.constraints?.split(',').map((constraints, index) => (
 
                 <li key={index}>  {constraints.trim()}</li>
 ))}
@@ -80,7 +80,7 @@ const ProblemDescription = ({programDetails,setShowHint,showHint,language,setLan
 
   {showHint && (
     <div className="mt-2 p-3 bg-gray-800 border border-neon-blue rounded-md">
-      <p className="text-gray-300">{programDetails.hint}</p>
+      <p className="text-gray-300">{problemDetails.hint}</p>
     </div>
   )}
 </div>
@@ -89,11 +89,11 @@ const ProblemDescription = ({programDetails,setShowHint,showHint,language,setLan
 
        
 
-        {programDetails.tags && (
+        {problemDetails.tags && (
             <div>
               <span className="text-gray-400 text-sm">Related Topics:</span>
               <div className="mt-2 flex flex-wrap gap-2">
-              {programDetails.tags.split(',').map((tag, index) => (
+              {problemDetails.tags.split(',').map((tag, index) => (
 
                 <span key={index} className="px-2 py-1 bg-gray-800 text-xs rounded">   {tag.trim()}</span>
               ))}

@@ -49,8 +49,12 @@ const router=useRouter()
   }
   
   const openProblem=async(name:string)=>{  
-   
-    router.push(`/problemDetails/${name}`)
+
+    const result=await confirmationAlert("open problem")
+    if(result){
+        
+      router.push(`/problemDetails/${name}`)
+    }
 
   }
 

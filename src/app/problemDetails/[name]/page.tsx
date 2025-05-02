@@ -9,10 +9,10 @@ import Results from '@/components/Problems/Results';
 import Submissions from '@/components/Problems/Submissions';
 import TestCases from '@/components/Problems/TestCases';
 import { getAllProblems } from '@/service/getDataService';
-import {runProblemService } from '@/service/problemService';
+import {runProblemService, submitProblemService } from '@/service/problemService';
 import { useParams } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import {FaBookmark, FaThumbsUp, FaThumbsDown, FaHistory, FaBook, FaLightbulb } from 'react-icons/fa';
+import {FaHistory, FaBook } from 'react-icons/fa';
 
 
 
@@ -25,18 +25,15 @@ const ProblemPage = () => {
     { id: 2, nums: "[3,2,4]", target: 6, output: "[1,2", status: 'not-run' }
   ]);
   const [selectedTestCase, setSelectedTestCase] = useState(1);
-  const codeEditorRef = useRef(null);
-  const lineNumbersRef = useRef(null);
   const [activeTab, setActiveTab] = useState('description');
   const [showHint, setShowHint] = useState(false);
   
-  const [show,setShow]=useState(true)
+  const [showTestCase,SetshowTestCase]=useState(true)
+  const [submissionDetails,SetSubmissionDetails]=useState({})
+  const [submissionTab,setSubmissionTab]=useState("submissionDetail")
   
   
-  const [programDetails,SetProgramDetails]=useState({starterCode:"javascript"})
-  
-  
-
+  const [problemDetails,SetproblemDetails]=useState({starterCode:"javascript"})
   let params:{name:string}=useParams()
   let search=decodeURIComponent(params.name)
 
@@ -49,7 +46,7 @@ const ProblemPage = () => {
         const response = await getAllProblems(params.toString());
         let problem=response.data.problemData.problems
         console.log(problem[0])
-        SetProgramDetails(problem[0])
+        SetproblemDetails(problem[0])
         const testCase=problem[0].testCases.filter(testCase=> testCase.isSample)
         console.log(testCase);
         setTestCases(testCase)
@@ -67,29 +64,27 @@ const ProblemPage = () => {
 
   
   const handleRunCode =async() => {
-    // Simulate running code
-    console.log("code ");
-
-    const response=await runProblemService({code,testCases,language,programDetails})
-    setShow(false)
-    console.log(response);
-    console.log(response.data.testResult);
+    
+    const response=await runProblemService({code,testCases,language,problemDetails})
+    SetshowTestCase(false)
     setTestCases(response.data.testResult);
     
     setActiveTab("testresult")
-    // const updatedTestCases = [...response.data.testCase];
-    // updatedTestCases[0].status = 'passed';
+   
   };
 
 
 
 
 
-  const handleSubmitCode = () => {
-    // Simulate submission
-    const updatedTestCases = [...testCases];
-    updatedTestCases.forEach(tc => tc.status = 'passed');
-    setTestCases(updatedTestCases);
+  const handleSubmitCode = async() => {
+    const response=await submitProblemService({code,testCases,language,problemDetails})
+
+    console.log(response.data.submissions);
+    SetSubmissionDetails(response.data.submissions)
+    setActiveTab("submissions")
+    setSubmissionTab("submissionDetail")
+   
   };
 
 
@@ -108,10 +103,10 @@ const ProblemPage = () => {
   
 
   useEffect(()=>{
-      setCode(programDetails.starterCode['javascript'])
-  },[programDetails])
+      setCode(problemDetails.starterCode['javascript'])
+  },[problemDetails])
   useEffect(()=>{
-      setCode(programDetails.starterCode[language])
+      setCode(problemDetails.starterCode[language])
   },[language])
 
   
@@ -165,7 +160,10 @@ const ProblemPage = () => {
         ? 'text-neon-blue border-b-2 border-neon-blue' 
         : 'text-gray-400 hover:text-neon-blue'
     }`}
-    onClick={() => setActiveTab('submissions')}
+    onClick={() =>{ setActiveTab('submissions')  
+    setSubmissionTab("allSubmission")}
+
+    }
   >
     <FaHistory className="inline " /> SUBMISSIONS
   </span>
@@ -187,7 +185,7 @@ const ProblemPage = () => {
           {activeTab==="description"&& (
 
             <ProblemDescription
-            programDetails={programDetails} setShowHint={setShowHint} showHint={showHint}
+            problemDetails={problemDetails} setShowHint={setShowHint} showHint={showHint}
             language={language} setLanguage={setLanguage}
             darkMode={darkMode} setDarkMode={setDarkMode} 
             code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} 
@@ -202,7 +200,7 @@ const ProblemPage = () => {
 
           {activeTab==="submissions"&& (
 
-          <Submissions></Submissions>
+          <Submissions submissionTab={submissionTab} setSubmissionTab={setSubmissionTab} SetSubmissionDetails={SetSubmissionDetails} submissionDetails={submissionDetails} problemId={problemDetails._id} ></Submissions>
 
           )}
 
@@ -229,7 +227,7 @@ const ProblemPage = () => {
           </div>
 
           <div className="p-4 flex flex-col md:flex-row gap-4">      
-          <Results testCases={testCases} show={show}></Results>
+          <Results testCases={testCases} showTestCase={showTestCase}></Results>
           </div>
         </div>
 
