@@ -1,46 +1,46 @@
 "use client"
-import {  resendOtpService } from "@/service/resendOtp";
+import { resendOtpService } from "@/service/resendOtp";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 
-const EnterOtp=({VerifyOtp,setOTP,email})=>{
+const EnterOtp = ({ VerifyOtp, setOTP, email }) => {
 
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   //   const [currentStep, setCurrentStep] = useState(2);
   const [isEmail, setIsEmail] = useState(true);
   const [timer, setTimer] = useState(300); // 5 minutes 
   const [resentTimer, setsentTimer] = useState(30); // 
-  const route=useRouter()
-let currentStep=2  //// remove this
+  const route = useRouter()
+  let currentStep = 2  //// remove this
 
 
   const codeInputs = useRef<(HTMLInputElement | null)[]>([]);
-  
 
 
 
-   useEffect(() => {
-      let interval: NodeJS.Timeout;
-      if (currentStep === 2 && timer > 0) {
-        interval = setInterval(() => {
-          setTimer((prev) => prev - 1);
-        }, 1000);
-      }
-      return () => clearInterval(interval);  //clean up when rerender
-    }, [currentStep, timer]);
 
-   useEffect(() => {
-      let interval: NodeJS.Timeout;
-      if (resentTimer > 0) {
-        interval = setInterval(() => {
-          setsentTimer((prev) => prev - 1);
-        }, 1000);
-      }
-      return () => clearInterval(interval);
-    }, [resentTimer]);
-  
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (currentStep === 2 && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);  //clean up when rerender
+  }, [currentStep, timer]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resentTimer > 0) {
+      interval = setInterval(() => {
+        setsentTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resentTimer]);
+
 
   // Handle code input changes
   const handleCodeChange = (index: number, value: string) => {
@@ -48,7 +48,7 @@ let currentStep=2  //// remove this
     newCode[index] = value.replace(/\D/g, '');
     setCode(newCode);
     setOTP(newCode)
-    
+
     if (value && index < 5) {
       codeInputs.current[index + 1]?.focus();
     }
@@ -72,71 +72,71 @@ let currentStep=2  //// remove this
     return `${mins}:${secs}`;
   };
 
-    let resendHandler=async()=>{
-      try{
+  let resendHandler = async () => {
+    try {
 
-        const response=await resendOtpService({email,otp:code})
-        console.log(response);
-        setsentTimer(30)
-        toastSuccess(response.data.message)
-  
-      }catch(error:any){
-        console.log(error);
-        toastError(error.response.data.message)
-      }
+      const response = await resendOtpService({ email, otp: code })
+      console.log(response);
+      setsentTimer(30)
+      toastSuccess(response.data.message)
 
-
+    } catch (error: any) {
+      console.log(error);
+      toastError(error.response.data.message)
     }
-    return (
-        <>
-                      <div>
-                        <h2 className="text-xl font-bold text-center neon-text mb-6">Enter Verification Code</h2>
-                        <p className="text-gray-400 text-center mb-6">
-                          We've sent a verification code to{' '}
-                          <span className="text-[#00eeff]">your email</span>.
-                          Enter the code below.
-                        </p>
-        
-                        <div className="flex justify-center space-x-2 mb-6">
-                          {code.map((digit, index) => (
-                            <input
-                            key={index}
-                            ref={(el) => (codeInputs.current[index] = el)}
-                            type="text"
-                            maxLength={1}
-                              value={digit}
-                              onChange={(e) => handleCodeChange(index, e.target.value)}
-                              onKeyDown={(e) => handleKeyDown(index, e)}
-                              className="w-10 h-12 text-center text-xl rounded-md bg-black border border-gray-800 text-white focus:border-[#00eeff] focus:outline-none"
-                              autoFocus={index === 0}
-                            />
-                          ))}
-                        </div>
-        
-                        <div className="text-center text-gray-400 text-sm mb-6">
-                          Didn't receive a code?{' '}
-                          <button disabled={resentTimer!=0} className={`text-[#00eeff] hover:underline ${resentTimer!=0 ? 'opacity-50 cursor-not-allowed':''}`}  onClick={resendHandler}>Resend Code</button>
-                          <div className="mt-2">Code expires in <span className="text-[#00eeff]">{formatTime(timer)}</span></div>
-                        </div>
-        
-                        <button
-                          onClick={() => {
-                             setOTP(code)
-                             VerifyOtp()
-                          }}
-                          className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300"
-                          >
-                          Verify Code
-                        </button>
-        
-                        <div className="text-center mt-6">
-                          <button  onClick={()=>{route.back()}}
-                          className="text-[#00eeff] hover:underline">Back</button>
-                        </div>
-                      </div>
-        
-        </>
-    )
+
+
+  }
+  return (
+    <>
+      <div>
+        <h2 className="text-xl font-bold text-center neon-text mb-6">Enter Verification Code</h2>
+        <p className="text-gray-400 text-center mb-6">
+          We've sent a verification code to{' '}
+          <span className="text-[#00eeff]">your email</span>.
+          Enter the code below.
+        </p>
+
+        <div className="flex justify-center space-x-2 mb-6">
+          {code.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => (codeInputs.current[index] = el)}
+              type="text"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleCodeChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              className="w-10 h-12 text-center text-xl rounded-md bg-black border border-gray-800 text-white focus:border-[#00eeff] focus:outline-none"
+              autoFocus={index === 0}
+            />
+          ))}
+        </div>
+
+        <div className="text-center text-gray-400 text-sm mb-6">
+          Didn't receive a code?{' '}
+          <button disabled={resentTimer != 0} className={`text-[#00eeff] hover:underline ${resentTimer != 0 ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={resendHandler}>Resend Code</button>
+          <div className="mt-2">Code expires in <span className="text-[#00eeff]">{formatTime(timer)}</span></div>
+        </div>
+
+        <button
+          onClick={() => {
+            setOTP(code)
+            VerifyOtp()
+          }}
+          className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300"
+        >
+          Verify Code
+        </button>
+
+        <div className="text-center mt-6">
+          <button onClick={() => { route.back() }}
+            className="text-[#00eeff] hover:underline">Back</button>
+        </div>
+      </div>
+
+    </>
+  )
 }
 
 

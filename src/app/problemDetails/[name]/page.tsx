@@ -17,8 +17,7 @@ import {FaHistory, FaBook } from 'react-icons/fa';
 
 
 const ProblemPage = () => {
-  const [language, setLanguage] = useState('javascript');
-  const [darkMode, setDarkMode] = useState(true);
+  const [language, setLanguage] = useState('Javascript');
   const [code, setCode] = useState();
   const [testCases, setTestCases] = useState([
     { id: 1, nums: "[2,7,11,15]", target: 9, output: "[0,1]", status: 'passed' },
@@ -26,14 +25,13 @@ const ProblemPage = () => {
   ]);
   const [selectedTestCase, setSelectedTestCase] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
-  const [showHint, setShowHint] = useState(false);
   
   const [showTestCase,SetshowTestCase]=useState(true)
   const [submissionDetails,SetSubmissionDetails]=useState({})
   const [submissionTab,setSubmissionTab]=useState("submissionDetail")
   
   
-  const [problemDetails,SetproblemDetails]=useState({starterCode:"javascript"})
+  const [problemDetails,SetproblemDetails]=useState({starterCode:"Javascript"})
   let params:{name:string}=useParams()
   let search=decodeURIComponent(params.name)
 
@@ -105,6 +103,7 @@ const ProblemPage = () => {
   useEffect(()=>{
       setCode(problemDetails.starterCode['javascript'])
   },[problemDetails])
+
   useEffect(()=>{
       setCode(problemDetails.starterCode[language])
   },[language])
@@ -185,9 +184,8 @@ const ProblemPage = () => {
           {activeTab==="description"&& (
 
             <ProblemDescription
-            problemDetails={problemDetails} setShowHint={setShowHint} showHint={showHint}
+            problemDetails={problemDetails} 
             language={language} setLanguage={setLanguage}
-            darkMode={darkMode} setDarkMode={setDarkMode} 
             code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} 
             ></ProblemDescription>
        
@@ -236,7 +234,6 @@ const ProblemPage = () => {
 
 
       </div>
-
   
     </div>
   );

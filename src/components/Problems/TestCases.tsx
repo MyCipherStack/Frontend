@@ -37,7 +37,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
   }
 
   const handleDeleteCase = (id) => {
-    const updatedTestCases = testCases.filter(tc => tc.id !== id)
+    const updatedTestCases = testCases.filter(tc => tc._id !== id)
     setTestCases(updatedTestCases)
     if (selectedTestCase === id) {
       setSelectedTestCase(updatedTestCases[0]?.id || null)

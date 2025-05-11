@@ -16,7 +16,7 @@ const [limit,setLimit]=useState("10")
 const [totalProblem,setTotalProblem]=useState(0)
 const [totalPages,setTotalPages]=useState(0)
 const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",status:"",category:""}])
-const [trigger,setTrigger]=useState(false)
+
 
 
 
@@ -34,7 +34,7 @@ const [trigger,setTrigger]=useState(false)
     };
   
   fetchData();
-  },[page,difficulty,status,search,trigger,category])
+  },[page,difficulty,status,search,category])
 
   let pageChange=(page:number)=>{
     setPage(page+"")
@@ -123,7 +123,7 @@ const [trigger,setTrigger]=useState(false)
               </thead>
               <tbody>
                 {Problem.map((problem) => (
-                  <tr key={problem._id} onClick={()=>openProblem(problem.title)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
+                  <tr key={problem._id} onClick={()=>openProblem(problem.title,problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
                     <td className="py-3 px-4 ">
                       <FaCheckCircle />
                     </td>
@@ -164,4 +164,4 @@ const [trigger,setTrigger]=useState(false)
   );
 };
 
-export default ProblemTable;
+export default React.memo(ProblemTable)

@@ -35,24 +35,24 @@ const ProfileDropdown = ({ user }: { user: any }) => {
   }, []);
 
 
-  const dispatch=useDispatch()
-  let logOutHandler=async()=>{
+  const dispatch = useDispatch()
+  let logOutHandler = async () => {
     dispatch(logOut())
-   await userLogOutService()
+    await userLogOutService()
 
- 
+
   }
   return (
     <div className="relative" ref={dropdownRef}>
-      <button 
+      <button
         className="flex items-center space-x-2 focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#0ef]">
           {user?.avatar ? (
-            <img 
-              src={user.avatar} 
-              alt="Profile" 
+            <img
+              src={user.avatar}
+              alt="Profile"
               className="w-full h-full object-cover"
             />
           ) : (
@@ -70,9 +70,9 @@ const ProfileDropdown = ({ user }: { user: any }) => {
           <div className="flex items-center px-4 py-3 border-b border-gray-900 bg-neutral-950">
             <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3">
               {user?.avatar ? (
-                <img 
-                  src={user.avatar} 
-                  alt="Profile" 
+                <img
+                  src={user.avatar}
+                  alt="Profile"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -87,29 +87,24 @@ const ProfileDropdown = ({ user }: { user: any }) => {
             </div>
           </div>
           <div className="py-1">
-            <a
-              href="#"
+            <div
               className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
             >
               <FaUser className="mr-3 text-gray-400" />
               <Link href={"/Profile"}>
-              <span>My Profile</span>
+                <span>My Profile</span>
               </Link>
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
+            </div>
+            <div className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
             >
-              <FaCog className="mr-3 text-gray-400" /> 
+              <FaCog className="mr-3 text-gray-400" />
               <span>Settings</span>
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition border-t border-gray-700"
+            </div>
+            <div  className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition border-t border-gray-700"
             >
-              <FaSignOutAlt className="mr-3 text-gray-400" /> 
-              <span onClick={()=>logOutHandler()}>Logout</span>
-            </a>
+              <FaSignOutAlt className="mr-3 text-gray-400" />
+              <span onClick={() => logOutHandler()}>Logout</span>
+            </div>
           </div>
         </div>
       )}
@@ -119,29 +114,29 @@ const ProfileDropdown = ({ user }: { user: any }) => {
 
 const Header = () => {
   const userData = useSelector((state: any) => state.auth.user);
-  
+
   return (
     <nav className="bg-black border-b border-gray-800 fixed w-full z-40">
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-8">
             <div className="text-xl font-bold text-[#0ef] flex items-center">
-              <Link  href={"/Home"}>
-              CipherStack
+              <Link href={"/Home"}>
+                CipherStack
               </Link>
               <FaTerminal className="ml-1 mt-1" />
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <button className="text-gray-300 hover:text-[#0ef] transition duration-300 " >
-               <Link href={"/problems"}>
-                <FaCode className="inline w-7" /> Problems 
-               </Link>
+                <Link href={"/problems"}>
+                  <FaCode className="inline w-7" /> Problems
+                </Link>
               </button>
               <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
-               <Link href={"/Arena"}>
-                
-                <FaTrophy className="inline mr-2" /> compete
-               </Link>
+                <Link href={"/Arena"}>
+
+                  <FaTrophy className="inline mr-2" /> compete
+                </Link>
 
               </button>
               <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
@@ -154,10 +149,10 @@ const Header = () => {
               <ProfileDropdown user={userData} />
             ) : (
               <>
-              <Link href={"/Login"} >
-              <button className="px-4 py-2 rounded border border-[#0ef] text-[#0ef] hover:bg-[#0ef] hover:text-black transition duration-300">
-                  Login
-                </button></Link>
+                <Link href={"/Login"} >
+                  <button className="px-4 py-2 rounded border border-[#0ef] text-[#0ef] hover:bg-[#0ef] hover:text-black transition duration-300">
+                    Login
+                  </button></Link>
                 <button className="px-4 py-2 rounded bg-[#0ef] text-black hover:bg-[#0df] transition duration-300">
                   Sign Up
                 </button>
