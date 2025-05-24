@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.6.1",
     "autoprefixer": "^10.4.21",
     "axios": "^1.8.4",
+    "lodash.debounce": "^4.0.8",
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

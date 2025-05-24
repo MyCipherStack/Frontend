@@ -3,17 +3,23 @@
 
 
 import Header from '@/components/Header';
+import PairProgrammingSidebar from '@/components/PairProgrammingSidebar';
 import ProblemDescription from '@/components/ProblemDescription';
 import Solutions from '@/components/Problems/Discussion';
 import Results from '@/components/Problems/Results';
 import Submissions from '@/components/Problems/Submissions';
 import TestCases from '@/components/Problems/TestCases';
 import Timer from '@/components/Timer';
-import { getAllProblems } from '@/service/getDataService';
+import { startTimer } from '@/features/timerSlice';
+import { joinPairProgramming } from '@/service/challengeServices';
 import {runProblemService, submitProblemService } from '@/service/problemService';
+import socket from '@/utils/socket';
+import { toastError } from '@/utils/toast';
 import { useParams } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {FaHistory, FaBook } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 
 
@@ -30,35 +36,51 @@ const ProblemPage = () => {
   const [showTestCase,SetshowTestCase]=useState(true)
   const [submissionDetails,SetSubmissionDetails]=useState({})
   const [submissionTab,setSubmissionTab]=useState("submissionDetail")
+  const userData = useSelector((state: any) => state.auth.user)
+  const [challengeData, setChallengeData] = useState({})
+  const [problems, setProblems] = useState([])
+  const dispatch=useDispatch()
+  
+  
+  
   
   
   const [problemDetails,SetproblemDetails]=useState({starterCode:"Javascript"})
   let params:{name:string}=useParams()
-  let search=decodeURIComponent(params.name)
+  let joinCode = decodeURIComponent(params.code)
 
-  useEffect(()=>{
-    let getProblemData=async()=>{
-    // const params=new URLSearchParams({page,limit,difficulty,status,search,category})
-    
-    const params=new URLSearchParams({search})
 
-        const response = await getAllProblems(params.toString());
-        let problem=response.data.problemData.problems
-        console.log(problem[0])
-        SetproblemDetails(problem[0])
-        const testCase=problem[0].testCases.filter(testCase=> testCase.isSample)
-        console.log(testCase);
-        setTestCases(testCase)
+
+
+
+  useEffect(() => {
+    let getProblemData = async () => {
+      const params = new URLSearchParams({ joinCode })
+      try{
+        const response = await joinPairProgramming(params.toString());
         
+  
+      let challenge = response.data.challengeData
+      setChallengeData(challenge)
+      socket.emit("join-challenge", challenge._id, userData._id)
 
-    
+      let problem = response.data.challengeData.problems
+      setProblems(problem)
+      SetproblemDetails(problem[0])
+      setCode(problem[0].starterCode['javascript'])
+      const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
+      setTestCases(testCase)
+    }catch(error){
+              toastError(error.response.data.message)
+      
+  } 
+
     }
     getProblemData()
-  },[])
 
-  const handleCodeChange = (e) => {
-    setCode(e.target.value);
-  };
+    dispatch(startTimer())
+  
+  }, [])
 
 
   
@@ -187,9 +209,8 @@ const ProblemPage = () => {
           {activeTab==="description"&& (
 
             <ProblemDescription
-            problemDetails={problemDetails} 
-            language={language} setLanguage={setLanguage}
-            code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} 
+            problemDetails={problemDetails} language={language} setLanguage={setLanguage}
+            code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} pairEditor={true} challengeId={ challengeData._id}
             ></ProblemDescription>
        
           )}
@@ -234,8 +255,8 @@ const ProblemPage = () => {
 
 
         )}
-
-
+  
+      <PairProgrammingSidebar challengeId={ challengeData._id}/>
       </div>
   
     </div>

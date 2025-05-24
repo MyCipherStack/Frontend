@@ -6,7 +6,7 @@ import { logOutService } from "@/service/logoutServices";
 import { toastError, toastSuccess } from "@/utils/toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FaTerminal, FaChartLine, FaUsers, FaCode, FaTrophy, FaFlag, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaTerminal, FaChartLine, FaUsers, FaCode, FaTrophy, FaFlag, FaCog, FaSignOutAlt, FaCrown } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
@@ -53,6 +53,10 @@ const AdminNavbar=({status})=>{
                   <Link href="/admin/problems" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="problems"  ? "active":""} hover:text-neon-blue transition-all duration-300`}>
                     <FaCode className="w-6" />
                     <span className="ml-3">Problem Management</span>
+                  </Link>
+                  <Link href="/admin/premium" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="premium"  ? "active":""} hover:text-neon-blue transition-all duration-300`}>
+                    <FaCrown className="w-6" />
+                    <span className="ml-3">Premium</span>
                   </Link>
                   <Link href="/admin/contests" className="sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue hover:text-neon-blue transition-all duration-300">
                     <FaTrophy className="w-6" />

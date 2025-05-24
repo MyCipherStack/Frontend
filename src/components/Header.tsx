@@ -49,9 +49,9 @@ const ProfileDropdown = ({ user }: { user: any }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#0ef]">
-          {user?.avatar ? (
+          {user?.image ? (
             <img
-              src={user.avatar}
+              src={user.image}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -69,9 +69,9 @@ const ProfileDropdown = ({ user }: { user: any }) => {
         <div className="absolute right-0 mt-2 w-46 bg-neutral-950 neon-border rounded-md shadow-lg border border-gray-950 z-50 overflow-hidden">
           <div className="flex items-center px-4 py-3 border-b border-gray-900 bg-neutral-950">
             <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3">
-              {user?.avatar ? (
+              {user?.image ? (
                 <img
-                  src={user.avatar}
+                  src={user.image}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />

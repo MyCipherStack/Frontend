@@ -6,9 +6,6 @@ import { FaTerminal, FaEye, FaEyeSlash, FaCheck, FaCode } from 'react-icons/fa';
 import "../globals.css"
 import EnterOtp from '@/components/PasswordComponent.tsx/EnteOtp';
 import CreateNewPassword from '@/components/PasswordComponent.tsx/CreateNewPasswor';
-import { resendOtpService } from '@/service/resendOtp';
-import { toast } from 'react-toastify';
-import { verifyOtpService } from '@/service/verifyOtpService';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { forgotPasswordOtp } from '@/service/passwordServices';
 import { forgotPasswordVerify } from '@/service/forgotPasswordVerify';

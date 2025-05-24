@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Split from "react-split";
 import CodeEditorPanel from "./CodeEditorPanel";
 import {
@@ -16,10 +16,11 @@ const ProblemDescription = ({
   setCode,
   handleRunCode,
   handleSubmitCode,
+  pairEditor,
+  challengeId
 }) => {
   const [showHint, setShowHint] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-
   return (
     <>
       <div className="flex flex-col md:flex-row gap-4  pb-5">
@@ -159,6 +160,8 @@ const ProblemDescription = ({
             setCode={setCode}
             handleRunCode={handleRunCode}
             handleSubmitCode={handleSubmitCode}
+            pairEditor={pairEditor}
+            challengeId={challengeId}
           >
             {" "}
           </CodeEditorPanel>

@@ -19,7 +19,7 @@ import {getUserProfile } from '@/service/getDataService';
 const ProfilePage = () => {
 
 const dispatch=  useDispatch()
-const router=useRouter()
+
 
     
     type FormData = {
@@ -132,8 +132,7 @@ const [formData, setFormData] = useState<FormData>({
     <>
  <Head>
    <title>Profile - CipherStack</title>
-   <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript">  
-   </script>
+  
 
    
  </Head>
@@ -166,6 +165,8 @@ const ProfileHeader = ({setIsLoading, isLoading,setFormData,formData}) => {
   const [isEditProfile,SetisEditProfile]=useState(false)
   
   const userData = useSelector((state: any) => state.auth.user);
+const router=useRouter()
+
 return (
 <div className="bg-[#111] rounded-lg neon-border overflow-hidden mb-6">
  <div className="bg-black px-6 py-3 border-b border-[#0ef] flex items-center">
@@ -208,7 +209,7 @@ return (
 
 
 
-       <button className="px-4 py-2 bg-transparent border border-gray-700 text-gray-400 rounded-md hover:border-[#0ef] hover:text-[#0ef] transition duration-300 w-full">
+       <button onClick={()=>router.push("/results")} className="px-4 py-2 bg-transparent border border-gray-700 text-gray-400 rounded-md hover:border-[#0ef] hover:text-[#0ef] transition duration-300 w-full">
          <FaChartLine className="inline mr-2" /> Battle Results
        </button>
      </div>

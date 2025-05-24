@@ -1,17 +1,21 @@
 "use client"
+import JoinChallengeModal from '@/components/Arena/JoinchallengeModel';
+import PairProgrammingModal from '@/components/Arena/JoinPairProgrammingModal';
 import { BattleRequests } from '@/components/BattleRequests';
 import Header from '@/components/Header';
+import { ProblemSelectionModal } from '@/components/Problems/ProblemSelectionModal';
 import ProblemTable from '@/components/Problems/ProblemTable';
 import { createGroupChallengeService } from '@/service/challengeServices';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { act, useState } from 'react';
 import { FaDoorClosed, FaWindowClose } from 'react-icons/fa';
 export default function Arena() {
   const [activeModal, setActiveModal] = useState(null);
   const [selectedProblemsCount, setSelectedProblemsCount] = useState(0);
   const [showProblemModal, setShowProblemModal] = useState(false);
   const router=useRouter()
+
   
   const closeModal = () => setActiveModal(null);
   
@@ -26,7 +30,7 @@ export default function Arena() {
   };
   const [groupChallenge, setGroupChallenge] = useState<GroupChallenge>({
     challengeName: "",
-    participants: "10",
+    participants: "2",
     duration: "60",
     problems: [],
     problemsName: [],
@@ -46,6 +50,10 @@ export default function Arena() {
   const createGroupchallenge = async (e:React.ChangeEvent) => {
     try{
       e.preventDefault()
+      if(!groupChallenge.challengeName){ return toastError("enter a challenge name")}
+      if(groupChallenge.problems.length<1){
+         return   toastError("select least one problem ")
+      }
       const response = await createGroupChallengeService(groupChallenge)
       toastSuccess(response.data.message)
       console.log(response.data);
@@ -99,7 +107,18 @@ export default function Arena() {
 
       {/* Modals */}
       {activeModal === 'createGroup' && <CreateGroupModal groupChallenge={groupChallenge} setGroupChallenge={setGroupChallenge} setShowProblemModal={setShowProblemModal} createGroupchallenge={createGroupchallenge} selectedProblemsCount={selectedProblemsCount} closeModal={closeModal} />}
+      {activeModal=="create1vs1" && <Create1vs1Model  setActiveModal={setActiveModal} groupChallenge={groupChallenge} setGroupChallenge={setGroupChallenge} setShowProblemModal={setShowProblemModal} createGroupchallenge={createGroupchallenge} selectedProblemsCount={selectedProblemsCount} closeModal={closeModal} />}
+  
       {showProblemModal && <ProblemSelectionModal openProblem={openProblem} selectedProblemsCount={selectedProblemsCount} setShowProblemModal={setShowProblemModal} groupChallenge={groupChallenge} />}
+
+      {activeModal ==="joinGroup" && <JoinChallengeModal onClose={closeModal}/>}
+
+      {activeModal==="pairProgramming" && <PairProgrammingModal onClose={closeModal}/>}
+
+
+
+
+
     </div>
   );
 }
@@ -145,7 +164,7 @@ const ArenaCards = ({ setActiveModal }) => (
       <p className="text-gray-400 mb-6">Challenge a specific user to a 1v1 coding battle. Test your skills in head-to-head competition.</p>
       <div className="space-y-4">
         <button
-          onClick={() => setActiveModal('battle')}
+          onClick={() => {setActiveModal('create1vs1')}}
           className="w-full bg-transparent border border-neon-blue text-neon-blue py-2 rounded hover:bg-neon-blue hover:text-black transition duration-300"
         >
           Challenge User
@@ -265,7 +284,7 @@ const CreateGroupModal = ({ groupChallenge, setGroupChallenge, setShowProblemMod
           <label className="block text-gray-400 mb-1">Select problems</label>
           <button
             type="button"
-            onClick={() => setShowProblemModal(true)}
+            onClick={() => {setShowProblemModal(true)       }}
             className="w-full bg-transparent border border-gray-700 rounded px-3 py-2 text-left text-gray-400 hover:border-neon-blue hover:text-neon-blue"
           >
             <i className="fas fa-plus-circle mr-2"></i>Add Problems
@@ -291,50 +310,66 @@ const CreateGroupModal = ({ groupChallenge, setGroupChallenge, setShowProblemMod
 
 
 
-// Problem Selection Modal
-const ProblemSelectionModal = ({ openProblem, selectedProblemsCount, setShowProblemModal, groupChallenge }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center z-50 overflow-y-auto pt-20">
-    <div className="bg-card-bg neon-border rounded-lg w-full max-w-5xl overflow-hidden">
-      <div className="bg-black px-6 py-3 border-b border-neon-blue flex justify-between items-center">
-        <div className="text-neon-blue font-bold">Select Problems</div>
-        <button onClick={() => setShowProblemModal(false)} className="text-gray-400 hover:text-neon-blue">
+
+
+const Create1vs1Model = ({setActiveModal, groupChallenge, setGroupChallenge, setShowProblemModal, createGroupchallenge, selectedProblemsCount, closeModal }) => (
+
+
+  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-start justify-center z-50 overflow-y-auto pt-20">
+    <div className="bg-card-bg neon-border rounded-lg p-6 w-full max-w-md">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-bold neon-text">Create 1 vs 1 Challenge</h3>
+        <button onClick={closeModal} className="hover:neon-text">
+          <FaWindowClose />
           <i className="fas fa-times"></i>
         </button>
       </div>
-
-      {/* Footer with Selected Problems */}
-      <div className="bg-black px-6 py-4 border-t border-gray-800 flex justify-between items-center">
-        <div className="text-gray-400">
-          Selected: <span className="text-neon-blue">{selectedProblemsCount}</span> problems
-          <div className='text-white' >
-            {groupChallenge.problemsName.map((problem, index) => {
-              return (<div className='flex items-center' key={index}>{problem}
-                <FaWindowClose className='ms-1' />
-              </div>
-              )
-            })}
-          </div>
+      <form className="space-y-4">
+        <div>
+          <label className="block text-gray-400 mb-1">Challenge Name</label>
+          <input type="text" value={groupChallenge.challengeName} onChange={(e) => { setGroupChallenge((prev) => ({ ...prev, challengeName: e.target.value })) }} className="w-full bg-black border border-gray-700 rounded px-3 py-2" placeholder="Enter challenge name" />
         </div>
-        <div className="flex gap-4">
-          <button onClick={() => setShowProblemModal(false)} className="px-4 py-2 bg-transparent border border-gray-600 text-gray-300 rounded hover:border-neon-blue hover:text-neon-blue">
-            Cancel
-          </button>
+        <div>
+          <label className="block text-gray-400 mb-1">Type</label>
+          <select className="w-full bg-black border border-gray-700 rounded px-3 py-2" value={groupChallenge.type} onChange={(e) => { setGroupChallenge((prev) => ({ ...prev, type: e.target.value })) }} >
+            <option value="public ">Public</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        {/* <div className=''>
+          <label className="block text-gray-400 mb-1">Max Participants</label>
+          <input type="number" onChange={(e) => { setGroupChallenge((prev) => ({ ...prev, participants:2})) }} className="w-full bg-black border border-gray-700 rounded px-3 py-2" value={groupChallenge.participants} />
+        </div> */}
+        <div>
+          <label className="block text-gray-400 mb-1">Select problems</label>
           <button
-            onClick={() => {
-              setShowProblemModal(false);
-            }}
-            className="px-4 py-2 bg-neon-blue text-black bg-white rounded hover:bg-[#0df]"
+            type="button"
+            onClick={() => {setShowProblemModal(true)
+            // setActiveModal("")
+          }}
+            className="w-full bg-transparent border border-gray-700 rounded px-3 py-2 text-left text-gray-400 hover:border-neon-blue hover:text-neon-blue"
           >
-            Confirm Selection
+            <i className="fas fa-plus-circle mr-2"></i>Add Problems
+            <span className="float-right text-neon-blue">({selectedProblemsCount})</span>
           </button>
         </div>
-      </div>
-      <ProblemTable openProblem={openProblem}/>
-
-
-
-
-
+        <div>
+          <label className="block text-gray-400 mb-1">Duration</label>
+          <select className="w-full bg-black border border-gray-700 rounded px-3 py-2" value={groupChallenge.duration} onChange={(e) => { setGroupChallenge((prev) => ({ ...prev, duration: e.target.value })) }} >
+            <option value="30">30 minuts</option>
+            <option value="60">1 Hours</option>
+            <option value="120">2 Hours</option>
+            <option value="180">3 Hours</option>
+          </select>
+        </div>
+        <button className="w-full bg-white text-black py-2 rounded font-bold hover:bg-[#0df] transition duration-300" onClick={createGroupchallenge}>
+          Create Challenge
+        </button>
+      </form>
     </div>
   </div>
 );
+
+
+
+

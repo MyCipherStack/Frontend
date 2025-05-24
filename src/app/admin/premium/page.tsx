@@ -1,5 +1,10 @@
 "use client";
 import AdminNavbar from "@/components/Admin/NavBar";
+import { creatPremiumService, editPremiumService, getAllPlanDetails } from "@/service/PremiumServices";
+import { confirmationAlert } from "@/utils/confirmationAlert";
+import { toastError, toastSuccess } from "@/utils/toast";
+import { Modern_Antiqua } from "next/font/google";
+import { features } from "process";
 import React from "react";
 import { useState, useEffect } from "react";
 import {
@@ -11,17 +16,17 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 
-interface Plan {
-  id: string;
-  name: string;
-  price: number;
-  cycle: string;
-  features: string[];
-  trial: number;
-  status: string;
-  activeUsers?: number;
-  revenue?: number;
-}
+ export interface Plan {
+    _id?: string;
+    name: string;
+    price: number;
+    cycle: string;
+    features:{ text: string; enabled: boolean }[];
+    trial: number;
+    status: string;
+    activeUsers?: number;
+    revenue?: number;
+  }
 
 interface FeatureToggle {
   name: string;
@@ -29,65 +34,35 @@ interface FeatureToggle {
   description: string;
 }
 
-const PremiumPlanManagement = () => {
-  const [plans, setPlans] = useState<Record<string, Plan>>({
-    monthly: {
-      id: "monthly",
-      name: "Monthly Premium",
-      price: 19.99,
-      cycle: "monthly",
-      features: [
-        "Access to all premium problems",
-        "Advanced problem hints",
-        "Premium-only contests",
-      ],
-      trial: 7,
-      status: "active",
-      activeUsers: 842,
-      revenue: 16831.58,
-    },
-    annual: {
-      id: "annual",
-      name: "Annual Premium",
-      price: 199.99,
-      cycle: "annual",
-      features: [
-        "All monthly premium features",
-        "2 months free",
-        "Priority support",
-      ],
-      trial: 14,
-      status: "active",
-      activeUsers: 406,
-      revenue: 81195.94,
-    },
-  });
 
-  // const [features, setFeatures] = useState<FeatureToggle[]>([
-  //   {
-  //     name: "Premium Problems",
-  //     enabled: true,
-  //     description: "Exclusive access to advanced problem sets and solutions",
-  //   },
-  //   {
-  //     name: "Premium Contests",
-  //     enabled: true,
-  //     description: "Special contests with higher rewards and recognition",
-  //   },
-  //   {
-  //     name: "Advanced Analytics",
-  //     enabled: true,
-  //     description: "Detailed performance metrics and insights",
-  //   },
-  // ]);
+
+const PremiumPlanManagement = () => {
+  const [plans, setPlans] = useState<Plan[]>([]);
+  
+
+  useEffect(()=>{
+    try{
+    const  getData=async()=>{
+        
+        const response=await getAllPlanDetails()
+        setPlans(response.data.plans)
+        console.log(response);
+      }
+      getData()  
+    }catch(error){
+      toastError("error on fetching data")
+    }
+},[])
+
 
   const [showModal, setShowModal] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
-  const [modalFeatures, setModalFeatures] = useState<
-    { text: string; enabled: boolean }[]
-  >([]);
+  const [currentPlan, setCurrentPlan] = useState<Plan | null>({name:"",features:[],price:0,trial:7,cycle:"monthely",status:"active"});
+  const [modalFeatures, setModalFeatures] = useState<{ text: string; enabled: boolean }[]>([]);
+  const [modalState,SetModalState]=useState<String>("edit")
+
 
   const showCreatePlanModal = () => {
+    SetModalState("create")
     setCurrentPlan(null);
     setModalFeatures([
       { text: "", enabled: true },
@@ -96,11 +71,14 @@ const PremiumPlanManagement = () => {
     setShowModal(true);
   };
 
-  const editPlan = (planId: string) => {
-    const plan = plans[planId];
-    setCurrentPlan(plan);
-    setModalFeatures(plan.features.map((f) => ({ text: f, enabled: true })));
-    setShowModal(true);
+  const editPlan = async(planId: string) => {
+    SetModalState("edit")
+    const plan = plans.find(plan=>plan._id==planId)
+    if(plan){
+      setCurrentPlan(plan);
+      setModalFeatures(plan.features);
+      setShowModal(true);
+    }
   };
 
   const closePlanModal = () => {
@@ -129,64 +107,95 @@ const PremiumPlanManagement = () => {
     newFeatures[index].enabled = !newFeatures[index].enabled;
     setModalFeatures(newFeatures);
   };
-
-  // const togglePremiumFeature = (index: number) => {
-  //   const newFeatures = [...features];
-  //   newFeatures[index].enabled = !newFeatures[index].enabled;
-  //   setFeatures(newFeatures);
-  // };
-
-  const savePlan = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formData = {
-      id: currentPlan?.id || `plan_${Date.now()}`,
-      name: (document.getElementById("planName") as HTMLInputElement).value,
-      price: parseFloat(
-        (document.getElementById("planPrice") as HTMLInputElement).value
-      ),
-      cycle: (document.getElementById("planCycle") as HTMLSelectElement).value,
-      trial:
-        parseInt(
-          (document.getElementById("trialPeriod") as HTMLInputElement).value
-        ) || 0,
-      status: (document.getElementById("planStatus") as HTMLSelectElement)
-        .value,
-      features: modalFeatures
-        .filter((f) => f.text.trim())
-        .map((f) => f.text.trim()),
-      activeUsers: currentPlan?.activeUsers || 0,
-      revenue: currentPlan?.revenue || 0,
-    };
-
-    if (currentPlan) {
-      setPlans({
-        ...plans,
-        [currentPlan.id]: formData,
-      });
-    } else {
-      setPlans({
-        ...plans,
-        [formData.id]: formData,
-      });
-    }
-
-    closePlanModal();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name,id, value } = e.target;
+    console.log(name,id,"ASDf",value);
+    
+    setCurrentPlan((prev) => ({ ...prev, [id]: value }));
   };
 
-  const deletePlan = () => {
-    if (currentPlan) {
-      const newPlans = { ...plans };
-      delete newPlans[currentPlan.id];
-      setPlans(newPlans);
-      closePlanModal();
+
+
+
+
+  const savePlan =async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPlan((prev)=>({...prev,[features]:modalFeatures}))
+
+      try{
+        if(currentPlan && modalState=="create"){
+          currentPlan.features=modalFeatures
+          console.log(currentPlan,"current plan");
+          
+          const response=await creatPremiumService(currentPlan)
+          setPlans((prev)=>[...prev,currentPlan])
+         
+        }else if(currentPlan && modalState=="edit"){
+          const response=await editPremiumService(currentPlan)
+          setPlans((prev)=>( prev.map(plan=>plan._id==currentPlan._id ?{...currentPlan} :plan)))
+        }
+      }catch(error){
+        console.log(error);
+      }
+    
+
+toastSuccess("new plan created")
+
+
+    closePlanModal();
+    SetModalState("edit")
+    // if (currentPlan) {
+    //   setPlans({
+    //     ...plans,currentPlan,
+    //   });
+    // } else {
+    //   setPlans({
+    //     ...plans,
+    //     [currentPlan._id]: currentPlan,
+    //   });
+    // }
+
+
+
+
+
+    // closePlanModal();
+
+
+
+  };
+
+  const deletePlan = (planId:string) => {
+    console.log(planId);
+    const deleteCall=async()=>{
+      const allow=await confirmationAlert("delete the plan")
+
+      if(allow){
+      const plan = plans.find(plan=>plan._id==planId)
+      if(plan){
+        plan.status="deleted"
+        const response=await editPremiumService(plan)
+        const  afterDeletedPlans=plans.filter(plan=>plan._id!=planId)
+        setPlans(afterDeletedPlans)
+        closePlanModal();
+        
+      }    }
+
     }
+      deleteCall()
+
+    // if (currentPlan) {
+    //   const newPlans = { ...plans };
+    //   delete newPlans[currentPlan.id];
+    //   setPlans(newPlans);
+    //   closePlanModal();
+    // }
   };
 
   return (
     <div className="">
       {/* Header */}
-      <AdminNavbar />
+      <AdminNavbar status={"premium"} />
 
       {!showModal && (
         <>
@@ -195,7 +204,7 @@ const PremiumPlanManagement = () => {
               <h1 className="text-2xl   font-bold neon-text">Premium</h1>
               <div
                 className="flex items-center gap-2"
-                onClick={() => showAddProblem(true)}
+                // onClick={() => showAddProblem(true)}
               >
                 <button
                   onClick={showCreatePlanModal}
@@ -214,12 +223,13 @@ const PremiumPlanManagement = () => {
               </div>
               <div className="p-2 ">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Object.values(plans).map((plan) => (
+                  {plans.map((plan) => (
                     <div
-                      key={plan.id}
+                      key={plan._id}
                       className="bg-black rounded-lg border border-gray-800 p-6"
                     >
                       <div className="flex justify-between items-start mb-4">
+                      
                         <div>
                           <h3 className="text-xl font-bold text-[#0ef]">
                             {plan.name}
@@ -233,7 +243,7 @@ const PremiumPlanManagement = () => {
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => editPlan(plan.id)}
+                            onClick={() => editPlan(plan._id)}
                             className="p-2 text-[#0ef] hover:text-white"
                           >
                             <FaEdit />
@@ -250,7 +260,7 @@ const PremiumPlanManagement = () => {
                             className="flex items-center text-gray-300"
                           >
                             <FaCheck className="text-green-400 mr-2" />
-                            {feature}
+                            {feature.text}
                           </div>
                         ))}
                       </div>
@@ -273,37 +283,7 @@ const PremiumPlanManagement = () => {
             </div>
           </div>
 
-          {/* 
-
-
-      <div className="bg-[#111111] rounded-lg border border-[#0ef] [box-shadow:0_0_10px_#0ef] overflow-hidden mb-8">
-        <div className="bg-black px-6 py-3 relative border-b border-[#0ef]">
-          <div className="text-[#0ef] font-bold ml-20">Premium Features</div>
-        </div>
-        <div className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, i) => (
-              <div key={i} className="bg-black rounded-lg border border-gray-800 p-4">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-bold">{feature.name}</h3>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={feature.enabled}
-                      onChange={() => togglePremiumFeature(i)}
-                    />
-                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0ef]"></div>
-                  </label>
-                </div>
-                <div className="text-sm text-gray-400">
-                  {feature.description}
-                </div>
-              </div>
-                         ))}
-                                  </div>
-        </div>
-      </div> */}
+  
         </>
       )}
       {/* Create/Edit Plan Modal */}
@@ -328,8 +308,8 @@ const PremiumPlanManagement = () => {
                   <label className="block text-gray-400 mb-2">Plan Name</label>
                   <input
                     type="text"
-                    id="planName"
-                    defaultValue={currentPlan?.name || ""}
+                    id="name"
+                    defaultValue={currentPlan?.name || ""}  onChange={handleChange}
                     className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                     placeholder="e.g. Monthly Premium"
                     required
@@ -346,8 +326,8 @@ const PremiumPlanManagement = () => {
                       </span>
                       <input
                         type="number"
-                        id="planPrice"
-                        defaultValue={currentPlan?.price || ""}
+                        id="price"
+                        defaultValue={currentPlan?.price || ""} onChange={handleChange}
                         step="0.01"
                         min="0"
                         className="w-full bg-black border border-gray-800 text-white pl-8 pr-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
@@ -361,8 +341,8 @@ const PremiumPlanManagement = () => {
                       Billing Cycle
                     </label>
                     <select
-                      id="planCycle"
-                      defaultValue={currentPlan?.cycle || "monthly"}
+                      id="cycle"
+                      defaultValue={currentPlan?.cycle || "monthly"} onChange={handleChange}
                       className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                     >
                       <option value="monthly">Monthly</option>
@@ -419,8 +399,8 @@ const PremiumPlanManagement = () => {
                     </label>
                     <input
                       type="number"
-                      id="trialPeriod"
-                      defaultValue={currentPlan?.trial || 7}
+                      id="trial"
+                      defaultValue={currentPlan?.trial || 7}  onChange={handleChange}
                       min="0"
                       className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                       placeholder="7"
@@ -429,12 +409,11 @@ const PremiumPlanManagement = () => {
                   <div>
                     <label className="block text-gray-400 mb-2">Status</label>
                     <select
-                      id="planStatus"
-                      defaultValue={currentPlan?.status || "active"}
+                      id="status"
+                      defaultValue={currentPlan?.status || "active"} onChange={handleChange}
                       className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                     >
                       <option value="active">Active</option>
-                      <option value="draft">Draft</option>
                       <option value="hidden">Hidden</option>
                     </select>
                   </div>
@@ -445,7 +424,7 @@ const PremiumPlanManagement = () => {
                   {currentPlan && (
                     <button
                       type="button"
-                      onClick={deletePlan}
+                      onClick={()=>deletePlan(currentPlan._id)}
                       className="px-4 py-2 bg-transparent border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white"
                     >
                       <FaTrashAlt className="inline mr-2" />

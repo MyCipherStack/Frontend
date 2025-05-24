@@ -9,10 +9,12 @@ import { SecurityTab } from "./Tabs/SecurityTab";
 import { PreferencesTab } from "./Tabs/PreferencesTab";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError } from "@/utils/toast";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/features/auth/userAuthSlice";
 
 export default function EditProfileModal({setIsLoading, isLoading,setFormData,formData,onClose }) {
   const [activeTab, setActiveTab] = useState("personal");
-  
+  const dispatch=useDispatch()
 
   const handleInputChange = (
     section: keyof FormData,
@@ -32,13 +34,13 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
     e.preventDefault();
     setIsLoading(true);
     try {
-      const phoneRegex = /^(?:\+?(\d{1,3}))?[-.\s]?\(?(\d{1,4})\)?[-.\s]?\(?(\d{1,4})\)?[-.\s]?\d{1,4}$/;
+      const phoneRegex =/^(?:\+91|91|0)?[6-9]\d{9}$/;
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
       if( !phoneRegex.test(formData.personal.phone) && formData.personal.phone!==""){
-      return  toastError("enter valid phonenumber")
+      return  toastError("enter valid phone number")
     }
     if(!usernameRegex.test(formData.personal.username) ){
-        return  toastError("username must be minimum 3 charater")
+        return  toastError("username must be minimum 3 character")
 
       }
       
@@ -47,22 +49,21 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
 
         const response =await userProfileDataUpdate(formData)
         console.log(response);
-        
+        dispatch(loginSuccess(response.data.user))
         
         onClose();
       } 
       } catch (error) {
         if(error.response.data.message.includes(" dup key: { name")){
-          console.log("this user name already exists");
+          toastError("This user name already exists")
+          console.log("This user name already exists");
         }else{
           console.error("Error updating profile:",error.response.data.message);
+          toastError("Error updating profile")
         }
-
-       
       } finally {
         setIsLoading(false);
       }
-
     };
 
   if (isLoading) {

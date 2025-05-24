@@ -5,9 +5,10 @@
 import React from 'react'
 import { FaBug, FaExpandAlt, FaPlay, FaRedoAlt } from 'react-icons/fa'
 import CodeEditorMonaco from './Problems/CodeEditorMonaco'
+import PairEditor from './PairProgammingEditor'
 
 
-const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, setCode, handleRunCode, handleSubmitCode }) => {
+const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, setCode, handleRunCode, handleSubmitCode, pairEditor,challengeId}) => {
 
 
   return (
@@ -54,7 +55,13 @@ const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, s
 
         {/* Code Editor */}
         <div className="flex ">
-          <CodeEditorMonaco code={code} language={language} setCode={setCode}></CodeEditorMonaco>
+          {pairEditor ? (
+            <PairEditor code={code}  setCode={setCode} challengeId={challengeId} language={language}/>
+
+          ):(
+           <CodeEditorMonaco code={code} language={language} setCode={setCode}></CodeEditorMonaco>
+
+          )}
         </div>
 
 
