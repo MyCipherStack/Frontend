@@ -58,7 +58,7 @@ const PremiumPlanManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<Plan | null>({name:"",features:[],price:0,trial:7,cycle:"monthely",status:"active"});
   const [modalFeatures, setModalFeatures] = useState<{ text: string; enabled: boolean }[]>([]);
-  const [modalState,SetModalState]=useState<String>("edit")
+  const [modalState,SetModalState]=useState<string>("edit")
 
 
   const showCreatePlanModal = () => {

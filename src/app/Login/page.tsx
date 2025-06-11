@@ -26,7 +26,7 @@ export default function AuthPage() {
     email?: string,
     password: string,
     confirmPassword?: string,
-    TickBox: Boolean
+    TickBox: boolean
   }
   const dispatch = useDispatch()
 
@@ -36,7 +36,7 @@ export default function AuthPage() {
   // Using watch() to get the form values.
   const formData = watch()
 
-  let VerifyOtp = useCallback(async () => {
+  const VerifyOtp = useCallback(async () => {
     try {
       console.log(otp, "code");
 

@@ -16,7 +16,7 @@ import { userResetPassword } from "@/service/passwordServices";
 
     
     const formData=watch()
-    let submit=async(e:React.FormEvent)=>{
+    const submit=async(e:React.FormEvent)=>{
       try{
         // e.preventDefault()
         const response =await userResetPassword({formData,email:userData.email})

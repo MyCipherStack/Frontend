@@ -34,7 +34,7 @@ const [trigger,setTrigger]=useState(false)
   fetchData();
   },[page,role,status,search,trigger])
 
-  let pageChange=(page:number)=>{
+  const pageChange=(page:number)=>{
     setPage(page+"")
   }
   

@@ -45,6 +45,8 @@ const dispatch=  useDispatch()
         publicProfile: boolean;
         showActivity: boolean;
       };
+    streak:Object
+    ,
     };
     
     
@@ -75,10 +77,11 @@ const [formData, setFormData] = useState<FormData>({
       publicProfile: true,
       showActivity: false,
     },
+    streak:{}
   });
 
 
-  let userData=useSelector((state:any)=>state.auth.user)
+  const userData=useSelector((state:any)=>state.auth.user)
   // Load user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
@@ -113,6 +116,7 @@ const [formData, setFormData] = useState<FormData>({
             publicProfile: data.preferences.publicProfile,
             showActivity: data.preferences.showActivity ,
           },
+          streak:data.streak
         });
       } catch (error) {
         console.error("Failed to fetch user data:", error);
@@ -133,14 +137,12 @@ const [formData, setFormData] = useState<FormData>({
  <Head>
    <title>Profile - CipherStack</title>
   
-
-   
  </Head>
  
  <div className="min-h-screen text-gray-100 flex flex-col relative">
    {/* Scanline overlay */}
-   <div className="fixed inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,255,255,0.03)_0px,rgba(0,255,255,0.03)_1px,transparent_1px,transparent_2px)] pointer-events-none z-10" />
    
+   <div className="fixed inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,255,255,0.03)_0px,rgba(0,255,255,0.03)_1px,transparent_1px,transparent_2px)] pointer-events-none z-10" />
    <Header></Header>
 
 
@@ -149,7 +151,7 @@ const [formData, setFormData] = useState<FormData>({
      <ProfileHeader   setIsLoading={setIsLoading}  isLoading={isLoading} setFormData={setFormData}    formData={formData}/>
      
      {/* Tabbed Content */}
-     <ProfileTabs />
+     <ProfileTabs streak={formData.streak} />
    </main>
 
    {/* Footer */}
@@ -259,7 +261,7 @@ return (
 
 
 
-const ProfileTabs = () => {
+const ProfileTabs = ({streak}) => {
 const [activeTab, setActiveTab] = useState('overview');
 
 return (
@@ -277,7 +279,7 @@ return (
  </div>
  
  <div className="p-6">
-   {activeTab === 'overview' && <OverviewTab />}
+   {activeTab === 'overview' && <OverviewTab streak={streak}/>}
    {activeTab === 'submissions' && <SubmissionsTab />}
    {activeTab === 'badges' && <BadgesTab />}
    {activeTab === 'contests' && <ContestsTab />}
@@ -287,12 +289,12 @@ return (
 );
 };
 
-const OverviewTab = () => {
+const OverviewTab = ({streak}) => {
 return (
 <>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
    <RecentActivity />
-   <StatsSection />
+   <StatsSection streak={streak}/>
  </div>
  
  <EarnedBadges />
@@ -334,14 +336,14 @@ return (
 );
 };
 
-const StatsSection = () => {
+const StatsSection = ({streak}) => {
 return (
 <div>
  <h2 className="text-xl font-bold neon-text mb-4">Coding Streak</h2>
  <div className="bg-black bg-opacity-50 p-4 rounded-lg border border-gray-800 mb-6">
    <div className="flex items-center justify-between mb-4">
-     <StatBox value="7 Days" label="Current Streak" color="[#0ef]" />
-     <StatBox value="21 Days" label="Longest Streak" color="[#0ef]" />
+     <StatBox value={streak.currentStreak ?? "0"} label="Current Streak" color="[#0ef]" />
+     <StatBox value={streak.higestStreak ?? "0"} label="Longest Streak" color="[#0ef]" />
    </div>
    
    <ContributionGraph />

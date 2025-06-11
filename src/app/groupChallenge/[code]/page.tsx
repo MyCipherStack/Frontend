@@ -35,12 +35,12 @@ const groupChallenge = () => {
   const userData = useSelector((state: any) => state.auth.user)
   const [problems, setProblems] = useState([])
   // console.log(params,"ASDFasdf");
-  let joinCode = decodeURIComponent(params.code)
+  const joinCode = decodeURIComponent(params.code)
   const dispatch = useDispatch()
   const route = useRouter()
 
 
-  let challengeEnd = () => {
+  const challengeEnd = () => {
     toastError("Challenge Ended")
     route.back()
   }
@@ -50,7 +50,7 @@ const groupChallenge = () => {
 
 
   useEffect(() => {
-    let getProblemData = async () => {
+    const getProblemData = async () => {
       const params = new URLSearchParams({ joinCode })
       try {
         const response = await joinGroupChallenge(params.toString());
@@ -59,7 +59,7 @@ const groupChallenge = () => {
 
 
         console.log(response.data, "joinDAta", userData._id, "userId");
-        let challenge = response.data.challengeData
+        const challenge = response.data.challengeData
         console.log(challenge.endTime, "challegeData");
 
         if (new Date(challenge.endTime).getTime() < Date.now()) {
@@ -70,7 +70,7 @@ const groupChallenge = () => {
         setChallengeData(challenge)
         socket.emit("join-challenge", challenge._id, userData._id)
 
-        let problem = response.data.challengeData.problems
+        const problem = response.data.challengeData.problems
         setProblems(problem)
         SetproblemDetails(problem[0])
         setCode(problem[0].starterCode['javascript'])
@@ -116,7 +116,7 @@ const groupChallenge = () => {
     const response = await submitProblemService({ code, testCases, language, problemDetails })
 
     console.log(response.data, "responseData");
-    let submissionDetails = response.data.submissions
+    const submissionDetails = response.data.submissions
     console.log(submissionDetails, "Response submission data");
     SetSubmissionDetails(response.data.submissions)
 
@@ -137,7 +137,7 @@ const groupChallenge = () => {
     setSelectedTestCase(newId);
   };
 
-  let ExitGroupChallenge = () => {
+  const ExitGroupChallenge = () => {
     route.back()
   }
 
@@ -255,8 +255,7 @@ const groupChallenge = () => {
                 <Results testCases={testCases} showTestCase={showTestCase}></Results>
               </div>
             </div>
-
-
+            
           )}
 
 

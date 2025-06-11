@@ -18,10 +18,10 @@ export default function PasswordResetPage() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 
 
-  let sentOtpHandler=async()=>{
+  const sentOtpHandler=async()=>{
     try{        
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          let  validEmail=emailRegex.test(email)
+          const  validEmail=emailRegex.test(email)
           if(!validEmail){
             toastError("enter valid email")
               return
@@ -41,7 +41,7 @@ export default function PasswordResetPage() {
 
   
 
-    let VerifyOtp=useCallback( async()=>{
+    const VerifyOtp=useCallback( async()=>{
       try{
         // const url1="/api/user/forgotPasswordVerify"
 

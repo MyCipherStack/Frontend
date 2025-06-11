@@ -36,7 +36,7 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
   fetchData();
   },[page,difficulty,status,search,category])
 
-  let pageChange=(page:number)=>{
+  const pageChange=(page:number)=>{
     setPage(page+"")
   }
   

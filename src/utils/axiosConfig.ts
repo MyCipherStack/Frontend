@@ -2,7 +2,6 @@ import axios, { InternalAxiosRequestConfig } from "axios"
 import { toastError } from "./toast"
 import { logOut } from "@/features/auth/userAuthSlice"
 import { store } from "@/store/store"
-import { error } from "console"
 
 
 

@@ -36,7 +36,7 @@ const ProfileDropdown = ({ user }: { user: any }) => {
 
 
   const dispatch = useDispatch()
-  let logOutHandler = async () => {
+  const logOutHandler = async () => {
     dispatch(logOut())
     await userLogOutService()
 

@@ -2,7 +2,7 @@ import DashBoard from "@/components/Admin/DashBoards"
 import AdminNavbar from "@/components/Admin/NavBar"
 
 
-let AdminDashBoard=()=>{
+const AdminDashBoard=()=>{
     return (
         <>
         <AdminNavbar status={"dashboard"}></AdminNavbar>

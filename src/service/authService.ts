@@ -2,7 +2,7 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const userLogin=async(body:Object)=>{
+export const userLogin=async(body:object)=>{
     try{
 
       const url="/api/user/login"
@@ -19,7 +19,7 @@ export const userLogin=async(body:Object)=>{
 }
 
 
-export const userRegister=async(body:Object)=>{
+export const userRegister=async(body:object)=>{
     try{
 
       const url="/api/user/register"
@@ -33,7 +33,7 @@ export const userRegister=async(body:Object)=>{
 
 
 
-export const adminLogin=async(body:Object)=>{
+export const adminLogin=async(body:object)=>{
     try{
 
       const url="/api/admin/login"

@@ -33,17 +33,17 @@ const ProblemPage = () => {
   
   
   const [problemDetails,SetproblemDetails]=useState({starterCode:"Javascript"})
-  let params:{name:string}=useParams()
-  let search=decodeURIComponent(params.name)
+  const params:{name:string}=useParams()
+  const search=decodeURIComponent(params.name)
 
   useEffect(()=>{
-    let getProblemData=async()=>{
+    const getProblemData=async()=>{
     // const params=new URLSearchParams({page,limit,difficulty,status,search,category})
     
     const params=new URLSearchParams({search})
 
         const response = await getAllProblems(params.toString());
-        let problem=response.data.problemData.problems
+        const problem=response.data.problemData.problems
         console.log(problem[0])
         SetproblemDetails(problem[0])
         const testCase=problem[0].testCases.filter(testCase=> testCase.isSample)

@@ -3,7 +3,7 @@ import UserManagement from "@/components/Admin/UserManagement"
 
 
 
-let Users=()=>{
+const Users=()=>{
     return (
         <>
         <AdminNavbar status={"users"}></AdminNavbar>

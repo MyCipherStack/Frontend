@@ -41,5 +41,18 @@ export const getAllUsers=async(params:string)=>{
         throw error
     }
 }
+export const getAllUsersforUser=async(params:string)=>{
+    try{
+
+        const url=`/api/user/users?${params}`
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
 
 

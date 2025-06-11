@@ -43,3 +43,21 @@ export const getAllPlanDetails=async()=>{
 
 
 
+
+
+export const getAllPlanDetailsForUsers=async()=>{
+    const url="/api/user/getAllPlans"
+    try{
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    
+
+}
+}
+
+
+
+

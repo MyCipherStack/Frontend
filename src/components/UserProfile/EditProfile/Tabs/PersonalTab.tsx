@@ -12,7 +12,7 @@ export function PersonalTab({
 
  const showWidget = () => {
     
-    let widget = window.cloudinary.createUploadWidget({ 
+    const widget = window.cloudinary.createUploadWidget({ 
        cloudName: `dmvffxx3d`,
        uploadPreset: `cipherStack`}, 
     (error, result) => {

@@ -14,11 +14,11 @@ import { toast } from "react-toastify";
 
 
 const AdminNavbar=({status})=>{
-  let dispatch=useDispatch()
-  let router=useRouter()
+  const dispatch=useDispatch()
+  const router=useRouter()
 
 
-  let LogoutHandler=async()=>{
+  const LogoutHandler=async()=>{
     try{
     const response=await AdminLogOut()
         toastSuccess(response.data.message)

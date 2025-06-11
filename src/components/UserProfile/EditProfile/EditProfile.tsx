@@ -44,7 +44,7 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
 
       }
       
-      let confirm=await confirmationAlert("save the changes")
+      const confirm=await confirmationAlert("save the changes")
     if(confirm){
 
         const response =await userProfileDataUpdate(formData)

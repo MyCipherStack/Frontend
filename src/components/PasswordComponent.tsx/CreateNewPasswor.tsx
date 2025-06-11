@@ -30,7 +30,7 @@ const CreateNewPassword = ({ setCurrentStep }) => {
     setShowPassword(prev => ({ ...prev, [field]: !prev[field] }));
   };
 
-  let resetHandler = async () => {
+  const resetHandler = async () => {
     try {
 
       console.log(formData);

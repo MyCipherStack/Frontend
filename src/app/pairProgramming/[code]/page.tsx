@@ -46,34 +46,32 @@ const ProblemPage = () => {
   
   
   const [problemDetails,SetproblemDetails]=useState({starterCode:"Javascript"})
-  let params:{name:string}=useParams()
-  let joinCode = decodeURIComponent(params.code)
+  const params:{name:string,code:string}=useParams()
+  const joinCode = decodeURIComponent(params.code)
 
 
 
 
 
   useEffect(() => {
-    let getProblemData = async () => {
+    const getProblemData = async () => {
       const params = new URLSearchParams({ joinCode })
       try{
         const response = await joinPairProgramming(params.toString());
         
   
-      let challenge = response.data.challengeData
+      const challenge = response.data.challengeData
       setChallengeData(challenge)
       socket.emit("join-challenge", challenge._id, userData._id)
 
-      let problem = response.data.challengeData.problems
+      const problem = response.data.challengeData.problems
       setProblems(problem)
       SetproblemDetails(problem[0])
       setCode(problem[0].starterCode['javascript'])
       const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
       setTestCases(testCase)
-    }catch(error){
-              toastError(error.response.data.message)
-      
-  } 
+    }catch(error:unknown){
+              toastError(error.response.data.message)} 
 
     }
     getProblemData()
@@ -223,7 +221,6 @@ const ProblemPage = () => {
           {activeTab==="submissions"&& (
 
           <Submissions submissionTab={submissionTab} setSubmissionTab={setSubmissionTab} SetSubmissionDetails={SetSubmissionDetails} submissionDetails={submissionDetails} problemId={problemDetails._id} ></Submissions>
-
           )}
 
 

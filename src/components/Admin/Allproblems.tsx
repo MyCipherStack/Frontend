@@ -44,7 +44,7 @@ const router=useRouter()
   fetchData();
   },[page,difficulty,status,search,trigger,category])
 
-  let pageChange=(page:number)=>{
+  const pageChange=(page:number)=>{
     setPage(page+"")
   }
   

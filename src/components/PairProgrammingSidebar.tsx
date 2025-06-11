@@ -27,7 +27,7 @@ const PairProgrammingSidebar = ({ challengeId }) => {
 
       setMessages([...messages, { userName: 'you', text: message, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
       setMessage('')
-      socket.emit("send-message", { roomId, userName: user.name, text: message, time: new Date().toLocaleDateString([], { hour: "2-digit", minute: "2-digit" }) })
+      socket.emit("send-message", { roomId, userName: user?.name, text: message, time: new Date().toLocaleDateString([], { hour: "2-digit", minute: "2-digit" }) })
 
     }
 

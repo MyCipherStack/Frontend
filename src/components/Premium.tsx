@@ -1,8 +1,33 @@
 // components/Premium.js
+import { getAllPlanDetailsForUsers } from '@/service/PremiumServices';
+import { toastError } from '@/utils/toast';
+import { useEffect, useState } from 'react';
 import { FaCheckCircle, FaCrown, FaGem, FaChartLine } from 'react-icons/fa';
 
-export default function Premium() {
-  const features = [
+
+
+
+
+ export interface Plan {
+    _id?: string;
+    name: string;
+    price: number;
+    cycle: string;
+    features:{ text: string; enabled: boolean }[];
+    trial: number;
+    status: string;
+    activeUsers?: number;
+    revenue?: number;
+  }
+
+
+
+
+  
+  export default function Premium() {
+  // const [plans, setPlans] = useState<Plan[]>([]);
+
+    const features = [
     {
       icon: FaCheckCircle,
       title: "Premium Problems",
@@ -17,13 +42,23 @@ export default function Premium() {
       icon: FaChartLine,
       title: "Advanced Analytics",
       description: "Detailed performance tracking and progress insights"
-    },
-    {
-      icon: FaGem,
-      title: "Priority Support",
-      description: "24/7 priority customer support"
     }
-  ];
+  ]
+
+  useEffect(()=>{
+      try{
+        const  getData=async()=>{
+            
+            const response=await getAllPlanDetailsForUsers()
+            console.log(response.data.plans);
+            setPlans(response.data.plans)
+            console.log(response);
+          }
+          // getData()  
+        }catch(error){
+          toastError("error on fetching data")
+        }
+  })
 
   const plans = [
     {
@@ -45,7 +80,17 @@ export default function Premium() {
         "All premium features",
         "Save 17% ($40)"
       ]
-    }
+    },
+    {
+      title: "Monthly Premium",
+      price: "19.99",
+      period: "month",
+      badge: false,
+      features: [
+        "All premium features",
+        "Cancel anytime"
+      ]
+    },
   ];
 
   return (

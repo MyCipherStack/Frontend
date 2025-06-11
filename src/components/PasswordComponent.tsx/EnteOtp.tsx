@@ -13,7 +13,7 @@ const EnterOtp = ({ VerifyOtp, setOTP, email }) => {
   const [timer, setTimer] = useState(300); // 5 minutes 
   const [resentTimer, setsentTimer] = useState(30); // 
   const route = useRouter()
-  let currentStep = 2  //// remove this
+  const currentStep = 2  //// remove this
 
 
   const codeInputs = useRef<(HTMLInputElement | null)[]>([]);
@@ -72,7 +72,7 @@ const EnterOtp = ({ VerifyOtp, setOTP, email }) => {
     return `${mins}:${secs}`;
   };
 
-  let resendHandler = async () => {
+  const resendHandler = async () => {
     try {
 
       const response = await resendOtpService({ email, otp: code })
