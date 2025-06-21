@@ -1,28 +1,52 @@
-import Head from 'next/head';
+
+  "use client"
 import Link from 'next/link';
+import LineChartComponet from './LineChart';
+import { useEffect, useState } from 'react';
+import { getAdminDashBoardData } from '@/service/getDataService';
+import { toastError } from '@/utils/toast';
 
 
 
 export default function DashBoard() {
+
+  const [range,setRange]=useState("")
+  const [chartData,setChartData]=useState()
+
+
+  const params=new  URLSearchParams({range:range})
+  useEffect(()=>{
+    try{
+     const get=async()=>{
+
+        const response=await getAdminDashBoardData(params.toString())
+        // console.log(response.data.userData);
+        setChartData(response.data.userData)
+      }
+      get()
+      }catch(error){
+      toastError("Error fetching dahboard Data")
+    }
+  
+  },[range])
+
   return (
     <>
 
 
       <div className="flex">
 
-    
-
         {/* Main Content Area */}
         <div className="content-area">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between iteuuuuuuuuums-center mb-8">
             <h1 className="text-2xl font-bold neon-text">Dashboard Overview</h1>
             <div className="flex items-center gap-4">
-              <select className="bg-black border border-gray-800 text-gray-300 px-4 py-2 rounded">
-                <option>Last 24 Hours</option>
-                <option>Last 7 Days</option>
-                <option>Last 30 Days</option>
-                <option>This Year</option>
+              <select onClick={(e)=>setRange(e.target.value)} className="bg-black border border-gray-800 text-gray-300 px-4 py-2 rounded">
+                <option value="24h">Last 24 Hours</option>
+                <option value="7d">Last 7 Days</option>
+                <option value="30d">Last 30 Days</option>
+                <option value="1y">This Year</option>
               </select>
               <button className="px-4 py-2 bg-[#0ef] text-black rounded hover:bg-[#0df] transition duration-300">
                 <i className="fas fa-download mr-2"></i>Export Report
@@ -109,6 +133,8 @@ export default function DashBoard() {
                 <div className="text-[#0ef] font-bold ml-20">Revenue Overview</div>
               </div>
               <div className="p-4 h-[300px] flex items-center justify-center">
+
+
                 <div className="text-gray-500">Chart </div>
               </div>
             </div>
@@ -119,6 +145,7 @@ export default function DashBoard() {
                 <div className="text-[#0ef] font-bold ml-20">User Growth</div>
               </div>
               <div className="p-4 h-[300px] flex items-center justify-center">
+                <LineChartComponet chartData={chartData}/>
                 <div className="text-gray-500">Chart </div>
               </div>
             </div>

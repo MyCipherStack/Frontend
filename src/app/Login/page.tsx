@@ -13,6 +13,7 @@ import { loginSuccess } from "@/features/auth/userAuthSlice";
 import Link from "next/link";
 import { loginSchema, signSchema } from "@/validations/authSchemas";
 import { toastError, toastSuccess } from "@/utils/toast";
+import { AxiosError } from "axios";
 
 
 
@@ -47,8 +48,10 @@ export default function AuthPage() {
       toastSuccess(response.data.message)
 
     }
-    catch (error: any) {
-      toastError(error.response.data.message)
+    catch (error:unknown) {
+    const axiosError=error as AxiosError<{message?:string}>
+      
+      toastError(axiosError?.response?.data?.message ?? "something went wrong")
     }
 
   }, [otp, formData.email])
@@ -84,11 +87,12 @@ export default function AuthPage() {
         }
 
       }
-      catch (error: any) {
+      catch (error:unknown) {
         console.log(error);
+        const axiosError=error as AxiosError<{message?:string}>
 
-        if (error.response && error.response.data && error.response.data.message) {
-          toastError(error.response.data.message)
+        if (axiosError.response && axiosError.response.data && axiosError.response.data.message) {
+          toastError(axiosError.response.data.message)
         } else {
           toastError("Something went wrong.Please try again")
         }
@@ -106,8 +110,10 @@ export default function AuthPage() {
       window.location.href = "http://localhost:5000/api/user/auth/google"; //
 
 
-    } catch (error: any) {
-      toast.error(error.message, {
+    } catch (error:unknown) {
+      const axiosError=error as AxiosError<{message?:string}>
+
+      toast.error(axiosError.message, {
         position: "top-right",
         autoClose: 2000,
         style: { color: " #0ef", textShadow: "0 0 8px #0ef", backgroundColor: "#000", border: "1px solid #0ef" },

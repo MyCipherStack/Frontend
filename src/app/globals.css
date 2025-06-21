@@ -229,6 +229,8 @@
 
 
 
+
+
 /* pairPRogramming */
 
 .toggle-btn {
@@ -272,3 +274,33 @@ input:checked + .toggle-slider:before {
   transform: translateX(26px);
   background-color: #0ef;
 }
+
+
+
+
+
+
+
+
+
+/* Smaller, minimal scrollbar  */
+.small-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #aaa transparent; /* Firefox */
+}
+
+/* For WebKit browsers */
+.small-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.small-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 5px;
+}
+
+.small-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+

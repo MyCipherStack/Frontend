@@ -11,17 +11,12 @@ import "@/app/Profile/page"
 import Header from '@/components/Header';
 import { useSelector } from 'react-redux';
 import EditProfileModal from '@/components/UserProfile/EditProfile/EditProfile';
-import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import {getUserProfile } from '@/service/getDataService';
 
 const ProfilePage = () => {
 
-const dispatch=  useDispatch()
-
-
-    
+  
     type FormData = {
       personal: {
         displayName: string;
@@ -45,7 +40,7 @@ const dispatch=  useDispatch()
         publicProfile: boolean;
         showActivity: boolean;
       };
-    streak:Object
+    streak:object
     ,
     };
     

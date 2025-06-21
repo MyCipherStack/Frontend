@@ -10,7 +10,7 @@ import { FaPlus, FaSearch } from "react-icons/fa";
 
 
 
-const InvitedUsers = ({allowedUser,invitedUsers,setInvitedUsers,sessionType,setSessionType}:{allowedUser:number,invitedUsers:string[],setInvitedUsers:Dispatch<SetStateAction<string[]>>}) => {
+const InvitedUsers = ({allowedUser,invitedUsers,setInvitedUsers,sessionType,setSessionType}:{allowedUser:number,invitedUsers:string[], setInvitedUsers:Dispatch<SetStateAction<string[]>>,sessionType:string,setSessionType:Dispatch<SetStateAction<"invite" | "sharecode">>}) => {
 
 const [searchQuery, setSearchQuery] = useState('');
 const [users,setUsers]=useState([{_id:"",image:"",name:"",email:"",role:"",status:"",createdAt:""}])

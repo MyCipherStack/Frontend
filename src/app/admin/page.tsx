@@ -10,6 +10,7 @@ import { loginSchema } from "@/validations/authSchemas";
 import { adminLogin } from "@/service/authService";
 import "@/app/Login/page.css";
 import { toastSuccess } from "@/utils/toast";
+import { AxiosError } from "axios";
 
 type LoginType = {
   username: string;
@@ -30,7 +31,7 @@ export default function AdminLoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const formData = watch();
+  // const formData = watch();
 
   const submitForm = async (data: LoginType) => {
     try {
@@ -46,10 +47,11 @@ export default function AdminLoginPage() {
       
       dispatch(adminLoginSuccess(response.data.admin));
       router.push("/admin/dashboard");
-    } catch (error: any) {
-      console.error(error);
+    } catch (error:unknown) {
+      console.error(error)
+      const axiosError = error as AxiosError<{message:string}>;
       toast.error(
-        error.response?.data?.message || "Invalid admin credentials",
+        axiosError.response?.data?.message || "Invalid admin credentials",
         {
           position: "top-right",
           autoClose: 2000,

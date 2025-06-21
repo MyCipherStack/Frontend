@@ -1,11 +1,11 @@
 "use client"
 
 import { getAllProblems } from "@/service/getDataService";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH, FaCircleNotch, FaCheckCircle, FaPlus, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaSearch, FaEdit, FaBan, FaCheck, FaCheckCircle, FaPlus } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 import { useRouter } from "next/navigation";
-import { editProblemService } from "@/service/problemService";
+import { editProblemService, IProblem } from "@/service/problemService";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 
@@ -22,7 +22,7 @@ const [page,setPage]=useState("1")
 const [limit,setLimit]=useState("10")
 const [totalProblem,setTotalProblem]=useState(0)
 const [totalPages,setTotalPages]=useState(0)
-const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",status:"",category:""}])
+const [Problem,setProblem]=useState<IProblem[]>([])
 const [trigger,setTrigger]=useState(false)
 
 
@@ -59,7 +59,7 @@ const router=useRouter()
   }
 
     
-  const handleSubmit =async (e:React.ChangeEvent,problem) => {
+  const handleSubmit =async (e:React.MouseEvent ,problem:IProblem) => {
     e.stopPropagation()
     setLimit("0")
     const alert=await confirmationAlert(`change this program ${problem.status ? "active" :"block"}`)
@@ -184,11 +184,11 @@ const router=useRouter()
                       <div className="flex gap-5">
                       <button onClick={(e)=>showEditProblem(e,problem)}><FaEdit></FaEdit></button>
        
-                        <div className="flex gap-1" onClick={(e)=>handleSubmit(e,problem)}>
-                                       <button>  {problem.status  ? "block" : "Unblock"}</button>
-                                               <button className="p-1 text-gray-400 hover:text-red-500"  title={problem.status === "Banned" ? "Unban" : "Ban"}>
+                        <div className="flex gap-1" onClick={(e:React.MouseEvent)=>handleSubmit(e,problem)} >
+                                              <button>  {problem.status  ? "block" : "Unblock"}</button>
+                                               <button className="p-1 text-gray-400 hover:text-red-500">
                                                  {problem.status  ? <FaCheck /> : <FaBan />}
-                                               </button>
+                                               </button> 
                                             
                                              </div>
                             

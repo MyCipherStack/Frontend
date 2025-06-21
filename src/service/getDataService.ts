@@ -21,7 +21,7 @@ export const getAllProblems=async(params:string)=>{
     try{
 
         const url=`/api/user/problems?${params}`
-        const response= await axios.get(url) 
+        const response= await axios.get(url,{withCredentials:true}) 
         return response
     }
     catch(error){
@@ -34,13 +34,15 @@ export const getAllUsers=async(params:string)=>{
     try{
 
         const url=`/api/admin/users?${params}`
-        const response= await axios.get(url) 
+        const response= await axios.get(url,{withCredentials:true}) 
         return response
     }
     catch(error){
         throw error
     }
 }
+
+
 export const getAllUsersforUser=async(params:string)=>{
     try{
 
@@ -51,8 +53,21 @@ export const getAllUsersforUser=async(params:string)=>{
     catch(error){
         throw error
     }
+
 }
 
 
 
+export const getAdminDashBoardData=async(params:string)=>{
+    try{
+
+        const url=`/api/admin/dashboard?${params}`
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+
+}
 

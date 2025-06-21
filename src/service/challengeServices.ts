@@ -72,3 +72,28 @@ export const joinPairProgramming=async(params:string)=>{
         throw error
     }
 }
+
+
+
+export const getAllGroupChallenges=async()=>{
+    try{
+        const url="/api/admin/getAllGroupChallenges"
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+
+export const getAllPairProgramming=async()=>{
+    try{
+        const url="/api/admin/getAllPairProgramming"
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}

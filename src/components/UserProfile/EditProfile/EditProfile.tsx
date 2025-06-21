@@ -1,7 +1,7 @@
 "use client";
 
 import { userProfileDataUpdate } from "@/service/postUpdateService";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import {FaTimes} from "react-icons/fa";
 import { PersonalTab } from "./Tabs/PersonalTab";
 import { AppearanceTab } from "./Tabs/AppearanceTab";
@@ -12,15 +12,12 @@ import { toastError } from "@/utils/toast";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/features/auth/userAuthSlice";
 
+
 export default function EditProfileModal({setIsLoading, isLoading,setFormData,formData,onClose }) {
   const [activeTab, setActiveTab] = useState("personal");
   const dispatch=useDispatch()
 
-  const handleInputChange = (
-    section: keyof FormData,
-    field: string,
-    value: string | boolean
-  ) => {
+  const handleInputChange = ( section: keyof FormData,field: string,value: string | boolean ) => {
     setFormData((prev) => ({
       ...prev,
       [section]: {
@@ -93,7 +90,7 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
 
         {/* Tabs Navigation */}
         <div className="flex border-b border-gray-800">
-          {["personal", "appearance", "security", "preferences"].map((tab) => (
+          {["personal", "security",].map((tab) => (
             <button
               key={tab}
               type="button"
@@ -117,21 +114,11 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
               onChange={(field, value) => handleInputChange("personal", field, value)}
             />
           )}
-          {activeTab === "appearance" && (
-            <AppearanceTab
-              data={formData.appearance}
-              onChange={(field, value) => handleInputChange("appearance", field, value)}
-            />
-          )}
+
           {activeTab === "security" && (
             <SecurityTab />
           )}
-          {activeTab === "preferences" && (
-            <PreferencesTab
-              data={formData.preferences}
-              onChange={(field, value) => handleInputChange("preferences", field, value)}
-            />
-          )}
+  
         </div>
 
 

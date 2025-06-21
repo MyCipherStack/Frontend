@@ -20,8 +20,9 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types":["node"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/utils/axiosConfig.ts", "src/components/ProblemTable.tsx", "src/components/UserProfile/EditProfile/Tabs/PersonalTab.tsx", "src/app/problemDetails/pag", "src/service/g"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/utils/axiosConfig.ts", "src/components/ProblemTable.tsx", "src/components/UserProfile/EditProfile/Tabs/PersonalTab.tsx", "src/app/problemDetails/pag", "src/service/g", "src/app/admin/contests/page.tss"],
+  "exclude": ["node_modules"],
 }

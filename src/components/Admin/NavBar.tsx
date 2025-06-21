@@ -1,8 +1,7 @@
 
 "use client"
-import { AdminLogOut } from "@/features/auth/adminAuthSlice";
-import { logOut } from "@/features/auth/userAuthSlice";
-import { logOutService } from "@/service/logoutServices";
+
+import { adminLogOutService } from "@/service/logoutServices";
 import { toastError, toastSuccess } from "@/utils/toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,7 @@ const AdminNavbar=({status})=>{
 
   const LogoutHandler=async()=>{
     try{
-    const response=await AdminLogOut()
+    const response=await adminLogOutService()
         toastSuccess(response.data.message)
 
            router.push("/admin")
@@ -58,7 +57,7 @@ const AdminNavbar=({status})=>{
                     <FaCrown className="w-6" />
                     <span className="ml-3">Premium</span>
                   </Link>
-                  <Link href="/admin/contests" className="sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue hover:text-neon-blue transition-all duration-300">
+                  <Link href="/admin/contests" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="contests"  ? "active":""} hover:text-neon-blue transition-all duration-300`} >
                     <FaTrophy className="w-6" />
                     <span className="ml-3">Contests</span>
                   </Link>

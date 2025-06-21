@@ -1,14 +1,13 @@
 "use client"
 
 import socket from '@/utils/socket';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FaMicrophone, FaVideo, FaDesktop, FaRecordVinyl, FaCode, FaPaperPlane, FaComments, FaLock } from 'react-icons/fa';
-
 import React from 'react';
 import Header from '@/components/Header';
 import { useParams, useRouter } from 'next/navigation';
 import { joinInteview } from '@/service/interviewService';
-import { toastError } from '@/utils/toast';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { MdClose } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -39,8 +38,11 @@ const InterviewViewPage = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
-
-  const peerConnection = useRef<RTCPeerConnection>(null)
+  const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
+  const incomingTrackTypes = useRef<string[]>([]);
+  
+  
+  const peerConnectionRef = useRef<RTCPeerConnection>(null)
   const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
 
 
@@ -48,8 +50,10 @@ const InterviewViewPage = () => {
   const [isLocked, setIsLocked] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
   const [scheduledTime, setScheduledTime] = useState<Date | null>(null);
-  const [roomId,setRoomId]=useState()
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [isHost,setIsHost]=useState(false)
   const user=useSelector((state:RootState)=>state.auth.user)
+  const [isScreenSharing,setIsScreenSharing]=useState(false)
   
 
   
@@ -83,21 +87,120 @@ const InterviewViewPage = () => {
 
 
 
+  useEffect(() => {
+    const handleTrackType = ({ type }) => {
+      incomingTrackTypes.current.push(type); // correctly tracks 'camera' or 'screen'
+    };
+  
+    socket.on("track-type", handleTrackType);
+  
+    return () => {
+      socket.off("track-type", handleTrackType); // cleanup must match the same function
+    };
+  }, []);
+  
+let alreadyInitialized=useRef(false)
+
+socket.on("joined",async({roomId})=>{
+  alreadyInitialized.current=false
+  console.log("ishost",isHost);
+  
+  if(isHost){
+    initializeMedia(roomId,true)
+
+  }
+})
+
+
+
+
+
+
+
+
+
+const handleOffer =useCallback(async (data: RTCSessionDescriptionInit,roomId:string) => {
+  console.log("guest received offer", data);
+  console.log("guest received offer roomid,",roomId);
+
+  const pc = peerConnectionRef.current;
+
+  if (!pc) {
+    console.warn("Peer connection not ready");
+    return;
+  }
+
+  await pc.setRemoteDescription(new RTCSessionDescription(data));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  console.log("📡 Guest sending answer...");
+  socket.emit("answer", { roomId, data: answer });
+
+  // 🔥 Flush queued candidates
+  for (const c of pendingCandidatesRef.current) {
+    console.log("🌊 Flushing queued candidate", c);
+    await pc.addIceCandidate(c);
+  }
+  pendingCandidatesRef.current = [];
+},[])
+
+
+const handlerAnswer=useCallback(async (data: RTCSessionDescriptionInit,roomId:string) => {
+
+  if ( peerConnectionRef.current?.signalingState === "have-local-offer") {
+      await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data));  //  this must happen only ONCE
+    } else {
+      console.warn("Unexpected signaling state:", peerConnectionRef.current?.signalingState);
+    }
+  
+},[])
+
+
+
+
+
+const handelCandidate =useCallback( async (candidate: RTCIceCandidateInit,roomId:string) => {
+const pc = peerConnectionRef.current;
+console.log(pc,"handlecandidate");
+
+if (!pc) {
+  console.warn("PeerConnection not ready yet");
+  return;
+}
+
+if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
+  console.log("Remote description not set yet, queueing candidate");
+  pendingCandidatesRef.current.push(candidate);
+} else {
+  try {
+    await pc.addIceCandidate(candidate);
+  } catch (err) {
+    console.error("Error adding ICE candidate:", err);
+  }
+}
+},[])
+
+
+
+
+
+
+
 
 
 
 
 
   useEffect(() => {
+    
+
     let isInitiator=false
     const join=async()=>{
-        try{
+      try{
             const response=await joinInteview(id)
-            console.log(response);
+            // console.log(response);
             
-            if(response?.data.status){ 
-            
-                
+            if(response?.data.status){
                 const startDate=response.data.interview.date
                 const startTime=response.data.interview.time
                 
@@ -109,11 +212,10 @@ const InterviewViewPage = () => {
                 setRoomId(response.data.interview.id)
                 
                 isInitiator = response.data.interview.isHost 
-                console.log( response.data.interview.isHost);
-
-                initializeMedia(response.data.interview.id, response.data.interview.isHost);
+                // console.log( response.data.interview.isHost);
+                setIsHost(isInitiator)
+                initializeMedia(response.data.interview.id, isInitiator);
             }else{
-
                  toastError("invalid interview or something wentwrong")
                 route.back()
             }
@@ -122,120 +224,16 @@ const InterviewViewPage = () => {
             toastError("invalid interview or something wentwrong")
             route.back()
         }
-        
-    }
-    
-join()
-
-
-
-
-
-
-    const initializeMedia = async (roomId,isInitiator) => {
-      try {
-        
-
-        socket.emit("join-interview",{roomId})
-
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
-
-        const pc = new RTCPeerConnection(config)
-
-        peerConnection.current = pc
-
-        stream.getTracks().forEach(track => pc.addTrack(track, stream))
-
-        // pc.onicecandidate = (event) => {
-
-        //   if (event.candidate) {
-        //     socket.emit("candidate",{roomId,data: event.candidate})
-        //   }
-        // }
-
-        // pc.ontrack = (event) => {
-        //     console.log(event.streams);
-
-        //   if (remoteVideoRef.current) {
-        //     remoteVideoRef.current.srcObject = event.streams[0]
-        //   }
-        // }
-
-    
-
-
-        socket.on("offer", async (data) => {
-          pc.setRemoteDescription(new RTCSessionDescription(data))
-          const answer = await pc.createAnswer()
-          await pc.setLocalDescription(answer)
-          socket.emit("answer",{roomId, data:answer})
-        })
-
-        socket.on("answer", async (data) => {
-            if (pc.signalingState === "have-local-offer") {
-                await pc.setRemoteDescription(data);  // ← this must happen only ONCE!
-              }
-              
-        })
-
-        socket.on("candidate", async (candidate: RTCIceCandidateInit) => {
-            
-          await peerConnection.current?.addIceCandidate(candidate)
-        })
-
-
-
-
-        // WANT TO CREAT A INITIATOR FOR AVOID colliction to handshake
-        if (isInitiator) {
-            console.log("iam the host so i can offer the description");
-            
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            socket.emit("offer", { roomId, data: offer });
-          }
-        
-        
-
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
-
-        // if(remoteVideoRef.current){
-        //   remoteVideoRef.current.srcObject=stream
-        // }
-
-        
-        pc.onicecandidate = (event) => {
-
-            if (event.candidate) {
-              socket.emit("candidate",{roomId,data: event.candidate})
-            }
-          }
-  
-          pc.ontrack = (event) => {
-              console.log(event);
-  
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject =event.streams[0]
-              setTimeout(() => {
-                remoteVideoRef.current?.play().catch((e) =>
-                  console.error("Error playing remote video:", e)
-                );
-              }, 100);
-            }
-          }
-  
-
-        localStreamRef.current = stream;
-      } catch (err) {
-        console.error('Error accessing media devices:', err);
       }
-    };
+      if(!alreadyInitialized.current){
+        alreadyInitialized.current = true;
+      join()
+    }
+
+
+
+ 
+
 
 
     return () => {
@@ -243,14 +241,173 @@ join()
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
       }
-      if (screenStreamRef.current) {
-        screenStreamRef.current.getTracks().forEach(track => track.stop());
-      }
+      // if (screenStreamRef.current) {
+      //   screenStreamRef.current.getTracks().forEach(track => track.stop());
+      // }
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
+
+      socket.off("offer",handleOffer )
+
+
+      socket.off("answer",handlerAnswer )
+      
+
+      socket.off("candidate",handelCandidate )
+
+      peerConnectionRef.current?.close();
+
     };
-  }, []);
+  }, [handleOffer,handlerAnswer,handelCandidate]);
+
+
+
+  
+
+
+  const initializeMedia = async (roomId,isInitiator) => {
+    try {
+      
+      console.log("interiview joined emit");
+      
+      socket.emit("join-interview",{roomId})
+
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+
+      const pc = new RTCPeerConnection(config)
+
+      peerConnectionRef.current = pc
+
+
+      pc.onnegotiationneeded = async () => {
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socket.emit("offer", { roomId, data: offer });
+        } catch (err) {
+          console.error("Negotiation failed", err);
+        }
+      };
+
+      
+
+      stream.getTracks().forEach(track => pc.addTrack(track, stream))
+
+      stream.getVideoTracks().forEach(() => {
+        socket.emit("track-type", { roomId, kind: "video", type: "camera" });
+      });
+      
+    
+      // toggleScreenShare()
+
+      // STEP 1
+
+      // WANT TO CREAT A INITIATOR FOR AVOID colliction to handshake
+      if (isInitiator) {
+        console.log("iam the host so i can offer the description");
+        
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { roomId, data: offer });
+      }
+
+
+      socket.on("offer",(data)=>handleOffer(data,roomId) )
+
+
+      socket.on("answer",(data)=>handlerAnswer(data,roomId) )
+      
+
+      socket.on("candidate",(data)=>handelCandidate(data,roomId) )
+
+
+
+
+
+
+
+      /// Localy show same screen 
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        
+      }
+
+
+      
+      pc.onicecandidate = (event) => {
+
+          if (event.candidate) {
+            socket.emit("candidate",{roomId,data: event.candidate})
+          }
+        }
+
+
+
+        pc.ontrack = (event) => {
+            console.log(event,"event");
+            console.log(event.streams);
+
+            const stream=event.streams[0]
+            const track=event.track
+
+            
+
+            if(track.kind==="video"){
+              const label=track.label.toLowerCase()
+              console.log(label,"label");
+              const type=incomingTrackTypes.current.shift()
+              
+
+          
+              if(type==="screen"){
+                toastSuccess("screen")
+                toastSuccess("screen")
+                console.log("screen");
+                
+                if(screenShareRef.current){
+                  screenShareRef.current.srcObject=stream
+                  const screen=  screenShareRef.current
+                  setTimeout(()=>{
+                    screen.play().catch((e)=>{
+                      console.log("Err playin screen")})
+                      toastError("loading screen.....")
+                    },500)
+
+                  }
+              }else{
+              toastSuccess("camera")
+
+                if(remoteVideoRef.current){
+                  remoteVideoRef.current.srcObject=stream
+                  setTimeout(() => {
+                    remoteVideoRef.current?.play().catch((e) =>
+                      console.error("Error playing remote video:", e)
+                    );
+                  }, 500);
+                }
+                }
+              }
+
+
+            }
+
+
+
+            
+
+
+
+
+      localStreamRef.current = stream;
+    } catch (err) {
+      console.error('Error accessing media devices:', err);
+    }
+  };
 
   // Toggle microphone
   const toggleMicrophone = () => {
@@ -274,6 +431,8 @@ join()
     }
   };
 
+
+
   // Start/stop screen recording
   const toggleScreenRecording = async () => {
     if (mediaRecorderRef.current?.state === 'recording') {
@@ -282,49 +441,49 @@ join()
       stopTimer();
       return;
     }
+  }
+    const toggleScreenShare=async()=>{
+      console.log("open screenshare");
+      
+      const pc=peerConnectionRef.current
+      const localStream=localStreamRef.current
+      
+      // if(!pc || !localStream) return
+      
+      if(!isScreenSharing){
+        try{
+          const screenStream=await navigator.mediaDevices.getDisplayMedia({video:true})
+          
+          const screenTrack=screenStream.getVideoTracks()[0]
+          
+          pc.addTrack(screenTrack,screenStream)
+          
+          socket.emit("track-type", { roomId, kind: "video", type: "screen" });
+          if(screenShareRef.current){
+            // screenShareRef.current.srcObject=screenStream
+          }
 
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: true
-      });
+          // screenShareRef.current=screenStream
 
-      if (screenShareRef.current) {
-        screenShareRef.current.srcObject = stream;
+          // socket.emit("track-type", { roomId, kind: "video", type: "screen" });
+          setIsScreenSharing(true)
+
+        
+          
+          
+          screenTrack.onended=()=>{
+            screenShareRef.current!.srcObject = null;
+            // stopScreenShare()
+          }
+        }catch(error){
+          toastError("error in sharing screen try again")
+        }
       }
 
-      screenStreamRef.current = stream;
-      const recorder = new MediaRecorder(stream);
-      const chunks: BlobPart[] = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunks.push(e.data);
-        }
-      };
-
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'interview-recording.webm';
-        a.click();
-
-        if (screenShareRef.current) {
-          screenShareRef.current.srcObject = null;
-        }
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      recorder.start();
-      mediaRecorderRef.current = recorder;
-      setIsRecording(true);
-      startTimer();
-    } catch (err) {
-      console.error('Error starting screen recording:', err);
     }
-  };
+
+
+   
 
   // Timer functions
   const startTimer = () => {
@@ -382,7 +541,7 @@ join()
                 ref={remoteVideoRef}
                 className="w-full h-full  rounded-lg"
                 autoPlay
-                muted
+                
               />
               <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">Interviewer</div>
             </div>
@@ -431,7 +590,7 @@ join()
             </button>
 
             <button
-              onClick={toggleScreenRecording}
+              onClick={toggleScreenShare}
               className={`p-3 rounded-full border ${isRecording ? 'border-red-500 text-red-500' : 'border-[#00f3ff] text-[#00f3ff]'} hover:bg-[#00f3ff] hover:bg-opacity-20 transition`}
             >
               <FaDesktop className="text-xl" />

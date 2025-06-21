@@ -3,7 +3,7 @@ import axios from "../utils/axiosConfig"
 
 
 export interface IProblem {
-    _id:string;
+    _id?:string;
     title: string;
     problemId: string;
     difficulty: string;
@@ -18,10 +18,11 @@ export interface IProblem {
     testCases: { input: string; output: string; isSample: boolean,explanation:string }[];
     functionSignatureMeta:{
     name:string,
-    parameters:[],
+    parameters:string[],
     returnType:{type:string}}
     starterCode:{};
-    status:boolean
+    status:boolean;
+    updatedAt:string
   
 
   }

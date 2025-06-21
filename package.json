@@ -22,6 +22,7 @@
     "react-redux": "^9.2.0",
     "react-split": "^2.0.14",
     "react-toastify": "^11.0.5",
+    "recharts": "^2.15.3",
     "redux-persist": "^6.0.0",
     "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.6.13"
@@ -30,7 +31,7 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/lodash.debounce": "^4.0.9",
-    "@types/node": "^20",
+    "@types/node": "^20.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-redux": "^7.1.34",

@@ -49,7 +49,7 @@ const [trigger,setTrigger]=useState(false)
 
 if(alert){
   
-  const data= await usersDataUpdate(`/api/admin/users/${email}`,{status})
+  const data= await usersDataUpdate({email,status})
   console.log(data);
   setTrigger(!trigger)
   }
@@ -123,14 +123,14 @@ if(alert){
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user._id} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue">
+                {users.map((user,index) => (
+                  <tr key={index} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue">
                     <td className="py-3 px-4">
                       <input type="checkbox" className="rounded bg-black border-gray-700 text-neon-blue focus:ring-neon-blue" />
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <img src={user.image} className="w-8 h-8 rounded-full" alt="User" />
+                        <img src={user.image ? user.image : "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png" }alt="user" className="w-8 h-8 rounded-full" alt="User" />
                         <div>
                           <div>{user?.name}</div>
                           <div className="text-xs text-gray-400">#{user._id}</div>

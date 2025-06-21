@@ -27,10 +27,48 @@ export const editPremiumService=async(data:Plan)=>{
     }
 }
 
+
+
+
+
+    
 export const getAllPlanDetails=async()=>{
-    const url="/api/admin/getAllPlans"
+    
+    const url="/api/user/allPlans"
     try{
-        const response= await axios.get(url,{withCredentials:true}) 
+        const response= await axios.get(url,{withCredentials:true})  
+        return response
+    }
+    catch(error){
+        console.log(error,"errr");
+        
+        throw error
+
+}
+}
+
+
+export const adminAllPlans=async()=>{
+    
+    const url="/api/admin/adminAllPlans"
+    try{
+        const response= await axios.get(url,{withCredentials:true})  
+
+        return response
+    }
+    catch(error){
+        console.log(error,"errr");
+        
+        throw error
+
+}
+}
+
+
+export const subscribePlan=async(id:string)=>{
+    const url="/api/user/createPayment"
+    try{
+        const response= await axios.post(url,{id},{withCredentials:true}) 
         return response
     }
     catch(error){
@@ -42,21 +80,11 @@ export const getAllPlanDetails=async()=>{
 
 
 
-
-
-
-export const getAllPlanDetailsForUsers=async()=>{
-    const url="/api/user/getAllPlans"
-    try{
-        const response= await axios.get(url,{withCredentials:true}) 
-        return response
-    }
-    catch(error){
-        throw error
     
 
-}
-}
+
+
+
 
 
 

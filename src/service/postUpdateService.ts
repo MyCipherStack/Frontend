@@ -4,9 +4,9 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const usersDataUpdate=async(email:string,update:{})=>{
+export const usersDataUpdate=async(update:{email:string,status:string})=>{
     try{
-        const url=`/api/admin/users/${email}`
+        const url=`/api/admin/users/${update.email}`
         const response= await axios.patch(url,update,{withCredentials:true}) 
         return response 
     }

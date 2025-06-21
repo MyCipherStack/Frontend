@@ -1,10 +1,8 @@
 "use client";
 import AdminNavbar from "@/components/Admin/NavBar";
-import { creatPremiumService, editPremiumService, getAllPlanDetails } from "@/service/PremiumServices";
+import { adminAllPlans, creatPremiumService, editPremiumService, getAllPlanDetails } from "@/service/PremiumServices";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError, toastSuccess } from "@/utils/toast";
-import { Modern_Antiqua } from "next/font/google";
-import { features } from "process";
 import React from "react";
 import { useState, useEffect } from "react";
 import {
@@ -18,21 +16,21 @@ import {
 
  export interface Plan {
     _id?: string;
-    name: string;
-    price: number;
-    cycle: string;
-    features:{ text: string; enabled: boolean }[];
-    trial: number;
-    status: string;
+    name?: string;
+    price?: number;
+    cycle?: string;
+    features?:{ text: string; enabled: boolean }[];
+    trial?: number;
+    status?: string;
     activeUsers?: number;
     revenue?: number;
   }
 
-interface FeatureToggle {
-  name: string;
-  enabled: boolean;
-  description: string;
-}
+// interface FeatureToggle {
+//   name: string;
+//   enabled: boolean;
+//   description: string;
+// }
 
 
 
@@ -44,7 +42,7 @@ const PremiumPlanManagement = () => {
     try{
     const  getData=async()=>{
         
-        const response=await getAllPlanDetails()
+        const response=await adminAllPlans()
         setPlans(response.data.plans)
         console.log(response);
       }
@@ -58,7 +56,7 @@ const PremiumPlanManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<Plan | null>({name:"",features:[],price:0,trial:7,cycle:"monthely",status:"active"});
   const [modalFeatures, setModalFeatures] = useState<{ text: string; enabled: boolean }[]>([]);
-  const [modalState,SetModalState]=useState<string>("edit")
+  const [modalState,SetModalState]=useState<string>("edit") 
 
 
   const showCreatePlanModal = () => {
@@ -76,7 +74,7 @@ const PremiumPlanManagement = () => {
     const plan = plans.find(plan=>plan._id==planId)
     if(plan){
       setCurrentPlan(plan);
-      setModalFeatures(plan.features);
+      setModalFeatures(plan.features || []);
       setShowModal(true);
     }
   };
@@ -120,7 +118,7 @@ const PremiumPlanManagement = () => {
 
   const savePlan =async (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPlan((prev)=>({...prev,[features]:modalFeatures}))
+    setCurrentPlan((prev)=>({...prev,["features"]:modalFeatures}))
 
       try{
         if(currentPlan && modalState=="create"){
@@ -243,7 +241,7 @@ toastSuccess("new plan created")
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => editPlan(plan._id)}
+                            onClick={() => editPlan(plan._id as string)}
                             className="p-2 text-[#0ef] hover:text-white"
                           >
                             <FaEdit />
@@ -254,7 +252,8 @@ toastSuccess("new plan created")
                         </div>
                       </div>
                       <div className="space-y-3 mb-4">
-                        {plan.features.map((feature, i) => (
+                        { plan.features ?
+                        plan.features.map((feature, i) => (
                           <div
                             key={i}
                             className="flex items-center text-gray-300"
@@ -262,7 +261,7 @@ toastSuccess("new plan created")
                             <FaCheck className="text-green-400 mr-2" />
                             {feature.text}
                           </div>
-                        ))}
+                        )):""}
                       </div>
                       <div className="flex justify-between text-sm text-gray-400 border-t border-gray-800 pt-4">
                         <div>
@@ -424,7 +423,7 @@ toastSuccess("new plan created")
                   {currentPlan && (
                     <button
                       type="button"
-                      onClick={()=>deletePlan(currentPlan._id)}
+                      onClick={()=>deletePlan(currentPlan._id as string)}
                       className="px-4 py-2 bg-transparent border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white"
                     >
                       <FaTrashAlt className="inline mr-2" />

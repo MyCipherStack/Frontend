@@ -1,14 +1,13 @@
 'use client';
 import Header from '@/components/Header';
-import VerificationInput from '@/components/PasswordComponent.tsx/EnteOtp';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { FaTerminal, FaEye, FaEyeSlash, FaCheck, FaCode } from 'react-icons/fa';
+import { useState, useCallback } from 'react';
 import "../globals.css"
 import EnterOtp from '@/components/PasswordComponent.tsx/EnteOtp';
 import CreateNewPassword from '@/components/PasswordComponent.tsx/CreateNewPasswor';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { forgotPasswordOtp } from '@/service/passwordServices';
 import { forgotPasswordVerify } from '@/service/forgotPasswordVerify';
+import { AxiosError } from 'axios';
 export default function PasswordResetPage() {
   // State management
   const [currentStep, setCurrentStep] = useState(1);
@@ -31,7 +30,7 @@ export default function PasswordResetPage() {
 
               toastSuccess(response.data.message)
               setCurrentStep(2)
-          }catch(error:any){
+          }catch(error:unknown){
             console.log(error);
 
             toastError(error.response.data.message)
@@ -51,8 +50,10 @@ export default function PasswordResetPage() {
           toastSuccess(response.data.message)
      
         }
-        catch(error:any){
-          toastError((error.response.data.message))
+        catch(error:unknown){
+          const axiosError=error as AxiosError<{message?:string}>
+          const errorMessage = axiosError.response?.data?.message ?? 'Something went wrong';
+          toastError(errorMessage)
       
       }
           

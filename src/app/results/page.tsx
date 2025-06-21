@@ -147,7 +147,7 @@ const BattleResults = () => {
 
 export default BattleResults;
 
- export const Leaderboard = () => {
+ const Leaderboard = () => {
   return (
     <div className="bg-[#111111] neon-border rounded-lg p-8">
       <h2 className="text-3xl font-bold neon-text mb-6">GROUP CHALLENGE LEADERBOARDS</h2>
@@ -263,5 +263,3 @@ export default BattleResults;
     </div>
   );
 };
-
-// export  Leaderboard;

@@ -1,14 +1,10 @@
 "use client"
 
-import { FormEvent, useEffect, useState } from 'react';
-import PreviewTab from '@/components/Admin/PreviewTab';
-import Head from 'next/head';
+import { FormEvent, useState } from 'react';
 import AdminNavbar from '@/components/Admin/NavBar';
 import ProblemDetails from '@/components/Admin/ProblemDetails';
 import Allproblems from '@/components/Admin/Allproblems';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import { addProblemService, editProblemService, problemService } from '@/service/problemService';
+import { addProblemService, editProblemService, IProblem } from '@/service/problemService';
 import { toastError, toastSuccess } from '@/utils/toast';
 
 
@@ -30,38 +26,35 @@ export default function ProblemManagement() {
     constraints: '',
     hint:'',
     testCases: [
-      {testCaseNo:1 , input: '', output: '', isSample: false },
-      { input: '', output: '', isSample: true }
+      { input: '', output: '', isSample: false ,explanation:""},
+      { input: '', output: '', isSample: false ,explanation:""},
     ],
     functionSignatureMeta:{
         name: "",
-        parameters: [],
-        returnType: ""
+        parameters: [""],
+        returnType:{type:""}},
+        starterCode:{},
+        status:true,
+        updatedAt:""
       }
-  }
-  const [formData, setFormData] = useState(problem);
+  
+  const [formData, setFormData] = useState<IProblem>(problem);
 
   const [editproblem,setEditProblem]=useState(false)
   const [Addproblem,setAddProblem]=useState(false)
   const [allProblems,SetAllproblmes]=useState(true)
 
   
-  const router=useRouter()
-  const openEditProblem=async(e:React.ChangeEvent,problem:{})=>{
- 
-
-  }
-
 function showAllProblems() {
   SetAllproblmes(true);
   setEditProblem(false);
   setAddProblem(false);
 }
 
-function showEditProblem(e:React.ChangeEvent,problem:{}) {
+function showEditProblem(e:React.ChangeEvent,problemData:IProblem) {
   e.stopPropagation()
   e.stopPropagation()
-  setFormData(problem)
+  setFormData(problemData)
   // router.push(`/problemDetails/${name}`)
 
   setEditProblem(true);
@@ -106,7 +99,7 @@ const handleSubmit =async (e:FormEvent) => {
 
    { allProblems &&(
      <>
-    <Allproblems formData={formData} setFormData={setFormData} showAddProblem={showAddProblem} showEditProblem={showEditProblem}></Allproblems>
+    <Allproblems showAddProblem={showAddProblem} showEditProblem={showEditProblem}></Allproblems>
     </>
    )}
    { editproblem  &&(

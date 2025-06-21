@@ -2,12 +2,13 @@
 import {
   FaTerminal,
   FaCode,
-  FaUsers,
   FaTrophy,
   FaChevronDown,
   FaSignOutAlt,
   FaCog,
-  FaUser
+  FaUser,
+  FaLaptop,
+  FaCrown
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useState, useRef, useEffect } from "react";
@@ -16,8 +17,12 @@ import { useDispatch } from "react-redux";
 import Link from "next/link";
 import { userLogOutService } from "@/service/logoutServices";
 
-const ProfileDropdown = ({ user }: { user: any }) => {
+//add this as lazy loading
+import SettingsModal from "./UserProfile/Settings/Settings";
+
+const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
   const [isOpen, setIsOpen] = useState(false);
+ 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -36,12 +41,17 @@ const ProfileDropdown = ({ user }: { user: any }) => {
 
 
   const dispatch = useDispatch()
+
   const logOutHandler = async () => {
     dispatch(logOut())
     await userLogOutService()
 
-
   }
+
+
+
+
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -95,12 +105,15 @@ const ProfileDropdown = ({ user }: { user: any }) => {
                 <span>My Profile</span>
               </Link>
             </div>
-            <div className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
+            <div onClick={()=>setIsSettings(true)} className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
             >
+
               <FaCog className="mr-3 text-gray-400" />
-              <span>Settings</span>
+
+              <span >Settings</span>
+
             </div>
-            <div  className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition border-t border-gray-700"
+            <div className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition border-t border-gray-700"
             >
               <FaSignOutAlt className="mr-3 text-gray-400" />
               <span onClick={() => logOutHandler()}>Logout</span>
@@ -115,8 +128,15 @@ const ProfileDropdown = ({ user }: { user: any }) => {
 const Header = () => {
   const userData = useSelector((state: any) => state.auth.user);
 
+  const [Issettings,setIsSettings]=useState(false)
+  const onClose=()=>{
+    setIsSettings(false)
+  }
+
   return (
     <nav className="bg-black border-b border-gray-800 fixed w-full z-40">
+      {Issettings &&  <SettingsModal onClose={onClose}/> }
+     
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-8">
@@ -132,21 +152,27 @@ const Header = () => {
                   <FaCode className="inline w-7" /> Problems
                 </Link>
               </button>
-              <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
-                <Link href={"/Arena"}>
+              <Link href={"/Arena"}>
+                <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
+                  <FaTrophy className="inline mr-2" />compete
+                </button>
+              </Link>
+              <Link href={"/interview"}>
+                <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
+                  <FaLaptop className="inline mr-2" />Interview
+                </button>
+              </Link>
 
-                  <FaTrophy className="inline mr-2" /> compete
-                </Link>
-
-              </button>
-              <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
-                <FaUsers className="inline mr-2" /> Community
-              </button>
+              <Link href={"/premium"}>
+                <button className="text-gray-300 hover:text-[#0ef] transition duration-300">
+                  <FaCrown className="inline mr-2" />Premium
+                </button>
+              </Link>
             </div>
           </div>
           <div className="flex items-center space-x-4">
             {userData ? (
-              <ProfileDropdown user={userData} />
+              <ProfileDropdown user={userData} setIsSettings={setIsSettings} />
             ) : (
               <>
                 <Link href={"/Login"} >

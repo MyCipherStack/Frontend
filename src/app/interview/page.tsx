@@ -39,11 +39,35 @@ const InterviewPortal = () => {
 
   const schedule = async (e: React.FormEvent) => {
     e.preventDefault()
+    if(!formData.position  || !formData.interviewType || !formData.date || !formData.time || !formData.duration 
+    ||  !formData.notes
+     ){
+        return  toastError("Please fill in all fields.");
+    }
+    if(formData.isInvite){
+      if(invitedUsers.length===0){
+        return toastError("Select any user ")
+      }
+    }
+  
+
+    
+
     try {
       const response = await scheduleInterview({formData,sessionType,invitedUsers})
       if(response?.status){
         toastSuccess("Interview Scheduled")
         setIsModalOpen(false)
+        setFormData({
+          position: '',
+          interviewType: '',
+          date: '',
+          time: '',
+          duration: '30',
+          notes: '',
+          isInvite:true,
+        })
+
       }
       console.log(response);
 
@@ -59,28 +83,17 @@ const InterviewPortal = () => {
   return (
     <>
       <Header />
-
-      <div className="min-h-screen " style={{
-        backgroundColor: '#000000',
-        backgroundImage: `
-          linear-gradient(45deg, rgba(0, 243, 255, 0.1) 25%, transparent 25%),
-          linear-gradient(-45deg, rgba(0, 243, 255, 0.1) 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, rgba(0, 243, 255, 0.1) 75%),
-          linear-gradient(-45deg, transparent 75%, rgba(0, 243, 255, 0.1) 75%)
-        `,
-        backgroundSize: '20px 20px',
-        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-      }}>
+      <div className="min-h-screen ">
 
         
         {/* Create Interview Modal */}
         {isModalOpen && (
           <div
-            className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/90 bg-opacity-10  flex items-center justify-center z-50"
             onClick={() => setIsModalOpen(false)}
           >
             <div
-              className="rounded-xl p-8 max-w-2xl w-full relative mx-4 max-h-[90vh] overflow-auto "
+              className="rounded-xl p-8 max-w-2xl w-full relative mx-4 max-h-[90vh] overflow-auto small-scrollbar  neon-border"
               style={{
                 backdropFilter: 'blur(10px)',
                 border: '1px solid rgba(0, 243, 255, 0.1)'
@@ -141,7 +154,7 @@ const InterviewPortal = () => {
                       name="date"
                       value={formData.date}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-900 border border-[#00f3ff] rounded-lg px-4 py-2 text-gray-300 focus:outline-none focus:border-[#00f3ff]"
+                      className="w-full bg-gray-900 border  border-[#00f3ff] rounded-lg px-4 py-2 text-gray-300 focus:outline-none focus:border-[#00f3ff]"
                     />
                   </div>
                   <div>
@@ -348,29 +361,16 @@ export default InterviewPortal;
 
 
 
-import socket from '@/utils/socket';
-import { useEffect, useRef } from 'react';
-import { FaMicrophone, FaVideo, FaDesktop, FaRecordVinyl, FaCode, FaPaperPlane, FaComments } from 'react-icons/fa';
-import {  getUserInteview, getUserInteviews, scheduleInterview } from '@/service/interviewService';
+
+
+import { useEffect } from 'react';
+import {  FaVideo, FaCode } from 'react-icons/fa';
+import {  getUserInteviews, scheduleInterview } from '@/service/interviewService';
 import React from 'react';
 import InvitedUsers from '@/components/UsersInvite';
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { FaCalendarAlt, FaClock, FaUserTie, FaUsers, FaStickyNote, } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
-import { toastSuccess } from '@/utils/toast';
-import InterviewViewPage from '@/components/Interivew/interviewViewPage';
+import { toastError, toastSuccess } from '@/utils/toast';
 import { useRouter } from 'next/navigation';
 
 interface Interview {
@@ -383,15 +383,16 @@ interface Interview {
   hostId: string;
   participantId: string;
   code: string;
+  id:string
 }
 
 
 
 const ScheduledInterviews =() => {
   const [tab,SetTab]=useState<"userCreatedInterview"|"usersInterview">("userCreatedInterview")
-  const [userCreatedInterview,SetUserCreatedInterview]=useState<Interview>([])
-  const [userInterview,SetUserInterview]=useState<Interview>([])
-  const [interviews,setInterview]=useState<Interview>([])
+  const [userCreatedInterview,SetUserCreatedInterview]=useState<Interview[]>([])
+  const [userInterview,SetUserInterview]=useState<Interview[]>([])
+  const [interviews,setInterview]=useState<Interview[]>([])
   const router=useRouter()
 
   useEffect(()=>{

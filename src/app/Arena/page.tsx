@@ -1,15 +1,15 @@
 "use client"
+import { ActiveChallenges } from '@/components/Arena/ActiveChallenges';
 import JoinChallengeModal from '@/components/Arena/JoinchallengeModel';
 import PairProgrammingModal from '@/components/Arena/JoinPairProgrammingModal';
 import { BattleRequests } from '@/components/BattleRequests';
 import Header from '@/components/Header';
 import { ProblemSelectionModal } from '@/components/Problems/ProblemSelectionModal';
-import ProblemTable from '@/components/Problems/ProblemTable';
 import { createGroupChallengeService } from '@/service/challengeServices';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { useRouter } from 'next/navigation';
-import { act, useState } from 'react';
-import { FaDoorClosed, FaWindowClose } from 'react-icons/fa';
+import { useState } from 'react';
+import {  FaWindowClose } from 'react-icons/fa';
 export default function Arena() {
   const [activeModal, setActiveModal] = useState(null);
   const [selectedProblemsCount, setSelectedProblemsCount] = useState(0);
@@ -58,8 +58,8 @@ export default function Arena() {
       toastSuccess(response.data.message)
       console.log(response.data);
       router.push(`/groupChallenge/${response.data.joinCode}`)
-    }catch(error){
-      toastError(error)
+    }catch(error:unknown){
+      toastError("something went wrong in create challenge")
     }
   }
 
@@ -130,7 +130,7 @@ export default function Arena() {
 
 
 
-const ArenaCards = ({ setActiveModal }) => (
+const ArenaCards = ({ setActiveModal}) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
     {/* Group Challenge Card */}
     <div className="card neon-border p-6">
@@ -203,51 +203,7 @@ const ArenaCards = ({ setActiveModal }) => (
 
 
 
-const ActiveChallenges = ()=> (
-  <div className="mt-12">
-    <h2 className="text-2xl font-bold neon-text mb-6">Active Challenges</h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Public Challenge Card */}
-      <div className="card neon-border p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-neon-blue">Algorithm Masters</h3>
-            <p className="text-sm text-gray-400">Public Group Challenge</p>
-          </div>
-          <span className="px-3 py-1 bg-green-900 text-green-400 rounded-full text-sm">Live</span>
-        </div>
-        <div className="flex justify-between text-sm text-gray-400 mb-4">
-          <span><i className="fas fa-users mr-2"></i>8/12 participants</span>
-          <span><i className="fas fa-clock mr-2"></i>1:30:00 remaining</span>
-        </div>
-        <button className="w-full bg-neon-blue text-black py-2 rounded font-bold hover:bg-[#0df] transition duration-300">
-          Join Challenge
-        </button>
-      </div>
 
-      {/* Private Challenge Card */}
-      <div className="card neon-border p-4">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-lg font-bold text-neon-blue">Elite Coders</h3>
-            <p className="text-sm text-gray-400">Private Group Challenge</p>
-          </div>
-          <span className="px-3 py-1 bg-yellow-900 text-yellow-400 rounded-full text-sm">Waiting</span>
-        </div>
-        <div className="flex justify-between text-sm text-gray-400 mb-4">
-          <span><i className="fas fa-users mr-2"></i>4/6 participants</span>
-          <span><i className="fas fa-lock mr-2"></i>Invite Only</span>
-        </div>
-        <div className="flex space-x-2">
-          <input type="text" value="challenge-xyz-123" className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-sm" readOnly />
-          <button className="px-4 py-2 bg-transparent border border-neon-blue text-neon-blue rounded hover:bg-neon-blue hover:text-black transition duration-300">
-            Copy
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 
 

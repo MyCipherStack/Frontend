@@ -3,11 +3,9 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Premium from '@/components/Premium';
-
-import { useState } from 'react';
-import { FaCode, FaUsers, FaTrophy, FaDatabase, FaProjectDiagram, FaMicrochip, FaBolt, FaCheckCircle, FaHeart } from 'react-icons/fa';
+ 
+import { FaCode, FaUsers, FaDatabase, FaProjectDiagram, FaMicrochip, FaCheckCircle, FaHeart } from 'react-icons/fa';
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('explore');
 
   return (
     
