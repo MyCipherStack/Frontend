@@ -3,7 +3,7 @@ import Link from "next/link";
 
 interface NavbarProps {
   title: string;
-  links?: { name: string; href: string }[]; // Optional for extra nav links
+  links?: { name: string; href: string }[];
 }
 
 export default function Navbar({ title, links }: NavbarProps) {

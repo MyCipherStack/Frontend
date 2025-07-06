@@ -6,14 +6,11 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 
 
-const  LineChartComponet=({chartData})=> {
-  console.log(chartData);
+const  LineChartComponet=({chartData,XAxisData,YAxisData})=> {
   
-    const [neonBlue,setNeonBlue]=useState("#0ef")
 
-    useEffect(()=>{
-        const rootStyle=getComputedStyle(document.documentElement)
-    })
+
+
 
     return (
       <ResponsiveContainer width="100%" height="100%">
@@ -29,11 +26,11 @@ const  LineChartComponet=({chartData})=> {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="range" />
+          <XAxis dataKey={XAxisData} />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="usersCount" stroke="#8884d8" activeDot={{ r: 8 }} />
+          <Line type="monotone" dataKey={YAxisData} stroke="#8884d8" activeDot={{ r: 8 }} />
           {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
         </LineChart>
       </ResponsiveContainer>

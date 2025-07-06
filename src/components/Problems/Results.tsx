@@ -1,7 +1,7 @@
 
 
 
-import React, { useState } from 'react'
+import React, from 'react'
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
 
 const Results = ({testCases,showTestCase}) => {

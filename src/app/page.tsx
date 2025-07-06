@@ -3,9 +3,11 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Premium from '@/components/Premium';
+import { useRouter } from 'next/navigation'; 
  
 import { FaCode, FaUsers, FaDatabase, FaProjectDiagram, FaMicrochip, FaCheckCircle, FaHeart } from 'react-icons/fa';
 export default function Home() {
+  let router=useRouter()
 
   return (
     
@@ -27,7 +29,7 @@ export default function Home() {
                 Master algorithms, ace technical interviews, and join a community of coders solving the world's toughest programming challenges.
               </p>
               <div className="flex flex-wrap gap-4 mb-8">
-                <button className="px-6 py-3 rounded bg-[#0ef] text-black font-bold hover:bg-[#0df] transition duration-300">
+                <button onClick={()=>router.push("/problems")} className="px-6 py-3 rounded bg-[#0ef] text-black font-bold hover:bg-[#0df] transition duration-300">
                   Start Coding
                 </button>
                 <button className="px-6 py-3 rounded border border-gray-600 text-gray-300 hover:border-[#0ef] hover:text-[#0ef] transition duration-300">
@@ -87,7 +89,7 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-3xl font-bold">Problem Categories</h2>
-            <button className="text-[#0ef] hover:underline">View All →</button>
+            <button onClick={()=>router.push("/problems")}  className="text-[#0ef] cursor-pointer hover:underline">View All →</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -117,7 +119,7 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-3xl font-bold">Featured Problems</h2>
-            <button className="text-[#0ef] hover:underline">View All →</button>
+            <button  onClick={()=>router.push("/problems")}  className="text-[#0ef] cursor-pointer hover:underline">View All →</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[

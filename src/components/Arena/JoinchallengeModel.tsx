@@ -2,7 +2,7 @@ import { joinGroupChallenge } from '@/service/challengeServices';
 import { toastError } from '@/utils/toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { FaTimes, FaUsers, FaClock, FaCode, FaTrophy, FaSearch, FaPlus } from 'react-icons/fa';
+import { FaTimes} from 'react-icons/fa';
 
 interface Challenge {
   id: string;
@@ -53,10 +53,10 @@ const JoinChallengeModal = ({ onClose }: { onClose: () => void }) => {
       try{
         const response = await joinGroupChallenge(params.toString());    // i want to change this later
         
-        router.push(`/groupChallenge/${challengeCode}`)
+        router.push(`/challenge/${challengeCode}`)
         onClose();
       }catch(error){
-              toastError(error.response.data.message)  
+              toastError(error.response.data.message)      
       }
       
     }

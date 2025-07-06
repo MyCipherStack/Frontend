@@ -16,7 +16,7 @@ const dispatch=useDispatch()
 useEffect(()=>{
     const name=searchParams.get("name")
     const email=searchParams.get("email")
-    router.push("/Home")
+    router.push("/")
     dispatch(loginSuccess({name,email}))
 },[])
     return(

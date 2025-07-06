@@ -37,7 +37,7 @@ const CreateNewPassword = ({ setCurrentStep }) => {
 
       const response = await resetPasswordService({ password: formData.password })
       console.log(response);
-      router.push("Login")
+      router.push("/login")
       toastSuccess(response.data.message)
 
     } catch (error: any) {

@@ -20,19 +20,18 @@ import GroupChallengeHeader from '@/components/Problems/GroupChallengeHeader';
 
 
 
-const groupChallenge = () => {
+const GroupChallenge = () => {
   const [activeTab, setActiveTab] = useState('description');
-  const [showTestCase, SetshowTestCase] = useState(true)
+  const [showTestCase, setShowTestCase] = useState(true)
   const [submissionDetails, SetSubmissionDetails] = useState({})
-  const [submissionTab, setSubmissionTab] = useState("submissionDetail")
   const [problemDetails, SetproblemDetails] = useState({ starterCode: "Javascript" })
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState();
   const [testCases, setTestCases] = useState([]);
   const params = useParams()
   const [selectedTestCase, setSelectedTestCase] = useState(1);
-  const [challengeData, setChallengeData] = useState({})
-  const userData = useSelector((state: any) => state.auth.user)
+  const [challengeData, setChallengeData] = useState<{ _id: string }>({})
+  const userData = useSelector((state:unknown) => state.auth.user)
   const [problems, setProblems] = useState([])
   // console.log(params,"ASDFasdf");
   const joinCode = decodeURIComponent(params.code)
@@ -47,51 +46,56 @@ const groupChallenge = () => {
 
 
 
+  let alreadyRun = false
 
 
   useEffect(() => {
-    const getProblemData = async () => {
-      const params = new URLSearchParams({ joinCode })
-      try {
-        const response = await joinGroupChallenge(params.toString());
+    if (!alreadyRun) {
+      alreadyRun = true
+      const getProblemData = async () => {
+        const params = new URLSearchParams({ joinCode })
+        try {
+          const response = await joinGroupChallenge(params.toString());
+
+          const challenge = response.data.challengeData
+
+          dispatch(startTimer(challenge._id))
+
+          console.log(challenge.endTime, "challegeData");
+
+          if (new Date(challenge.endTime).getTime() < Date.now()) {
+            toastError("Challenge Time Ended")
+            challengeEnd();
+          }
 
 
+          setChallengeData(challenge)
 
+          socket.emit("join-challenge", challenge._id, userData.id)
 
-        console.log(response.data, "joinDAta", userData._id, "userId");
-        const challenge = response.data.challengeData
-        console.log(challenge.endTime, "challegeData");
+          const problem = response.data.challengeData.problems
 
-        if (new Date(challenge.endTime).getTime() < Date.now()) {
-          challengeEnd();
+          setProblems(problem)
+
+          SetproblemDetails(problem[0])
+
+          setCode(problem[0].starterCode['javascript'])
+
+          const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
+
+          setTestCases(testCase)
+        } catch (error) {
+
+          toastError(error.response.data.message)
+
         }
 
-
-        setChallengeData(challenge)
-        socket.emit("join-challenge", challenge._id, userData._id)
-
-        const problem = response.data.challengeData.problems
-        setProblems(problem)
-        SetproblemDetails(problem[0])
-        setCode(problem[0].starterCode['javascript'])
-        const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
-        setTestCases(testCase)
-      } catch (error) {
-        console.log(error);
-
-        toastError(error.response.data.message)
-
       }
+      getProblemData()
 
     }
-    getProblemData()
-    // const interval = setInterval(() => {
-    //   setElapsedTime(prev => prev + 1);
-    // }, 1000);
 
-    dispatch(startTimer())
-
-  }, [])
+  },[])
 
 
 
@@ -101,10 +105,10 @@ const groupChallenge = () => {
 
   const handleRunCode = async () => {
     const response = await runProblemService({ code, testCases, language, problemDetails })
-    SetshowTestCase(false)
+    setShowTestCase(false)
     setTestCases(response.data.testResult);
 
-    setActiveTab("testresult", challengeData._id,)
+    setActiveTab("testresult", challengeData._id)
 
   };
 
@@ -113,6 +117,7 @@ const groupChallenge = () => {
 
 
   const handleSubmitCode = async () => {
+
     const response = await submitProblemService({ code, testCases, language, problemDetails })
 
     console.log(response.data, "responseData");
@@ -121,7 +126,7 @@ const groupChallenge = () => {
     SetSubmissionDetails(response.data.submissions)
 
     setActiveTab("submissions")
-    setSubmissionTab("submissionDetail")
+
     console.log(challengeData, "challengeData");
 
     socket.emit("update-submit", challengeData._id, submissionDetails.userId, 0, submissionDetails.problemId, submissionDetails.id)
@@ -142,13 +147,6 @@ const groupChallenge = () => {
   }
 
 
-
-  const formatTime = (totalSeconds: number) => {
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-  };
   return (
     <>
 
@@ -156,7 +154,12 @@ const groupChallenge = () => {
         <div className="container px-4  pb-8 flex-grow text-sm">
           <Header></Header>
 
-          <GroupChallengeHeader activeTab={activeTab} setActiveTab={setActiveTab} timerControler={false} ExitGroupChallenge={ExitGroupChallenge} />
+          <GroupChallengeHeader activeTab={activeTab} setActiveTab={setActiveTab} timerControler={false} ExitGroupChallenge={ExitGroupChallenge}
+
+            SetproblemDetails={SetproblemDetails} setCode={setCode} setTestCases={setTestCases} problems={problems} problemDetails={problemDetails} challengeData={challengeData}
+            joinCode={joinCode}
+
+          />
 
 
 
@@ -164,23 +167,6 @@ const groupChallenge = () => {
           {/* <div className="flex  items-center gap-2 pb-1">
 
 
-
-          </div> */}
-          <div className="flex  gap-1 p-1">
-            {problems.map((problem, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  SetproblemDetails(problem);
-                  setCode(problem.starterCode['javascript']);
-                  setTestCases(problem.testCases);
-                }}
-                className="bg-blend-color border border-gray-300 rounded-xl shadow-sm px-4 py-2 text-sm hover:bg-gray-400 transition-all duration-150"
-              >
-                🧠 Problem {index + 1}
-              </button>
-            ))}
-          </div>
 
           {/* <ProblemDescription
         problemDetails={problemDetails}
@@ -216,7 +202,7 @@ const groupChallenge = () => {
           {activeTab === "submissions" && (
             <>
 
-              <div className={`text-lg font-semibold mb-2 ${submissionDetails.status === 'Success' ? 'text-green-500' : 'text-yellow-400'}`}>
+              <div className={`text-lg font-semibold mb-2 ${submissionDetails.status === 'Accepted' ? 'text-green-500' : 'text-yellow-400'}`}>
                 {submissionDetails.status}
               </div>
 
@@ -227,6 +213,7 @@ const groupChallenge = () => {
               )}
 
               {/* Failing Test Case Details */}
+              {submissionDetails?.failingTestCaseResult.compile_output &&
               <div className="bg-gray-900 p-4 rounded-md text-gray-100 text-sm space-y-2 shadow-md border border-gray-700">
                 <div>
                   <span className="text-gray-400 font-medium">Input:</span>
@@ -241,6 +228,7 @@ const groupChallenge = () => {
                   <pre className="bg-gray-800 p-2 mt-1 rounded text-green-400">{submissionDetails.failingTestCaseResult.output}</pre>
                 </div>
               </div>
+              }
             </>
 
           )}
@@ -255,8 +243,9 @@ const groupChallenge = () => {
                 <Results testCases={testCases} showTestCase={showTestCase}></Results>
               </div>
             </div>
-            
+
           )}
+
 
 
           <LeaderBoardSideBar challengeTime={challengeData.duration} ProblemCount={problems.length} challengeName={challengeData.challengeName} />
@@ -266,4 +255,4 @@ const groupChallenge = () => {
   )
 }
 
-export default groupChallenge
+export default GroupChallenge

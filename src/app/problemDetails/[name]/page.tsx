@@ -9,21 +9,24 @@ import Results from '@/components/Problems/Results';
 import Submissions from '@/components/Problems/Submissions';
 import TestCases from '@/components/Problems/TestCases';
 import Timer from '@/components/Timer';
-import { getAllProblems } from '@/service/getDataService';
+import { getAllProblems, getProblemDetails, problemDetailsService } from '@/service/getDataService';
 import {runProblemService, submitProblemService } from '@/service/problemService';
 import { useParams } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {FaHistory, FaBook } from 'react-icons/fa';
 
-
+type typeTestCase = {
+  id: number;
+  nums: string;
+  target: number;
+  output: string;
+  status: 'passed' | 'failed' | 'not-run';
+};
 
 const ProblemPage = () => {
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState();
-  const [testCases, setTestCases] = useState([
-    { id: 1, nums: "[2,7,11,15]", target: 9, output: "[0,1]", status: 'passed' },
-    { id: 2, nums: "[3,2,4]", target: 6, output: "[1,2", status: 'not-run' }
-  ]);
+  const [testCases, setTestCases] = useState<typeTestCase[]>([]);
   const [selectedTestCase, setSelectedTestCase] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   
@@ -32,8 +35,8 @@ const ProblemPage = () => {
   const [submissionTab,setSubmissionTab]=useState("submissionDetail")
   
   
-  const [problemDetails,SetproblemDetails]=useState({starterCode:"Javascript"})
-  const params:{name:string}=useParams()
+  const [problemDetails,SetproblemDetails]=useState({starterCode:"javascript"})
+  const params:{title:string}=useParams()
   const search=decodeURIComponent(params.name)
 
   useEffect(()=>{
@@ -42,11 +45,11 @@ const ProblemPage = () => {
     
     const params=new URLSearchParams({search})
 
-        const response = await getAllProblems(params.toString());
-        const problem=response.data.problemData.problems
-        console.log(problem[0])
-        SetproblemDetails(problem[0])
-        const testCase=problem[0].testCases.filter(testCase=> testCase.isSample)
+        const response = await getProblemDetails(params.toString());
+        const problem=response.data.problem
+        console.log(problem)
+        SetproblemDetails(problem)
+        const testCase=problem.testCases.filter(testCase=> testCase.isSample) 
         console.log(testCase);
         setTestCases(testCase)
         

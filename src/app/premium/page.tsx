@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header"
 import Premium from "@/components/Premium"
+import ReportButton from "@/components/Report"
 
 
 
@@ -11,6 +12,7 @@ const premiumPage=()=>{
      <>
      <Header/>
      <Premium/>
+     <ReportButton/>
      </>
     )
 }

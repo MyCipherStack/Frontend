@@ -124,6 +124,7 @@ const InterviewPortal = () => {
                     >
                       <option value="">Select Position</option>
                       <option value="senior-dev">Senior Developer</option>
+                      <option value="senior-dev">Senior Developer</option>
                       <option value="frontend-dev">Frontend Developer</option>
                       <option value="backend-dev">Backend Developer</option>
                       <option value="fullstack-dev">Full Stack Developer</option>
@@ -138,6 +139,7 @@ const InterviewPortal = () => {
                       className="w-full bg-gray-900 border border-[#00f3ff] rounded-lg px-4 py-2 text-gray-300 focus:outline-none focus:border-[#00f3ff]"
                     >
                       <option value="">Select Type</option>
+                      <option value="technical">Mock  Interview</option>
                       <option value="technical">Technical Interview</option>
                       <option value="coding">Coding Challenge</option>
                       <option value="system-design">System Design</option>
@@ -335,7 +337,7 @@ const InterviewPortal = () => {
             </div>
           </div>
         </div>
-
+          <ReportButton/>
         {/* Footer */}
         <footer className="mt-16 border-t border-[#00f3ff] py-8">
           <div className="container mx-auto px-4 text-center text-gray-400">
@@ -372,6 +374,7 @@ import { FaCalendarAlt, FaClock, FaUserTie, FaUsers, FaStickyNote, } from 'react
 import { MdAccessTime } from 'react-icons/md';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { useRouter } from 'next/navigation';
+import ReportButton from '@/components/Report';
 
 interface Interview {
   position: string;
@@ -508,7 +511,7 @@ const ScheduledInterviews =() => {
         <div className="text-center py-12 border border-[#00f3ff] border-dashed rounded-lg">
           <FaVideo className="mx-auto text-4xl text-[#00f3ff] mb-4" />
           <h3 className="text-xl font-bold text-[#00f3ff] mb-2">No Scheduled Interviews</h3>
-          <p className="text-gray-400 mb-4">You don't have any interviews scheduled yet</p>
+          <p className="text-gray-400 mb-4">You don&apos;t have any interviews scheduled yet</p>
           <button className="px-4 py-2 bg-[#00f3ff] text-black rounded-lg hover:bg-[#00d4e0] transition">
             Schedule Your First Interview
           </button>

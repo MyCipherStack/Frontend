@@ -1,138 +1,152 @@
 
-
-
-
-
-
 "use client";
 
 import { userProfileDataUpdate } from "@/service/postUpdateService";
-import { useEffect, useState} from "react";
-import {FaTimes} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaTimes } from "react-icons/fa";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError } from "@/utils/toast";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/features/auth/userAuthSlice";
 import { getUserProfile } from "@/service/getDataService";
 import { AppearanceTab } from "../EditProfile/Tabs/AppearanceTab";
-import { SecurityTab } from "../EditProfile/Tabs/SecurityTab";
 import { PreferencesTab } from "../EditProfile/Tabs/PreferencesTab";
 
 
-export default function SettingsModal({onClose }) {
+export default function SettingsModal({ onClose }) {
 
 
 
 
-    type FormData = {
-        personal: {
-          displayName: string;
-          username: string;
-          email: string;
-          phone: string;
-          bio: string;
-          github: string;
-          linkedin: string;
-          avatar: string;
-        };
-        appearance: {
-          theme: string;
-        };
-        preferences: {
-          emailNotifications: boolean;
-          interviewReminders: boolean;
-          contestReminders: boolean;
-          language: string;
-          timezone: string;
-          publicProfile: boolean;
-          showActivity: boolean;
-        };
-      streak:object
-      ,
-      };
-      
-      
-      
-      
-      const [isLoading, setIsLoading] = useState(false);
-      
+  type FormData = {
+    personal: {
+      displayName: string;
+      username: string;
+      email: string;
+      phone: string;
+      bio: string;
+      github: string;
+      linkedin: string;
+      avatar: string;
+    };
+    appearance: {
+      theme: string;
+    };
+    preferences: {
+      emailNotifications: boolean;
+      interviewReminders: boolean;
+      contestReminders: boolean;
+      language: string;
+      timezone: string;
+      publicProfile: boolean;
+      showActivity: boolean;
+    };
+    streak: object
+    ,
+  };
+
+
+
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
-      personal: {
-        displayName: "",
-        username: "",
-        email: "",
-        phone: "",
-        bio: "",
-        github: "",
-        linkedin: "",
-        avatar:"http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
-      },
-      appearance: {
-        theme: "cyberpunk",
-      },
-      preferences: {
-        emailNotifications: true,
-        interviewReminders: true,
-        contestReminders: true,
-        language: "english",
-        timezone: "gmt-8",
-        publicProfile: true,
-        showActivity: false,
-      },
-      streak:{}
-    });
-  
-  
+    personal: {
+      displayName: "",
+      username: "",
+      email: "",
+      phone: "",
+      bio: "",
+      github: "",
+      linkedin: "",
+      avatar: "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
+    },
+    appearance: {
+      theme: "cyberpunk",
+    },
+    preferences: {
+      emailNotifications: true,
+      interviewReminders: true,
+      contestReminders: true,
+      language: "english",
+      timezone: "gmt-8",
+      publicProfile: true,
+      showActivity: false,
+    },
+    streak: {}
+  });
 
-    // Load user data on mount
-    useEffect(() => {
-      const fetchUserData = async () => {
-        try {
-          setIsLoading(true);
-          const response = await getUserProfile()
-          console.log(response);
-          
-          const data=response.data.user   
-          console.log(data);
-           
-          setFormData({
-            personal: {
-              displayName: data.displayName || "",
-              username: data.name || "",
-              email: data.email || "",
-              phone: data.phone || "",
-              bio: data.bio || "",
-              github: data.github || "",
-              linkedin: data.linkedin || "",
-              avatar: data.image || "/default-avatar.jpg",
-            },
-            appearance: {
-              theme: data.theme || "cyberpunk"
-            },
-            preferences: {
-              emailNotifications: data.preferences.emailNotifications ,
-              interviewReminders: data.preferences.interviewReminders,
-              contestReminders: data.preferences.contestReminders,
-              language: data.preferences.language,
-              timezone: data.preferences.timezone ,
-              publicProfile: data.preferences.publicProfile,
-              showActivity: data.preferences.showActivity ,
-            },
-            streak:data.streak
-          });
-        } catch (error) {
-          console.error("Failed to fetch user data:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchUserData();
-      console.log(formData,"form data");
-      
-    }, []);
-  
-  
+
+  const themes = [
+    {
+      id: "cyberpunk",
+      color: " #0ef"
+
+    },
+    {
+      id: "synthwave",
+      color: '#f72585',
+    },
+    {
+      id: "dark",
+      color: '#888',
+    },
+    {
+      id: "matrix",
+      color: '#00ff00',
+    },
+  ];
+
+
+  // Load user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getUserProfile()
+        console.log(response);
+
+        const data = response.data.user
+        console.log(data);
+
+        setFormData({
+          personal: {
+            displayName: data.displayName || "",
+            username: data.name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            bio: data.bio || "",
+            github: data.github || "",
+            linkedin: data.linkedin || "",
+            avatar: data.image || "/default-avatar.jpg",
+          },
+          appearance: {
+            theme: data.theme || "cyberpunk"
+          },
+          preferences: {
+            emailNotifications: data.preferences.emailNotifications,
+            interviewReminders: data.preferences.interviewReminders,
+            contestReminders: data.preferences.contestReminders,
+            language: data.preferences.language,
+            timezone: data.preferences.timezone,
+            publicProfile: data.preferences.publicProfile,
+            showActivity: data.preferences.showActivity,
+          },
+          streak: data.streak
+        });
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+    console.log(formData, "form data");
+
+  }, []);
+
+
 
 
 
@@ -141,9 +155,9 @@ export default function SettingsModal({onClose }) {
 
 
   const [activeTab, setActiveTab] = useState("appearance");
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
 
-  const handleInputChange = ( section: keyof FormData,field: string,value: string | boolean ) => {
+  const handleInputChange = (section: keyof FormData, field: string, value: string | boolean) => {
     setFormData((prev) => ({
       ...prev,
       [section]: {
@@ -157,24 +171,29 @@ export default function SettingsModal({onClose }) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      
-      const confirm=await confirmationAlert("save the changes")
-    if(confirm){
 
-        const response =await userProfileDataUpdate(formData)
+      const confirm = await confirmationAlert("save the changes")
+      if (confirm) {
+
+        const response = await userProfileDataUpdate(formData)
         console.log(response);
         dispatch(loginSuccess(response.data.user))
-        
+      const selected=themes.find((t)=>t.id==formData.appearance.theme)
+        if(selected){
+          const stored = localStorage.setItem("theme-color",selected.color)
+        }
+
+
         onClose();
-      } 
-      } catch (error) {
-          console.error("Error updating profile:",error.response.data.message);
-          toastError("Error updating profile")
-        
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error updating profile:", error.response.data.message);
+      toastError("Error updating profile")
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -203,16 +222,15 @@ export default function SettingsModal({onClose }) {
 
         {/* Tabs Navigation */}
         <div className="flex border-b border-gray-800">
-          {[ "appearance", "preferences"].map((tab) => (
+          {["appearance", "preferences"].map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-3 text-sm font-medium flex-1 text-center ${
-                activeTab === tab
+              className={`px-4 py-3 text-sm font-medium flex-1 text-center ${activeTab === tab
                   ? "text-[#0ef] border-b-2 border-[#0ef]"
                   : "text-gray-400 hover:text-gray-200"
-              } transition-colors`}
+                } transition-colors`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -221,11 +239,11 @@ export default function SettingsModal({onClose }) {
 
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto p-6 max-h-[60vh]">
-    
+
           {activeTab === "appearance" && (
             <AppearanceTab
               data={formData.appearance}
-              onChange={(field, value) => handleInputChange("appearance", field, value)}
+              onChange={(field, value) => { handleInputChange("appearance", field, value) }}
             />
           )}
           {activeTab === "preferences" && (

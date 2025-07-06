@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   /* config options here */
+  reactStrictMode: false, // only while debugging
+
 };
 
 export default nextConfig;
+
+

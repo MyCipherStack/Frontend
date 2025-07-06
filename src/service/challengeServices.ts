@@ -16,10 +16,9 @@ type GroupChallenge = {
  export type pairProgramming = {
     challengeName: string;
     problems: string[],
-    problemsName: string[],
     type: string,
-    invitedFriends:string[],
-    problemType:string
+    invitedUsers:string[],
+    sessionType:string
 
   };
 
@@ -90,6 +89,44 @@ export const getAllGroupChallenges=async()=>{
 export const getAllPairProgramming=async()=>{
     try{
         const url="/api/admin/getAllPairProgramming"
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+
+
+export const challengeChangeStatus=async(status:string,id:string)=>{
+    try{
+        const url="/api/admin/challengeChangeStatus"
+        const response= await axios.patch(url,{status,id},{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+
+
+export const changeStatusPairProgarm=async(status:string,id:string)=>{
+    try{
+        const url="/api/admin/changeStatusPairProgarm"
+        const response= await axios.patch(url,{status,id},{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+
+export const getUserAciveChallenges=async(params:string)=>{
+    try{
+        const url=`/api/user/activeChallenges?${params}`
         const response= await axios.get(url,{withCredentials:true}) 
         return response
 

@@ -1,10 +1,12 @@
-import { tree } from 'next/dist/build/templates/app-page'
 import React, { useState } from 'react'
 import { FaEdit, FaPlusCircle, FaTrash, FaCheck, FaTimes } from 'react-icons/fa'
 
 const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAddTestCase, setTestCases }) => {
   const [editingCase, setEditingCase] = useState(null)
-  const [editedValues, setEditedValues] = useState({ input: '',  output: '' })
+  const [editedValues, setEditedValues] = useState({ input: '', output: '' })
+
+  console.log("test case", testCases);
+
 
   const handleEditClick = (testCase) => {
     setEditingCase(testCase._id)
@@ -54,23 +56,22 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
 
 
   return (
-    <div className="w-full md">
+    <div className="  h-screen w-full  pb-40  small-scrollbar overflow-scroll  ">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-neon-blue font-semibold">Test Cases</h3>
-        <button 
+        <button
           className="text-xs text-gray-400 hover:text-neon-blue flex items-center"
           onClick={handleAddTestCase}
         >
           <FaPlusCircle className="mr-1" /> Add Case
         </button>
       </div>
-      
-      {testCases.map(testCase => (
-        <div 
-          key={testCase.id}
-          className={`test-case-card mb-2 p-3 rounded border ${
-            selectedTestCase === testCase.id ? 'border-neon-blue' : 'border-gray-800'
-          } ${testCase.status === 'passed' ? 'bg-green-900 bg-opacity-20' : ''}`}
+
+      {testCases.map((testCase, index) => (
+        <div
+          key={index}
+          className={` test-case-card mb-2 p-3 rounded border ${selectedTestCase === testCase.id ? 'border-neon-blue' : 'border-gray-800'
+            } ${testCase.status === 'passed' ? 'bg-green-900 bg-opacity-20' : ''}`}
           onClick={() => !editingCase && setSelectedTestCase(testCase.id)}
         >
           {editingCase === testCase._id ? (
@@ -106,13 +107,13 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                 />
               </div>
               <div className="flex justify-end gap-2 mt-2">
-                <button 
+                <button
                   onClick={handleCancelEdit}
                   className="text-gray-400 hover:text-white p-1"
                 >
                   <FaTimes />
                 </button>
-                <button 
+                <button
                   onClick={() => handleSaveEdit(testCase._id)}
                   className="text-neon-blue hover:text-neon-blue-light p-1"
                 >
@@ -125,7 +126,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm">Case {testCase.testCaseNo}</span>
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     className="text-gray-400 hover:text-neon-blue text-xs"
                     onClick={(e) => {
                       e.stopPropagation()
@@ -134,7 +135,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                   >
                     <FaEdit />
                   </button>
-                  <button 
+                  <button
                     className="text-gray-400 hover:text-red-500 text-xs"
                     onClick={(e) => {
                       e.stopPropagation()
@@ -146,12 +147,12 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                 </div>
               </div>
               <div className="text-gray-300 text-sm">
-                
+
                 <p>input= {testCase.input}</p>
                 <p>target = {testCase.output}</p>
                 <p className="text-xs mt-1">
                   {/* Output: {testCase.output} */}
-                  {testCase.status ===true&& (
+                  {testCase.status === true && (
                     <span className="ml-2 text-green-400">✓ Passed</span>
                   )}
                 </p>

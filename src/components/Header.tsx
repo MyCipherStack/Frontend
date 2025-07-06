@@ -19,6 +19,8 @@ import { userLogOutService } from "@/service/logoutServices";
 
 //add this as lazy loading
 import SettingsModal from "./UserProfile/Settings/Settings";
+import { useRouter } from "next/navigation";
+import NotificationSystem from "./Notification";
 
 const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +49,6 @@ const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
     await userLogOutService()
 
   }
-
 
 
 
@@ -132,7 +133,13 @@ const Header = () => {
   const onClose=()=>{
     setIsSettings(false)
   }
+  const router=useRouter()
 
+
+  const signInhandler=()=>{
+    router.push("/login?mode=signup")
+  }
+  
   return (
     <nav className="bg-black border-b border-gray-800 fixed w-full z-40">
       {Issettings &&  <SettingsModal onClose={onClose}/> }
@@ -141,7 +148,7 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-8">
             <div className="text-xl font-bold text-[#0ef] flex items-center">
-              <Link href={"/Home"}>
+              <Link href={"/"}>
                 CipherStack
               </Link>
               <FaTerminal className="ml-1 mt-1" />
@@ -170,16 +177,17 @@ const Header = () => {
               </Link>
             </div>
           </div>
+          <NotificationSystem/>
           <div className="flex items-center space-x-4">
             {userData ? (
               <ProfileDropdown user={userData} setIsSettings={setIsSettings} />
             ) : (
               <>
-                <Link href={"/Login"} >
+                <Link href={"/login"} >
                   <button className="px-4 py-2 rounded border border-[#0ef] text-[#0ef] hover:bg-[#0ef] hover:text-black transition duration-300">
                     Login
                   </button></Link>
-                <button className="px-4 py-2 rounded bg-[#0ef] text-black hover:bg-[#0df] transition duration-300">
+                <button onClick={signInhandler} className="px-4 py-2 rounded bg-[#0ef] text-black hover:bg-[#0df] transition duration-300">
                   Sign Up
                 </button>
               </>

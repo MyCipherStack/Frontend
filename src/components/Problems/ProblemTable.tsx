@@ -1,47 +1,57 @@
 "use client"
 
-import { getAllProblems, getAllUsers } from "@/service/getDataService";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH, FaCircleNotch, FaCheckCircle } from "react-icons/fa";
+import { getAllProblems } from "@/service/getDataService";
+import React, { useEffect, useState } from "react";
+import { FaSearch, FaCheckCircle } from "react-icons/fa";
 import { Pagination } from "../Pagination";
-import { useRouter } from "next/navigation";
 
-const ProblemTable = ({openProblem}) => {
-const [search,setSearch]=useState("")
-const [difficulty,setDifficulty]=useState("")
-const [status,setStatus]=useState("true")
-const [category,setCategory]=useState("")
-const [page,setPage]=useState("1")
-const [limit,setLimit]=useState("10")
-const [totalProblem,setTotalProblem]=useState(0)
-const [totalPages,setTotalPages]=useState(0)
-const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",status:"",category:""}])
-
+const ProblemTable = ({ openProblem }) => {
+  const [search, setSearch] = useState("")
+  const [difficulty, setDifficulty] = useState("")
+  const [status, setStatus] = useState("true")
+  const [category, setCategory] = useState("")
+  const [page, setPage] = useState("1")
+  const [limit, setLimit] = useState("10")
+  const [totalProblem, setTotalProblem] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [Problem, setProblem] = useState([{ _id: "", title: "", tags: "", difficulty: "", status: "", category: "" }])
 
 
 
 
-  useEffect(()=>{
-    const params=new URLSearchParams({page,limit,difficulty,status,search,category})
-    const fetchData = async () => {
-    const response = await getAllProblems(params.toString());
-     setTotalPages(response.data.problemData.totalPages,)
-     setTotalProblem(response.data.problemData.totalProblems)
-     console.log(response.data.problemData.problems);
-     
-     setProblem(response.data.problemData.problems)
-     
-    };
-  
-  fetchData();
-  },[page,difficulty,status,search,category])
 
-  const pageChange=(page:number)=>{
-    setPage(page+"")
+  useEffect(() => {
+
+    const timeOut = setTimeout(() => {  //Debounce
+
+
+      const params = new URLSearchParams({ page, limit, difficulty, status, search, category })
+      const fetchData = async () => {
+        const response = await getAllProblems(params.toString());
+        setTotalPages(response.data.problemData.totalPages,)
+        setTotalProblem(response.data.problemData.totalProblems)
+        console.log(response.data.problemData.problems);
+
+        setProblem(response.data.problemData.problems)
+
+      };
+
+
+      fetchData();
+
+    }, 500)
+
+
+    return () => clearTimeout(timeOut)
+
+  }, [page, difficulty, status, search, category])
+
+  const pageChange = (page: number) => {
+    setPage(page + "")
   }
-  
+
   // const openProblem=async(name:string)=>{  
-   
+
   //   router.push(`/problemDetails/${name}`)
 
   // // const problemData=await getDataService("/p")
@@ -51,22 +61,22 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
   // }
 
 
-    
-  
+
+
 
   return (
     <div className="flex">
 
       {/* Main Content Area */}
       <div className="p-8 w-full">
-      
+
 
         {/* Search and Filter Bar */}
         <div className="bg-card-bg rounded-lg neon-border p-4 mb-8 text-xs">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-grow relative">
               <input
-                type="text" value={search} onChange={(e)=>setSearch(e.target.value)}
+                type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search Problem..."
                 className="search-input w-full px-4 py-2 pl-10 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none"
               />
@@ -74,30 +84,85 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
                 <FaSearch className="text-gray-500" />
               </div>
             </div>
-            <select value={difficulty} onChange={(e)=>setDifficulty(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
+            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">All Difficulties</option>
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
             </select>
-            <select  value={status} onChange={(e)=>setStatus(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
+            <select value={status} onChange={(e) => setStatus(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">Any Status</option>
               <option value="active">Solved</option>
               <option value="inactive">Attempted</option>
               <option value="banned">Unsolved</option>
             </select>
-            <select  value={category} onChange={(e)=>setCategory(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
+            <select value={category} onChange={(e) => setCategory(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">All Categories</option>
-              <option value="arrray">Array</option>
-              <option value="dynamic">Dynamic Programming</option>
-              <option value="tree">Trees</option>
-              <option value="graph">Graph</option>
+
+              <optgroup label="📦 Data Structures">
+                <option value="Array">Array</option>
+                <option value="String">String</option>
+                <option value="Hash Table">Hash Table</option>
+                <option value="Linked List">Linked List</option>
+                <option value="Stack">Stack</option>
+                <option value="Queue">Queue</option>
+                <option value="Heap (Priority Queue)">Heap (Priority Queue)</option>
+                <option value="Tree">Tree</option>
+                <option value="Binary Tree">Binary Tree</option>
+                <option value="Binary Search Tree">Binary Search Tree</option>
+                <option value="Trie">Trie</option>
+                <option value="Graph">Graph</option>
+                <option value="Matrix">Matrix</option>
+                <option value="Set">Set</option>
+              </optgroup>
+
+              <optgroup label="⚙️ Algorithms">
+                <option value="Two Pointers">Two Pointers</option>
+                <option value="Sliding Window">Sliding Window</option>
+                <option value="Binary Search">Binary Search</option>
+                <option value="Depth-First Search (DFS)">Depth-First Search (DFS)</option>
+                <option value="Breadth-First Search (BFS)">Breadth-First Search (BFS)</option>
+                <option value="Backtracking">Backtracking</option>
+                <option value="Recursion">Recursion</option>
+                <option value="Greedy">Greedy</option>
+                <option value="Dynamic Programming">Dynamic Programming</option>
+                <option value="Divide and Conquer">Divide and Conquer</option>
+                <option value="Topological Sort">Topological Sort</option>
+                <option value="Bit Manipulation">Bit Manipulation</option>
+                <option value="Union Find">Union Find</option>
+                <option value="Counting">Counting</option>
+                <option value="Brute Force">Brute Force</option>
+              </optgroup>
+
+              <optgroup label="🧩 Problem Patterns">
+                <option value="Sorting">Sorting</option>
+                <option value="Searching">Searching</option>
+                <option value="Memoization">Memoization</option>
+                <option value="Math">Math</option>
+                <option value="Simulation">Simulation</option>
+                <option value="String Matching">String Matching</option>
+                <option value="Geometry">Geometry</option>
+                <option value="Prefix Sum">Prefix Sum</option>
+                <option value="Suffix Array">Suffix Array</option>
+                <option value="Monotonic Stack">Monotonic Stack</option>
+              </optgroup>
+
+              <optgroup label="🛠️ Advanced / Design">
+                <option value="Design">Design</option>
+                <option value="LRU Cache">LRU Cache</option>
+                <option value="Segment Tree">Segment Tree</option>
+                <option value="Fenwick Tree (Binary Indexed Tree)">Fenwick Tree (Binary Indexed Tree)</option>
+                <option value="Top K">Top K</option>
+                <option value="Randomized">Randomized</option>
+                <option value="Concurrency">Concurrency</option>
+                <option value="Iterator">Iterator</option>
+              </optgroup>
             </select>
-       
+
           </div>
         </div>
 
-        
+
 
         {/* Problem Table */}
         <div className="bg-card-bg rounded-lg neon-border overflow-hidden mb-8">
@@ -123,7 +188,7 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
               </thead>
               <tbody>
                 {Problem.map((problem) => (
-                  <tr key={problem._id} onClick={()=>openProblem(problem.title,problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
+                  <tr key={problem._id} onClick={() => openProblem(problem.title, problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
                     <td className="py-3 px-4 ">
                       <FaCheckCircle />
                     </td>
@@ -137,7 +202,7 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
                     </td>
                     <td className="py-3 px-4">{problem.title}</td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1 ${problem.difficulty=="easy" ? "text-yellow-500" :"text-red-500"} text-xs rounded`}>{problem.difficulty}</span>
+                      <span className={`px-2 py-1 ${problem.difficulty == "easy" ? "text-yellow-500" : "text-red-500"} text-xs rounded`}>{problem.difficulty}</span>
                     </td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1  text-xs rounded`}>{problem.status}</span>
@@ -145,8 +210,8 @@ const [Problem,setProblem]=useState([{_id:"",title:"",tags:"",difficulty:"",stat
                     <td className="py-3 px-4">{problem.tags}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                       
-                       
+
+
                       </div>
                     </td>
                   </tr>

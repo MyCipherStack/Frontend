@@ -1,6 +1,6 @@
 "use client";
 import AdminNavbar from "@/components/Admin/NavBar";
-import { adminAllPlans, creatPremiumService, editPremiumService, getAllPlanDetails } from "@/service/PremiumServices";
+import { adminAllPlans, creatPremiumService, editPremiumService } from "@/service/PremiumServices";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError, toastSuccess } from "@/utils/toast";
 import React from "react";
@@ -14,17 +14,17 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 
- export interface Plan {
-    _id?: string;
-    name?: string;
-    price?: number;
-    cycle?: string;
-    features?:{ text: string; enabled: boolean }[];
-    trial?: number;
-    status?: string;
-    activeUsers?: number;
-    revenue?: number;
-  }
+export interface Plan {
+  _id?: string;
+  name?: string;
+  price?: number;
+  cycle?: string;
+  features?: { text: string; enabled: boolean }[];
+  trial?: number;
+  status?: string;
+  activeUsers?: number;
+  revenue?: number;
+}
 
 // interface FeatureToggle {
 //   name: string;
@@ -36,27 +36,29 @@ import {
 
 const PremiumPlanManagement = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
-  
 
-  useEffect(()=>{
-    try{
-    const  getData=async()=>{
-        
-        const response=await adminAllPlans()
+
+  useEffect(() => {
+    try {
+      const getData = async () => {
+
+        const response = await adminAllPlans()
         setPlans(response.data.plans)
         console.log(response);
       }
-      getData()  
-    }catch(error){
+      getData()
+    } catch (error) {
+      console.log(error);
+
       toastError("error on fetching data")
     }
-},[])
+  }, [])
 
 
   const [showModal, setShowModal] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState<Plan | null>({name:"",features:[],price:0,trial:7,cycle:"monthely",status:"active"});
+  const [currentPlan, setCurrentPlan] = useState<Plan | null>({ name: "", features: [], price: 0, trial: 7, cycle: "monthely", status: "active" });
   const [modalFeatures, setModalFeatures] = useState<{ text: string; enabled: boolean }[]>([]);
-  const [modalState,SetModalState]=useState<string>("edit") 
+  const [modalState, SetModalState] = useState<string>("edit")
 
 
   const showCreatePlanModal = () => {
@@ -69,10 +71,10 @@ const PremiumPlanManagement = () => {
     setShowModal(true);
   };
 
-  const editPlan = async(planId: string) => {
+  const editPlan = async (planId: string) => {
     SetModalState("edit")
-    const plan = plans.find(plan=>plan._id==planId)
-    if(plan){
+    const plan = plans.find(plan => plan._id == planId)
+    if (plan) {
       setCurrentPlan(plan);
       setModalFeatures(plan.features || []);
       setShowModal(true);
@@ -106,9 +108,9 @@ const PremiumPlanManagement = () => {
     setModalFeatures(newFeatures);
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name,id, value } = e.target;
-    console.log(name,id,"ASDf",value);
-    
+    const { name, id, value } = e.target;
+    console.log(name, id, "ASDf", value);
+
     setCurrentPlan((prev) => ({ ...prev, [id]: value }));
   };
 
@@ -116,28 +118,28 @@ const PremiumPlanManagement = () => {
 
 
 
-  const savePlan =async (e: React.FormEvent) => {
+  const savePlan = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPlan((prev)=>({...prev,["features"]:modalFeatures}))
+    setCurrentPlan((prev) => ({ ...prev, ["features"]: modalFeatures }))
 
-      try{
-        if(currentPlan && modalState=="create"){
-          currentPlan.features=modalFeatures
-          console.log(currentPlan,"current plan");
-          
-          const response=await creatPremiumService(currentPlan)
-          setPlans((prev)=>[...prev,currentPlan])
-         
-        }else if(currentPlan && modalState=="edit"){
-          const response=await editPremiumService(currentPlan)
-          setPlans((prev)=>( prev.map(plan=>plan._id==currentPlan._id ?{...currentPlan} :plan)))
-        }
-      }catch(error){
-        console.log(error);
+    try {
+      if (currentPlan && modalState == "create") {
+        currentPlan.features = modalFeatures
+        console.log(currentPlan, "current plan");
+        await creatPremiumService(currentPlan)
+        setPlans((prev) => [...prev, currentPlan])
+
+      } else if (currentPlan && modalState == "edit") {
+        await editPremiumService(currentPlan)
+        setPlans((prev) => (prev.map(plan => plan._id == currentPlan._id ? { ...currentPlan } : plan)))
+        toastSuccess("plan edited")
+
       }
-    
+    } catch (error) {
+      toastError(error.response.data.message)
+    }
 
-toastSuccess("new plan created")
+
 
 
     closePlanModal();
@@ -163,24 +165,25 @@ toastSuccess("new plan created")
 
   };
 
-  const deletePlan = (planId:string) => {
+  const deletePlan = (planId: string) => {
     console.log(planId);
-    const deleteCall=async()=>{
-      const allow=await confirmationAlert("delete the plan")
+    const deleteCall = async () => {
+      const allow = await confirmationAlert("delete the plan")
 
-      if(allow){
-      const plan = plans.find(plan=>plan._id==planId)
-      if(plan){
-        plan.status="deleted"
-        const response=await editPremiumService(plan)
-        const  afterDeletedPlans=plans.filter(plan=>plan._id!=planId)
-        setPlans(afterDeletedPlans)
-        closePlanModal();
-        
-      }    }
+      if (allow) {
+        const plan = plans.find(plan => plan._id == planId)
+        if (plan) {
+          plan.status = "deleted"
+           await editPremiumService(plan)
+          const afterDeletedPlans = plans.filter(plan => plan._id != planId)
+          setPlans(afterDeletedPlans)
+          closePlanModal();
+
+        }
+      }
 
     }
-      deleteCall()
+    deleteCall()
 
     // if (currentPlan) {
     //   const newPlans = { ...plans };
@@ -202,7 +205,7 @@ toastSuccess("new plan created")
               <h1 className="text-2xl   font-bold neon-text">Premium</h1>
               <div
                 className="flex items-center gap-2"
-                // onClick={() => showAddProblem(true)}
+              // onClick={() => showAddProblem(true)}
               >
                 <button
                   onClick={showCreatePlanModal}
@@ -227,7 +230,7 @@ toastSuccess("new plan created")
                       className="bg-black rounded-lg border border-gray-800 p-6"
                     >
                       <div className="flex justify-between items-start mb-4">
-                      
+
                         <div>
                           <h3 className="text-xl font-bold text-[#0ef]">
                             {plan.name}
@@ -252,16 +255,16 @@ toastSuccess("new plan created")
                         </div>
                       </div>
                       <div className="space-y-3 mb-4">
-                        { plan.features ?
-                        plan.features.map((feature, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center text-gray-300"
-                          >
-                            <FaCheck className="text-green-400 mr-2" />
-                            {feature.text}
-                          </div>
-                        )):""}
+                        {plan.features ?
+                          plan.features.map((feature, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center text-gray-300"
+                            >
+                              <FaCheck className="text-green-400 mr-2" />
+                              {feature.text}
+                            </div>
+                          )) : ""}
                       </div>
                       <div className="flex justify-between text-sm text-gray-400 border-t border-gray-800 pt-4">
                         <div>
@@ -282,7 +285,7 @@ toastSuccess("new plan created")
             </div>
           </div>
 
-  
+
         </>
       )}
       {/* Create/Edit Plan Modal */}
@@ -308,7 +311,7 @@ toastSuccess("new plan created")
                   <input
                     type="text"
                     id="name"
-                    defaultValue={currentPlan?.name || ""}  onChange={handleChange}
+                    defaultValue={currentPlan?.name || ""} onChange={handleChange}
                     className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                     placeholder="e.g. Monthly Premium"
                     required
@@ -345,7 +348,7 @@ toastSuccess("new plan created")
                       className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                     >
                       <option value="monthly">Monthly</option>
-                      <option value="annual">Annual</option>
+                      <option value="yearly">yearly</option>
                       <option value="quarterly">Quarterly</option>
                     </select>
                   </div>
@@ -399,7 +402,7 @@ toastSuccess("new plan created")
                     <input
                       type="number"
                       id="trial"
-                      defaultValue={currentPlan?.trial || 7}  onChange={handleChange}
+                      defaultValue={currentPlan?.trial || 7} onChange={handleChange}
                       min="0"
                       className="w-full bg-black border border-gray-800 text-white px-4 py-2 rounded focus:border-[#0ef] focus:outline-none"
                       placeholder="7"
@@ -423,7 +426,7 @@ toastSuccess("new plan created")
                   {currentPlan && (
                     <button
                       type="button"
-                      onClick={()=>deletePlan(currentPlan._id as string)}
+                      onClick={() => deletePlan(currentPlan._id as string)}
                       className="px-4 py-2 bg-transparent border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white"
                     >
                       <FaTrashAlt className="inline mr-2" />

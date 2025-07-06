@@ -19,3 +19,24 @@ export const toastError=(messages:string)=>{
       
     })
 }
+
+
+export const toastLite = (message: string) => {
+  toast(message, {
+    position: "top-right",
+    autoClose: 2500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    style: {
+      background: "#fff",
+      color: "#333",
+      boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+      borderRadius: "6px",
+      fontSize: "14px",
+      padding: "10px 16px",
+    },
+    icon: false,
+  });
+};

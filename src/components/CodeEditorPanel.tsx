@@ -34,7 +34,7 @@ const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, s
                 <FaRedoAlt className="mr-1" /> Reset
               </button>
             </div>
-            <div className="flex items-center space-x-3">
+            {/* <div className="flex items-center space-x-3">
               <label className="text-gray-400 text-sm flex items-center">
                 <span className="mr-2">Dark Mode</span>
                 <label className="toggle-btn">
@@ -49,14 +49,14 @@ const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, s
               <button className="text-gray-400 hover:text-neon-blue text-sm">
                 <FaExpandAlt />
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* Code Editor */}
         <div className="flex ">
           {pairEditor ? (
-            <PairEditor code={code}  setCode={setCode} challengeId={challengeId} language={language}/>
+            <PairEditor code={code}  setCode={setCode}  language={language} roomId={challengeId}/>
 
           ):(
            <CodeEditorMonaco code={code} language={language} setCode={setCode}></CodeEditorMonaco>

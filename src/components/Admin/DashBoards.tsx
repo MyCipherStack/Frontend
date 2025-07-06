@@ -12,6 +12,10 @@ export default function DashBoard() {
 
   const [range,setRange]=useState("")
   const [chartData,setChartData]=useState()
+  const [revenueChartData,setRevenueChartData]=useState()
+  const [totalUsers,setTotalUsers]=useState()
+  const [premiumUsers,setPremiumUsers]=useState()
+  const [thisMonthRevenu,setThisMonthRevenu]=useState()
 
 
   const params=new  URLSearchParams({range:range})
@@ -20,8 +24,15 @@ export default function DashBoard() {
      const get=async()=>{
 
         const response=await getAdminDashBoardData(params.toString())
-        // console.log(response.data.userData);
+
+        console.log(response.data.transactions);
+        console.log(response.data.userData);
+        
         setChartData(response.data.userData)
+        setTotalUsers(response.data.totalUsers)
+        setPremiumUsers(response.data.premiumUsers)
+        setRevenueChartData(response.data.transactions)
+        setThisMonthRevenu(response.data.thisMonthRevenu)
       }
       get()
       }catch(error){
@@ -61,7 +72,7 @@ export default function DashBoard() {
               <div className="flex justify-between items-start">
                 <div>
                   <div className="text-gray-400 mb-2">Total Users</div>
-                  <div className="text-3xl font-bold text-white">5,427</div>
+                  <div className="text-3xl font-bold text-white">{totalUsers}</div>
                   <div className="text-sm mt-2">
                     <span className="text-green-400"><i className="fas fa-arrow-up mr-1"></i>12.5%</span>
                     <span className="text-gray-400 ml-2">vs last month</span>
@@ -78,7 +89,7 @@ export default function DashBoard() {
               <div className="flex justify-between items-start">
                 <div>
                   <div className="text-gray-400 mb-2">Premium Users</div>
-                  <div className="text-3xl font-bold text-white">1,248</div>
+                  <div className="text-3xl font-bold text-white">{premiumUsers}</div>
                   <div className="text-sm mt-2">
                     <span className="text-green-400"><i className="fas fa-arrow-up mr-1"></i>8.3%</span>
                     <span className="text-gray-400 ml-2">vs last month</span>
@@ -95,7 +106,7 @@ export default function DashBoard() {
               <div className="flex justify-between items-start">
                 <div>
                   <div className="text-gray-400 mb-2">Monthly Revenue</div>
-                  <div className="text-3xl font-bold text-white">$24,892</div>
+                  <div className="text-3xl font-bold text-white">{thisMonthRevenu}</div>
                   <div className="text-sm mt-2">
                     <span className="text-green-400"><i className="fas fa-arrow-up mr-1"></i>15.2%</span>
                     <span className="text-gray-400 ml-2">vs last month</span>
@@ -133,6 +144,7 @@ export default function DashBoard() {
                 <div className="text-[#0ef] font-bold ml-20">Revenue Overview</div>
               </div>
               <div className="p-4 h-[300px] flex items-center justify-center">
+                <LineChartComponet chartData={revenueChartData} XAxisData={"range"} YAxisData={"revenue"} />
 
 
                 <div className="text-gray-500">Chart </div>
@@ -145,7 +157,7 @@ export default function DashBoard() {
                 <div className="text-[#0ef] font-bold ml-20">User Growth</div>
               </div>
               <div className="p-4 h-[300px] flex items-center justify-center">
-                <LineChartComponet chartData={chartData}/>
+                <LineChartComponet chartData={chartData} XAxisData={"range"}  YAxisData={"usersCount"}/>
                 <div className="text-gray-500">Chart </div>
               </div>
             </div>

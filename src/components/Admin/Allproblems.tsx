@@ -30,6 +30,9 @@ const router=useRouter()
 
 
   useEffect(()=>{
+
+    const timeOut=setTimeout(()=>{  //Debounce
+
     const params=new URLSearchParams({page,limit,difficulty,status,search,category})
     const fetchData = async () => {
     const response = await getAllProblems(params.toString());
@@ -41,7 +44,11 @@ const router=useRouter()
      
     };
   
-  fetchData();
+      fetchData();
+    },500)
+
+    return ()=> clearTimeout(timeOut)
+
   },[page,difficulty,status,search,trigger,category])
 
   const pageChange=(page:number)=>{

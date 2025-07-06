@@ -29,7 +29,7 @@ export const Pagination = ({
   return (
     <div className="p-4 flex justify-between items-center border-t border-gray-800">
       <div className="text-gray-400 text-sm">
-        Showing {start}-{end} of {totalData} users
+        Showing {start}-{end} of {totalData} Datas
       </div>
 
       <div className="flex space-x-1">
@@ -45,11 +45,10 @@ export const Pagination = ({
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`pagination-item flex items-center justify-center w-9 h-9 border border-opacity-20 border-neon-blue ${
-              currentPage === page
-                ? "bg-opacity-20 bg-neon-blue  neon-text border-neon-blue "
-                : "hover:border-neon-blue hover:text-neon-blue transition duration-300"
-            }`}
+            className={`pagination-item flex items-center justify-center w-9 h-9 border border-opacity-20 border-neon-blue ${currentPage === page
+              ? "bg-opacity-20 bg-neon-blue  neon-text border-neon-blue "
+              : "hover:border-neon-blue hover:text-neon-blue transition duration-300"
+              }`}
           >
             {page}
           </button>

@@ -61,14 +61,11 @@ const AdminNavbar=({status})=>{
                     <FaTrophy className="w-6" />
                     <span className="ml-3">Contests</span>
                   </Link>
-                  <Link href="/admin/reports" className="sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue hover:text-neon-blue transition-all duration-300">
+                  <Link href="/admin/reports" className={`sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue  ${status=="reports"  ? "active":""} hover:text-neon-blue transition-all duration-300`} >
                     <FaFlag className="w-6" />
                     <span className="ml-3">Reports</span>
                   </Link>
-                  <Link href="/admin/settings" className="sidebar-link flex items-center px-4 py-3 text-text-primary hover:bg-opacity-10 hover:bg-neon-blue hover:text-neon-blue transition-all duration-300">
-                    <FaCog className="w-6" />
-                    <span className="ml-3">Settings</span>
-                  </Link>
+      
                 </div>
                 <div className="absolute bottom-0 w-full border-t border-gray-800 p-4">
                   <button  className="sidebar-link flex w-full items-center text-red-400 hover:text-red-500" onClick={LogoutHandler}>

@@ -1,11 +1,10 @@
 "use client"
 
 import { getAllUsers } from "@/service/getDataService";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import {FaUserPlus, FaSearch, FaFilter, FaEdit, FaBan, FaKey, FaCheck, FaChevronLeft, FaEllipsisH } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaSearch, FaBan, FaCheck } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 import { usersDataUpdate } from "@/service/postUpdateService";
-import Swal from 'sweetalert2';
 import { confirmationAlert } from "@/utils/confirmationAlert";
 
 const UserManagement = () => {
@@ -22,16 +21,24 @@ const [trigger,setTrigger]=useState(false)
 
 
   useEffect(()=>{
-    const params=new URLSearchParams({page, role,status,search})
-    const fetchData = async () => {
-    const response = await getAllUsers(params.toString());
-     setTotalPages(response.data.usersData.totalPages,)
-     setTotalUsers(response.data.usersData.totalUsers)
-     setUsers(response.data.usersData.users)
-     
-    };
-  
-  fetchData();
+
+    const timeOut=setTimeout(()=>{  //Debounce
+
+      const params=new URLSearchParams({page, role,status,search})
+      const fetchData = async () => {
+        const response = await getAllUsers(params.toString());
+        setTotalPages(response.data.usersData.totalPages,)
+        setTotalUsers(response.data.usersData.totalUsers)
+        setUsers(response.data.usersData.users)
+        
+      };
+      
+      fetchData();
+
+    },500)
+
+    return ()=> clearTimeout(timeOut)
+
   },[page,role,status,search,trigger])
 
   const pageChange=(page:number)=>{

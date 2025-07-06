@@ -1,5 +1,6 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { FormData } from "../EditProfile";
+import { useEffect } from "react";
 
  export function AppearanceTab({
     data,
@@ -13,25 +14,44 @@ import { FormData } from "../EditProfile";
         id: "cyberpunk",
         name: "Cyberpunk",
         gradient: "from-[#111] via-[#0ef]/20 to-black",
+        color:" #0ef"
+
       },
       {
         id: "synthwave",
         name: "Synthwave",
         gradient: "from-purple-900 via-pink-600 to-black",
+        color: '#f72585',
       },
       {
         id: "dark",
         name: "Dark Mode",
         gradient: "from-gray-800 via-gray-700 to-black",
+        color: '#888',
       },
       {
         id: "matrix",
         name: "Matrix",
         gradient: "from-green-900 via-green-700 to-black",
+        color: '#00ff00',
       },
     ];
   
-
+  useEffect(()=>{
+    
+    return changeTheme(data.theme)
+  },[])
+    const changeTheme=(themeId:string)=>{
+      const selected=themes.find((t)=>t.id==themeId)
+      if(selected?.color){
+        console.log("bg-color changed to ",selected.color);
+        
+        document.documentElement.style.setProperty("--neon-blue",selected.color)
+      }
+      
+      onChange("theme", themeId)
+      
+    }
   
     return (
       <div className="space-y-6">
@@ -42,8 +62,8 @@ import { FormData } from "../EditProfile";
               <ThemeCard
                 key={theme.id}
                 theme={theme}
-                selected={data.theme === theme.id}
-                onSelect={() => onChange("theme", theme.id)}
+                selected={data.theme === theme.id }
+                onSelect={() =>changeTheme(theme.id)}
               />
             ))}
           </div>

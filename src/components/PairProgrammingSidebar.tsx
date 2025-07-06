@@ -5,7 +5,7 @@ import { FaMicrophone, FaMicrophoneSlash, FaCog, FaPhoneSlash, FaVolumeUp, FaPap
 import { useSelector } from 'react-redux';
 
 
-const PairProgrammingSidebar = ({ challengeId }) => {
+const PairProgrammingSidebar = ({ challengeId ,navigatorName,setNavigatorName}) => {
   const roomId = challengeId
   const [isMuted, setIsMuted] = useState(false);
   const [message, setMessage] = useState('');
@@ -15,7 +15,6 @@ const PairProgrammingSidebar = ({ challengeId }) => {
   const localStremRef=useRef(null)
   const peerConnectionRef=useRef(null)
   const remoteAudioRef=useRef(null)
-  const navigatorNameRef=useRef(null)
 
   const [messages, setMessages] = useState([
     { userName: 'you', text: 'Hey', time: '10:22 AM' },
@@ -60,6 +59,10 @@ const PairProgrammingSidebar = ({ challengeId }) => {
     socket.emit('signal',{roomId,data:offer})
   }
 
+
+
+
+  
   useEffect(()=>{
     startVoiceCall()
     socket.on('signal',async(data)=>{
@@ -74,18 +77,16 @@ const PairProgrammingSidebar = ({ challengeId }) => {
         await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(data.candidate))
       }
     })
-    socket.on("pairProgram-update",({userName})=>{
-      
-      navigatorNameRef.current=userName
-    })
 
-    return ()=>{socket.off('signal')}
+  
 
   },[roomId])
 
 let renderOnes=true
 
   useEffect(() => {
+
+
     if(renderOnes){
       renderOnes=false
       const handler = async (response: { userName: string, text: string, time: string }) => {
@@ -96,10 +97,20 @@ let renderOnes=true
       }
       socket.on("receive-message", handler)
       return () => {
-        socket.off("receive-message", handler);
+        // socket.off("receive-message", handler);
 
       }
     }
+
+
+      socket.on("pairProgram-update",({userName})=>{
+      console.log("user joined",userName)
+      setNavigatorName(userName)
+    })
+
+
+
+    return ()=>{socket.off('signal')}
   }, [])
 
 
@@ -153,7 +164,7 @@ useEffect(() => {
 
 
   return (
-    <div className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-80 z-50 overflow-auto bg-[#000000] border border-[#0ef] shadow-[0_0_10px_#0ef] transition-transform duration-300 ${isCollapsed ? 'translate-x-[270px]' : ''}`}>
+    <div className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-80 z-30 overflow-auto bg-[#000000] border border-[#0ef] shadow-[0_0_10px_#0ef] transition-transform duration-300 ${isCollapsed ? 'translate-x-[270px]' : ''}`}>
 
       {/* Header */}
       <div className='p-1' onClick={() => setIsCollapsed(!isCollapsed)}>{isCollapsed ? "Open" : "Close"}</div>
@@ -180,7 +191,7 @@ useEffect(() => {
                 <img src="https://via.placeholder.com/32" alt="Partner" className="w-full h-full object-cover" />
               </div>
               <div>
-                <div className="text-sm">{navigatorNameRef.current}</div>
+                <div className="text-sm">{navigatorName}</div>
                 <div className="text-xs text-blue-400">Navigator</div>
               </div>
             </div>
@@ -189,16 +200,13 @@ useEffect(() => {
 
         {/* Collaborative Editing */}
         <div className="mb-4 bg-black bg-opacity-50 p-3 rounded">
-          <h3 className="text-md font-bold mb-2">Collaborative Editing</h3>
+
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-green-400">Live collaboration active</span>
             </div>
-            <label className="toggle-btn">
-              <input type="checkbox" defaultChecked={true}  className="opacity-0 w-0 h-0" />
-              <span className="toggle-slider"></span>
-            </label> 
+     
           </div>
           <div className="text-xs text-gray-400 mt-2">
             <p>Both participants can edit code simultaneously in real-time</p>
@@ -247,7 +255,7 @@ useEffect(() => {
                   )}
                 </div>
               </div>
-              <div className="text-sm">You (CyberNinja)</div>
+              <div className="text-sm">You({user.name})</div>
             </div>
             <div className="flex gap-2">
               <button
@@ -278,7 +286,7 @@ useEffect(() => {
                   )}
                 </div>
               </div>
-              <div className="text-sm">CodeMaster</div>
+              <div className="text-sm">{navigatorName}</div>
             </div>
             <div className="flex items-center gap-2">
               <div className="voice-level">
@@ -294,7 +302,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* <div className="mt-3 pt-3 border-t border-gray-800">
+          <div className="mt-3 pt-3 border-t border-gray-800">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs text-gray-400">Voice Connection: <span className="text-green-400">Strong</span></span>
               <div className="flex items-center">
@@ -312,7 +320,7 @@ useEffect(() => {
                 <FaVolumeUp className="inline mr-1" /> Volume
               </button>
             </div>
-          </div> */}
+          </div>
         </div>
 
         {/* Chat Section */}

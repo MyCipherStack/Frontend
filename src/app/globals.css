@@ -2,10 +2,11 @@
 
 :root {
     --neon-blue: #0ef;
-    --dark-bg: #0a0a0a;
+    --dark-bg: #121111;
     --darker-bg: #000000;
     --card-bg: #111111;
     --text-primary: #e0e0e0;
+    --bg-color:rgb(202, 202, 202);
   }
 
   body {
@@ -111,13 +112,16 @@
 
 
 
+.bg-color{
+  background-color: var(--bg-color);
 
+}
 
 
 
 
 .neon-border {
-  box-shadow: 0 0 10px var(--neon-blue);
+  box-shadow: 0 0 8px var(--neon-blue);
   border: 1px solid var(--neon-blue);
 }
 
@@ -231,6 +235,8 @@
 
 
 
+
+
 /* pairPRogramming */
 
 .toggle-btn {
@@ -304,3 +310,37 @@ input:checked + .toggle-slider:before {
   background: transparent;
 }
 
+
+
+
+button{
+  cursor: pointer;
+}
+
+
+
+
+.color-nostreak {
+  fill: #252323;
+  }
+  /* 
+.color-heatmap-1 {
+  fill: #c6e48b;
+}
+.color-heatmap-2 {
+  fill: #7bc96f;
+}
+.color-heatmap-3 {
+  fill: #239a3b;
+}
+.color-heatmap-4 {
+  fill: #196127;
+} */
+
+
+
+
+.month-separator {
+  margin-left: 6px; /* Creates visible spacing between months */
+    border-left: 2px solid #999;
+}

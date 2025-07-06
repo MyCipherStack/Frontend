@@ -20,7 +20,7 @@ export interface IProblem {
     name:string,
     parameters:string[],
     returnType:{type:string}}
-    starterCode:{};
+    starterCode:Record<string,string>;
     status:boolean;
     updatedAt:string
   
@@ -66,10 +66,25 @@ export const runProblemService=async(data:Partial<IProblem>)=>{
     }
 }
 
+
+
+
+
 export const submitProblemService=async(data:Partial<IProblem>)=>{
     const url="/api/user/problem/submit"
     try{
         const response= await axios.post(url,data,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+export const userSubmissionsService=async()=>{
+    const url="/api/user/userSubmissions"
+    try{
+        const response= await axios.get(url,{withCredentials:true}) 
         return response
     }
     catch(error){

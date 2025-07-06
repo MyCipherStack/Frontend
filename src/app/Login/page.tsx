@@ -1,24 +1,55 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "@/app/Login/page.css"
 import { toast } from "react-toastify"
 import { userLogin, userRegister } from "@/service/authService";
-import { useRouter } from "next/navigation";
+import {  useRouter, useSearchParams } from "next/navigation";
 import EnterOtp from "@/components/PasswordComponent.tsx/EnteOtp";
 import { verifyOtpService } from "@/service/verifyOtpService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "@/features/auth/userAuthSlice";
 import Link from "next/link";
 import { loginSchema, signSchema } from "@/validations/authSchemas";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { AxiosError } from "axios";
-
+import socket from "@/utils/socket";
 
 
 export default function AuthPage() {
+
+
+
   const [isLogin, setIsLogin] = useState(true);
+
+  const searchParams = useSearchParams()
+
+  const mode = searchParams.get("mode")
+
+
+  const user = useSelector((state) => state.auth.user)
+
+  useEffect(() => {
+    if (mode === "signup") {
+      setIsLogin(false)
+    }
+  }, [mode])
+
+
+  useEffect(() => {
+
+    if (user) {
+      console.log("token");
+
+      router.replace("/")
+
+    }
+    console.log("notoken");
+  }, [])
+
+
+
   const [otpComponent, setotpComponent] = useState(false)
   const router = useRouter()
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
@@ -48,9 +79,9 @@ export default function AuthPage() {
       toastSuccess(response.data.message)
 
     }
-    catch (error:unknown) {
-    const axiosError=error as AxiosError<{message?:string}>
-      
+    catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>
+
       toastError(axiosError?.response?.data?.message ?? "something went wrong")
     }
 
@@ -76,9 +107,15 @@ export default function AuthPage() {
           const response = await userLogin(body)
           console.log(response, "response");
 
-          router.push("/Home")
+          router.push("/")
+
+          //join user room for notification
+          socket.emit("join-user-room", response.data.user.id)
+
           toastSuccess(response.data.message)
+
           dispatch(loginSuccess(response.data.user))
+
         } else {
 
           const response = await userRegister(body)
@@ -87,9 +124,9 @@ export default function AuthPage() {
         }
 
       }
-      catch (error:unknown) {
+      catch (error: unknown) {
         console.log(error);
-        const axiosError=error as AxiosError<{message?:string}>
+        const axiosError = error as AxiosError<{ message?: string }>
 
         if (axiosError.response && axiosError.response.data && axiosError.response.data.message) {
           toastError(axiosError.response.data.message)
@@ -107,11 +144,11 @@ export default function AuthPage() {
 
       console.log("google frond end");
 
-      window.location.href = "http://localhost:5000/api/user/auth/google"; //
+      window.location.href = process.env.NEXT_PUBLIC_GOOGLE_URL!; //
 
 
-    } catch (error:unknown) {
-      const axiosError=error as AxiosError<{message?:string}>
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>
 
       toast.error(axiosError.message, {
         position: "top-right",

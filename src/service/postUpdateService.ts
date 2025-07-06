@@ -15,7 +15,7 @@ export const usersDataUpdate=async(update:{email:string,status:string})=>{
     }
 }
 
-
+    
 
 export const userProfileDataUpdate=async(update:{})=>{
     try{

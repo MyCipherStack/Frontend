@@ -9,8 +9,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { joinInteview } from '@/service/interviewService';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { MdClose } from 'react-icons/md';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
+
 
 
 
@@ -34,7 +33,6 @@ const InterviewViewPage = () => {
 
   // Media stream references
   const localStreamRef = useRef<MediaStream | null>(null);
-  const screenStreamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -52,7 +50,6 @@ const InterviewViewPage = () => {
   const [scheduledTime, setScheduledTime] = useState<Date | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [isHost,setIsHost]=useState(false)
-  const user=useSelector((state:RootState)=>state.auth.user)
   const [isScreenSharing,setIsScreenSharing]=useState(false)
   
 
@@ -145,7 +142,7 @@ const handleOffer =useCallback(async (data: RTCSessionDescriptionInit,roomId:str
 },[])
 
 
-const handlerAnswer=useCallback(async (data: RTCSessionDescriptionInit,roomId:string) => {
+const handlerAnswer=useCallback(async (data: RTCSessionDescriptionInit) => {
 
   if ( peerConnectionRef.current?.signalingState === "have-local-offer") {
       await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data));  //  this must happen only ONCE
@@ -159,7 +156,7 @@ const handlerAnswer=useCallback(async (data: RTCSessionDescriptionInit,roomId:st
 
 
 
-const handelCandidate =useCallback( async (candidate: RTCIceCandidateInit,roomId:string) => {
+const handelCandidate =useCallback( async (candidate: RTCIceCandidateInit) => {
 const pc = peerConnectionRef.current;
 console.log(pc,"handlecandidate");
 
@@ -374,7 +371,7 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
                   const screen=  screenShareRef.current
                   setTimeout(()=>{
                     screen.play().catch((e)=>{
-                      console.log("Err playin screen")})
+                      console.log("Err playin screen",e)})
                       toastError("loading screen.....")
                     },500)
 
@@ -446,7 +443,7 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
       console.log("open screenshare");
       
       const pc=peerConnectionRef.current
-      const localStream=localStreamRef.current
+      // const localStream=localStreamRef.current
       
       // if(!pc || !localStream) return
       
@@ -476,6 +473,8 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
             // stopScreenShare()
           }
         }catch(error){
+          console.log(error);
+          
           toastError("error in sharing screen try again")
         }
       }
@@ -485,11 +484,11 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
 
    
 
-  // Timer functions
-  const startTimer = () => {
-    startTimeRef.current = Date.now();
-    timerIntervalRef.current = setInterval(updateTimer, 1000);
-  };
+  // // Timer functions
+  // const startTimer = () => {
+  //   startTimeRef.current = Date.now();
+  //   timerIntervalRef.current = setInterval(updateTimer, 1000);
+  // };
 
   const stopTimer = () => {
     if (timerIntervalRef.current) {
@@ -686,7 +685,7 @@ const LockedModal = ({setIsLocked,scheduledTime,timeRemaining,route}) => (
 
           <div className="mt-6 p-4 bg-black rounded-lg border border-gray-700">
             <p className="text-center text-gray-300">
-              This interview session will unlock automatically when it's time to start.
+              This interview session will unlock automatically when it&apos;s time to start.
             </p>
             <p className="text-center text-yellow-400 mt-2">
               Please come back at the scheduled time.

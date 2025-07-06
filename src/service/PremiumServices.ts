@@ -80,6 +80,22 @@ export const subscribePlan=async(id:string)=>{
 
 
 
+export const getSubcriptionData=async()=>{
+    
+    const url=`/api/user/subscriptionData`
+    try{
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    
+
+}
+}
+
+
+
     
 
 

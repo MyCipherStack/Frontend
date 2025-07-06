@@ -84,6 +84,8 @@ const handleSubmit =async (e:FormEvent) => {
 
     
   }catch(error){
+    console.log(error);
+    
     toastError("Something went wrong.Please try again")
   }
 };

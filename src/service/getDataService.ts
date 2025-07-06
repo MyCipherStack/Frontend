@@ -30,6 +30,19 @@ export const getAllProblems=async(params:string)=>{
 }
 
 
+export const getProblemDetails=async(params:string)=>{
+    try{
+
+        const url=`/api/user/problemDetails?${params}`
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
 export const getAllUsers=async(params:string)=>{
     try{
 

@@ -6,26 +6,39 @@ export function middleware(req: NextRequest) {
 
   const token = req.cookies.get("refreshToken")
   // const token = req.cookies.get("refreshToken")
-  const adminToken = req.cookies.get("accessToken")
-  const url=req.nextUrl.pathname
-console.log(token,"middleware");
-if ( !url.startsWith("/admin")  && url.startsWith("/Login") && token) {
+  const accessToken = req.cookies.get("accessToken")
+  const url = req.nextUrl.pathname
+  console.log(token, "middleware");
 
-  return NextResponse.redirect(new URL("/Home", req.url));
-}
-if ( !url.startsWith("/admin") && token) {
-  return NextResponse.next();
-}
-if(url.startsWith("/admin/") &&  !adminToken && !token){
-  console.log("start with /admin with out token");
-  
-  return NextResponse.redirect(new URL("/admin", req.url));
-}
-if(url.startsWith("/admin/") &&  adminToken){
+
+  const publicPath=["/","/login","/problems"]
+
+  if ( url.startsWith("/login") && token) {
+
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  if(publicPath.includes(url)){
+
+    return NextResponse.next();
+
+  }
+
+
+
+
+  // if (!url.startsWith("/admin") && token) {
+  //   return NextResponse.next();
+  // }
+  if (url.startsWith("/admin/") && !accessToken && !token) {
+    console.log("start with /admin with out token");
+
+    return NextResponse.redirect(new URL("/admin", req.url));
+  }
+  if (url.startsWith("/admin/") && accessToken) {
     console.log("start with /admin with token");
     // return NextResponse.redirect(new URL("/admin/dashboard", req.url));
-  return NextResponse.next();
-
+    return NextResponse.next();
   }
 
   return NextResponse.next();
@@ -36,6 +49,7 @@ if(url.startsWith("/admin/") &&  adminToken){
 //Configure where the middleware should run
 export const config = {
   matcher: [
-    "/Login","/Profile" ,"/admin/:path*"         // exact path
+    "/login", "/Profile", "/admin/:path*"  ,
+    "/problems" , "/Arena"     // exact path
   ],
 };

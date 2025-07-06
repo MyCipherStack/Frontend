@@ -7,7 +7,7 @@ import { store } from "@/store/store"
 
 
 axios.interceptors.request.use(
-    (config:InternalAxiosRequestConfig<any>)=>{
+    (config:InternalAxiosRequestConfig<unknown>)=>{
         config.baseURL="http://localhost:5000/"
         return config
     },(error)=>Promise.reject(error)
@@ -24,7 +24,11 @@ console.log(error);
             console.log(error.response);
             
             store.dispatch(logOut())
-            toastError(error.response.message || "Unauthorized access")
+            toastError(error.response.message || "Unauthorized access Login to continue")
+            setTimeout(()=>{
+                window.location.href="login"
+
+            },600)
         }
         return Promise.reject(error)
     },

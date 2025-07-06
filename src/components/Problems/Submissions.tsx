@@ -3,7 +3,7 @@
 import { getSubmissions } from '@/service/getSubmissions';
 import { toastError } from '@/utils/toast';
 import { useEffect, useState } from 'react';
-import { FaCheckCircle, FaExclamationCircle, FaCode, FaHistory, FaBook, FaArrowRight, FaArrowLeft, FaChevronLeft } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationCircle, FaCode, FaArrowRight, FaChevronLeft } from 'react-icons/fa';
   // Sample submission data
   const submissionw = [
     {

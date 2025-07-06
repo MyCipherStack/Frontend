@@ -35,12 +35,13 @@ const ProblemDescription = ({
 
           <div className="w-full md:w-4/12 bg-card-bg rounded-lg neon-border relative overflow-hidden left-pane">
             <div className="bg-black px-6 py-3 border-b border-neon-blue flex justify-between items-center">
-              <div className="text-neon-blue font-bold">Problem #1337</div>
+              <div className="text-neon-blue font-bold">Problem #{problemDetails.problemId}</div>
               <div className="flex gap-2">
-                <span className="px-2 py-1 bg-green-900 text-green-400 text-xs rounded">
+                <span className={`px-2 py-1  ${problemDetails.difficulty === "easy" ? "bg-green-800" : problemDetails.difficulty === "medium" ?  "bg-yellow-800"  : "bg-red-800"} text-white text-xs rounded`} >
+
                   Easy
                 </span>
-                <span className="text-gray-400 text-xs">Acceptance: 67.8%</span>
+                <span className="text-gray-400 text-xs mt-1">Acceptance:{problemDetails.acceptence}%</span>
               </div>
             </div>
             {/* Problem Content */}
@@ -101,7 +102,7 @@ const ProblemDescription = ({
               <div className="mb-6">
                 <button
                   onClick={() => setShowHint(!showHint)}
-                  className="flex items-center gap-2 text-neon-blue hover:text-neon-blue-light transition-colors"
+                  className="flex items-center  cursor-pointer gap-2 text-neon-blue hover:text-neon-blue-light transition-colors"
                 >
                   <FaLightbulb />
 
