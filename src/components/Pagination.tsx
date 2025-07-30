@@ -17,7 +17,8 @@ export const Pagination = ({
 }: PaginationProps) => {
   const getPageNumbers = () => {
     const pages = [];
-    for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+    let start=Math.max(1,currentPage-3)
+    for (let i =start; i <= Math.min(start+4,totalPages); i++) {
       pages.push(i);
     }
     return pages;
@@ -29,7 +30,7 @@ export const Pagination = ({
   return (
     <div className="p-4 flex justify-between items-center border-t border-gray-800">
       <div className="text-gray-400 text-sm">
-        Showing {start}-{end} of {totalData} Datas
+        Showing {start}-{end} of {totalData} Data
       </div>
 
       <div className="flex space-x-1">
@@ -54,11 +55,11 @@ export const Pagination = ({
           </button>
         ))}
 
-        {totalPages > 5 && (
+        {/* {totalPages > 5 && currentPage < totalPages-1 && (
           <button className="pagination-item flex items-center justify-center w-9 h-9 border border-opacity-20 border-neon-blue hover:border-neon-blue hover:text-neon-blue transition duration-300">
             <FaEllipsisH />
           </button>
-        )}
+        )} */}
 
         <button
           onClick={() => onPageChange(currentPage + 1)}

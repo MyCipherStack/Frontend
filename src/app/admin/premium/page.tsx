@@ -3,6 +3,7 @@ import AdminNavbar from "@/components/Admin/NavBar";
 import { adminAllPlans, creatPremiumService, editPremiumService } from "@/service/PremiumServices";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError, toastSuccess } from "@/utils/toast";
+import { AxiosError } from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
 import {
@@ -25,12 +26,6 @@ export interface Plan {
   activeUsers?: number;
   revenue?: number;
 }
-
-// interface FeatureToggle {
-//   name: string;
-//   enabled: boolean;
-//   description: string;
-// }
 
 
 
@@ -135,8 +130,12 @@ const PremiumPlanManagement = () => {
         toastSuccess("plan edited")
 
       }
-    } catch (error) {
-      toastError(error.response.data.message)
+    } catch (error: unknown) {
+
+      const err = error as AxiosError<{ message: string }>
+
+      toastError(err?.response?.data?.message || "unexpected error occured")
+
     }
 
 
@@ -174,7 +173,7 @@ const PremiumPlanManagement = () => {
         const plan = plans.find(plan => plan._id == planId)
         if (plan) {
           plan.status = "deleted"
-           await editPremiumService(plan)
+          await editPremiumService(plan)
           const afterDeletedPlans = plans.filter(plan => plan._id != planId)
           setPlans(afterDeletedPlans)
           closePlanModal();
@@ -267,7 +266,7 @@ const PremiumPlanManagement = () => {
                           )) : ""}
                       </div>
                       <div className="flex justify-between text-sm text-gray-400 border-t border-gray-800 pt-4">
-                        <div>
+                        {/* <div>
                           Active Users:{" "}
                           <span className="text-white">{plan.activeUsers}</span>
                         </div>
@@ -276,7 +275,7 @@ const PremiumPlanManagement = () => {
                           <span className="text-green-400">
                             ${plan.revenue?.toFixed(2)}
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ))}

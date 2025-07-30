@@ -1,7 +1,7 @@
-
+//RECHECK
 
     // Code template generators
-   export const generateCodeTemplates = (meta) => {
+   export const generateCodeTemplates = (meta:{parameters: {name: string, type: string}[], name: string, returnType: string}) => {
         const generateJS = () => {
           const params = meta.parameters?.map(p => p.name).join(', ');
           return `function ${meta.name}(${params}) {\n  // your code here\n}`;
@@ -13,7 +13,7 @@
         };
     
         const generateJava = () => {
-          const convertType = (type) => {
+          const convertType = (type:string) => {
             switch (type) {
               case 'number': return 'int';
               case 'string': return 'String';

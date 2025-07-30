@@ -13,7 +13,7 @@ export interface typeLeaderBoad {
 }
 
 const LeaderBoardSideBar = ({ challengeTime, ProblemCount, challengeName }: {
-  challengeTime: string,
+  challengeTime: number,
   ProblemCount:number, challengeName: string
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -57,7 +57,7 @@ const LeaderBoardSideBar = ({ challengeTime, ProblemCount, challengeName }: {
           <h2 className="text-xl font-bold text-[#0ef] mb-2">{challengeName}</h2>
           <div className="text-gray-400 text-sm space-y-2">
             <p className="flex items-center"><FaUsers className="mr-2" />{leaderBoard.length} Participants</p>
-            <p className="flex items-center"><FaClock className="mr-2" />{challengeTime / 60} Hours Challenge</p>
+            <p className="flex items-center"><FaClock className="mr-2" />{Number(challengeTime) / 60} Hours Challenge</p>
             <p className="flex items-center"><FaCode className="mr-2" />{ProblemCount} Problems</p>
           </div>
         </div>

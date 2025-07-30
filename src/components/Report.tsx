@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { createReport } from '@/service/reportServices';
 import { useSelector } from 'react-redux';
 import { toastSuccess } from '@/utils/toast';
+import { RootState } from '@/store/store';
 
 const ReportButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,17 +15,16 @@ const ReportButton = () => {
   const [users, setUsers] = useState([{ _id: "", image: "", name: "", email: "", role: "", status: "", createdAt: "" }])
   const [invitedUsers, setInvitedUsers] = useState<string[]>([]);
   const [description, setDescription] = useState<string>("");
-  const pathParams=usePathname()
-  
-  const user=useSelector((state)=>state.auth.user)
+  const pathParams = usePathname()
 
-  const handleSubmit = async(e: React.FormEvent) => {
+  const user = useSelector((state:RootState) => state.auth.user)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-   
-   
-  const response=  await createReport({reportType,description,pageInfo:pathParams,reportedUser:invitedUsers[0]})
-    toastSuccess(response.data)
-    alert(pathParams);
+
+
+    const response = await createReport({ reportType, description, pageInfo: pathParams, reportedUser: invitedUsers[0] })
+    toastSuccess("report submitted successully")
     setIsModalOpen(false);
     // setReportType('issue');
   };
@@ -58,14 +58,14 @@ const ReportButton = () => {
         setUsers(response.data.usersData.users)
 
       };
-if(isModalOpen){
-  fetchData();
-}
+      if (isModalOpen) {
+        fetchData();
+      }
     }, 500)
 
     return () => clearTimeout(timeOut)
 
-  }, [searchQuery,isModalOpen])
+  }, [searchQuery, isModalOpen])
 
 
 
@@ -179,7 +179,7 @@ if(isModalOpen){
                 name="description"
                 rows={4} value={description}
                 className="w-full p-2 bg-black neon-border text-neon- rounded"
-                placeholder="Describe the issue or user behavior..."  onChange={(e)=>setDescription(e.target.value)}
+                placeholder="Describe the issue or user behavior..." onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
             <button

@@ -1,23 +1,25 @@
 "use client";
 
 import { userProfileDataUpdate } from "@/service/postUpdateService";
-import { useState} from "react";
+import { Dispatch, SetStateAction, useState} from "react";
 import {FaTimes} from "react-icons/fa";
 import { PersonalTab } from "./Tabs/PersonalTab";
-import { AppearanceTab } from "./Tabs/AppearanceTab";
 import { SecurityTab } from "./Tabs/SecurityTab";
-import { PreferencesTab } from "./Tabs/PreferencesTab";
 import { confirmationAlert } from "@/utils/confirmationAlert";
 import { toastError } from "@/utils/toast";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/features/auth/userAuthSlice";
+import { UserFormData } from "@/types/users";
+import axios, { Axios, AxiosError } from "axios";
 
 
-export default function EditProfileModal({setIsLoading, isLoading,setFormData,formData,onClose }) {
+export default function EditProfileModal({ setIsLoading, isLoading,setFormData,formData,onClose }:{setIsLoading: Dispatch<SetStateAction<boolean>>, isLoading: boolean,setFormData: Dispatch<SetStateAction<UserFormData>>,formData:UserFormData,onClose: () => void}) {
   const [activeTab, setActiveTab] = useState("personal");
   const dispatch=useDispatch()
+  
 
-  const handleInputChange = ( section: keyof FormData,field: string,value: string | boolean ) => {
+  const handleInputChange = ( section: keyof UserFormData,field: string,value: string | boolean ) => {
+   
     setFormData((prev) => ({
       ...prev,
       [section]: {
@@ -33,6 +35,7 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
     try {
       const phoneRegex =/^(?:\+91|91|0)?[6-9]\d{9}$/;
       const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
+      const displayNameRegex = /^[a-zA-Z0-9_]{0,20}$/
       if( !phoneRegex.test(formData.personal.phone) && formData.personal.phone!==""){
       return  toastError("enter valid phone number")
     }
@@ -40,7 +43,10 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
         return  toastError("username must be minimum 3 character")
 
       }
-      
+    if(!displayNameRegex.test(formData.personal.displayName) ){
+      return  toastError("display name must be minimum 3 character")
+
+    }
       const confirm=await confirmationAlert("save the changes")
     if(confirm){
 
@@ -51,17 +57,17 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
         onClose();
       } 
       } catch (error) {
-        if(error.response.data.message.includes(" dup key: { name")){
+      if(axios.isAxiosError(error)){
+        if(error?.response?.data.message.includes(" dup key: { name")){
           toastError("This user name already exists")
-          console.log("This user name already exists");
         }else{
-          console.error("Error updating profile:",error.response.data.message);
           toastError("Error updating profile")
         }
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -147,15 +153,3 @@ export default function EditProfileModal({setIsLoading, isLoading,setFormData,fo
 }
 
 
-
-
-
-
-// Tab Components
-
-
-
-
-
-
-// Shared Components

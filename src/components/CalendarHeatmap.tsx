@@ -1,12 +1,10 @@
 
-
-
-import CalendarHeatmap from 'react-calendar-heatmap';
+import CalendarHeatmap, { TooltipDataAttrs } from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import { Tooltip } from 'react-tooltip'
 
 
-const CalendarHeatmapComponent = ({submissions}) => {
+const CalendarHeatmapComponent = ({submissions}:{submissions:{date:string,count:number}[]}) => {
     console.log("submssions",submissions)
     return (
 
@@ -42,7 +40,7 @@ const CalendarHeatmapComponent = ({submissions}) => {
                     return {
                         'data-tooltip-id': 'heatmap-tooltip',
                         'data-tooltip-content': `${date}: ${count} submissions`,
-                    };
+                    } as  { [key: string]: string }
                     // return { 'data-tip': `${date}: ${count} submissions` } as { [key: string]: string }
                 }}
 

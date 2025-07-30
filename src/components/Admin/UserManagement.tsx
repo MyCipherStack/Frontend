@@ -58,7 +58,17 @@ if(alert){
   
   const data= await usersDataUpdate({email,status})
   console.log(data);
-  setTrigger(!trigger)
+
+ let modifiedUsers=users.map(data=>{
+    if(data.email==email){
+      data.status=status
+    }
+    return data
+  })
+
+  setUsers(modifiedUsers)
+
+  // setTrigger(!trigger)
   }
     
   }
@@ -118,9 +128,7 @@ if(alert){
             <table className="w-full">
               <thead>
                 <tr>
-                  <th>
-                    <input type="checkbox" className="rounded bg-black border-gray-700 text-neon-blue focus:ring-neon-blue" />
-                  </th>
+             
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">User</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Email</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Role</th>
@@ -132,15 +140,13 @@ if(alert){
               <tbody>
                 {users.map((user,index) => (
                   <tr key={index} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue">
-                    <td className="py-3 px-4">
-                      <input type="checkbox" className="rounded bg-black border-gray-700 text-neon-blue focus:ring-neon-blue" />
-                    </td>
+                   
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <img src={user.image ? user.image : "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png" }alt="user" className="w-8 h-8 rounded-full" alt="User" />
+                        <img src={user.image ? user.image : "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png" }alt="user" className="w-8 h-8 rounded-full"/>
                         <div>
                           <div>{user?.name}</div>
-                          <div className="text-xs text-gray-400">#{user._id}</div>
+                          <div className="text-xs text-gray-400">{user._id}</div>
                         </div>
                       </div>
                     </td>

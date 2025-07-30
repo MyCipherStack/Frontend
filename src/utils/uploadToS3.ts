@@ -1,6 +1,6 @@
 
 
-import {PutObjectAclCommand, S3Client} from "@aws-sdk/client-s3"
+import {ObjectCannedACL, PutObjectAclCommand, S3Client} from "@aws-sdk/client-s3"
 
 
 
@@ -21,10 +21,11 @@ export const uploadToS3=async(file:File):Promise<string>=>{
 
     const params={
         Bucket:bucketName,
-        key:`avatars/${fileName}`,
+        Key:`avatars/${fileName}`,
         Body:file,
         ContentType:file.type,
-        ACL:"public-read",
+        ACL:"public-read" as ObjectCannedACL
+        
 
     }
 

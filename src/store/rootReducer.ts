@@ -1,12 +1,14 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/userAuthSlice';
 import adminAuthReducer from "../features/auth/adminAuthSlice"
-import timeRuducer from "../features/timerSlice"
+import timeReducer from "../features/timerSlice"
+import problemReducer from "../features/problemSlice"
 
 const rootReducer = combineReducers({
   auth: authReducer,
   adminAuth:adminAuthReducer,
-  timer:timeRuducer
+  timer:timeReducer,
+  userProblems:problemReducer
 });
 
 export default rootReducer;

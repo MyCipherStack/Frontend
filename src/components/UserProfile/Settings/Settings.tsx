@@ -13,7 +13,7 @@ import { AppearanceTab } from "../EditProfile/Tabs/AppearanceTab";
 import { PreferencesTab } from "../EditProfile/Tabs/PreferencesTab";
 
 
-export default function SettingsModal({ onClose }) {
+export default function SettingsModal({ onClose }:{onClose:()=>void}) {
 
 
 
@@ -187,7 +187,7 @@ export default function SettingsModal({ onClose }) {
         onClose();
       }
     } catch (error) {
-      console.error("Error updating profile:", error.response.data.message);
+
       toastError("Error updating profile")
 
     } finally {

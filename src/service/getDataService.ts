@@ -71,6 +71,20 @@ export const getAllUsersforUser=async(params:string)=>{
 
 
 
+export const getAllTransactions=async(params:string)=>{
+    try{
+
+        const url=`/api/admin/transations?${params}`
+        const response=await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+
+
+
 export const getAdminDashBoardData=async(params:string)=>{
     try{
 

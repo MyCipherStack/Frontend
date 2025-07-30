@@ -14,3 +14,17 @@ export const getSubmissions=async(problemId:string)=>{
         throw error
     }
 }
+
+export const recentSubmissions=async()=>{
+    try{
+        console.log("get recentSubmissions");
+        
+        const url=`/api/user/recentSubmission`
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+    }
+    catch(error){
+        throw error
+    }
+}
+

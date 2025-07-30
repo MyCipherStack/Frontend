@@ -15,6 +15,7 @@ import { loginSchema, signSchema } from "@/validations/authSchemas";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { AxiosError } from "axios";
 import socket from "@/utils/socket";
+import { RootState } from "@/store/store";
 
 
 export default function AuthPage() {
@@ -28,7 +29,7 @@ export default function AuthPage() {
   const mode = searchParams.get("mode")
 
 
-  const user = useSelector((state) => state.auth.user)
+  const user = useSelector((state:RootState) => state.auth.user)
 
   useEffect(() => {
     if (mode === "signup") {
@@ -68,7 +69,7 @@ export default function AuthPage() {
   // Using watch() to get the form values.
   const formData = watch()
 
-  const VerifyOtp = useCallback(async () => {
+  const verifyOtp = useCallback(async () => {
     try {
       console.log(otp, "code");
 
@@ -164,8 +165,8 @@ export default function AuthPage() {
 
       <div className="min-h-screen text-gray-100 flex flex-col relative">
         {/* Background Effects */}
-        <div className="fixed inset-0 bg-noise-pattern pointer-events-none z-10"></div>
-        <div className="scan-line"></div>
+        <div className="fixed inset-0  pointer-events-none z-10"></div>
+        <div className=""></div>
 
         {/* Main Content with Adjusted Spacing */}
         <main className="container mx-auto px-4 pt-20 pb-16 flex-grow mt-2">
@@ -260,7 +261,7 @@ export default function AuthPage() {
                       }
                     </div>
 
-                    <button onClick={handleSubmit(submitForm)} disabled={isSubmitting}
+                    <button onClick={handleSubmit((e)=>submitForm(e))} disabled={isSubmitting}
                       className={`w-full py-2 text-sm bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 uppercase tracking-wider ${isSubmitting && 'opacity-50 cursor-not-allowed'} `}
                     >
                       {isSubmitting ? "Please wait..." : (isLogin ? "Login" : "Create Account")}
@@ -313,7 +314,7 @@ export default function AuthPage() {
             <div className=" flex flex-col flex-grow  items-center justify-center px-4 py-12">
               <div className=" rounded-lg border neon-border  w-96 max-w-md overflow-hidden relative p-6">
 
-                <EnterOtp VerifyOtp={VerifyOtp} setOTP={setOtp} email={formData.email} />
+                <EnterOtp verifyOtp={verifyOtp} setOTP={setOtp} email={formData.email} />
 
 
               </div>

@@ -1,63 +1,64 @@
 'use client';
 import Header from '@/components/Header';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useReducer } from 'react';
 import "../globals.css"
 import EnterOtp from '@/components/PasswordComponent.tsx/EnteOtp';
 import CreateNewPassword from '@/components/PasswordComponent.tsx/CreateNewPasswor';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { forgotPasswordOtp } from '@/service/passwordServices';
 import { forgotPasswordVerify } from '@/service/forgotPasswordVerify';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
+
 export default function PasswordResetPage() {
   // State management
   const [currentStep, setCurrentStep] = useState(1);
-  const [email,setIsEmail]=useState("")
-
+  const [email, setIsEmail] = useState("")
+  const router=useRouter()
 
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 
 
-  const sentOtpHandler=async()=>{
-    try{        
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          const  validEmail=emailRegex.test(email)
-          if(!validEmail){
-            toastError("enter valid email")
-              return
-          }
-        
-            const response=await forgotPasswordOtp({email:email})
+  const sentOtpHandler = async () => {
+    try {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const validEmail = emailRegex.test(email)
+      if (!validEmail) {
+        toastError("enter valid email")
+        return
+      }
 
-              toastSuccess(response.data.message)
-              setCurrentStep(2)
-          }catch(error:unknown){
-            console.log(error);
+      const response = await forgotPasswordOtp({ email: email })
 
-            toastError(error.response.data.message)
-          }
-
+      toastSuccess(response.data.message)
+      setCurrentStep(2)
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toastError(error?.response?.data.message)
+      }
+    }
   }
 
-  
 
-    const VerifyOtp=useCallback( async()=>{
-      try{
-        // const url1="/api/user/forgotPasswordVerify"
 
-        const response= await forgotPasswordVerify({otp,email:email})
-          setCurrentStep(3)
+  const verifyOtp = useCallback(async () => {
+    try {
 
-          toastSuccess(response.data.message)
-     
-        }
-        catch(error:unknown){
-          const axiosError=error as AxiosError<{message?:string}>
-          const errorMessage = axiosError.response?.data?.message ?? 'Something went wrong';
-          toastError(errorMessage)
+      const response = await forgotPasswordVerify({ otp, email: email })
       
-      }
-          
-    },[otp,email])
+      setCurrentStep(3)
+
+      toastSuccess(response.data.message)
+
+    }
+    catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message?: string }>
+      const errorMessage = axiosError.response?.data?.message ?? 'Something went wrong';
+      toastError(errorMessage)
+
+    }
+
+  }, [otp, email])
 
 
   return (
@@ -109,7 +110,7 @@ export default function PasswordResetPage() {
                   <div className="mb-6">
                     <label className="block text-gray-400 mb-2">Email Address</label>
                     <input required
-                      type="email" onChange={(e)=>setIsEmail(e.target.value)}
+                      type="email" onChange={(e) => setIsEmail(e.target.value)}
                       className="w-full bg-black border border-gray-800 text-white px-4 py-3 rounded focus:border-[#00eeff] focus:outline-none"
                       placeholder="your.email@example.com"
                     />
@@ -117,13 +118,13 @@ export default function PasswordResetPage() {
 
 
                   <button
-                    onClick={() =>sentOtpHandler()
+                    onClick={() => sentOtpHandler()
                     }
                     className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300">
                     Send Verification Code
                   </button>
 
-                  <div className="text-center mt-6">
+                  <div onClick={()=>router.push("/login")}  className="text-center mt-6">
                     <button className="neon-text hover:underline">Back to Login</button>
                   </div>
                 </div>
@@ -131,9 +132,9 @@ export default function PasswordResetPage() {
 
 
 
-              {currentStep === 2 && (<EnterOtp VerifyOtp={VerifyOtp} setOTP={setOtp} email={email} />)}
+              {currentStep === 2 && (<EnterOtp verifyOtp={verifyOtp} setOTP={setOtp} email={email} />)}
 
-              {currentStep === 3 && (<CreateNewPassword setCurrentStep={setCurrentStep}/>)}
+              {currentStep === 3 && (<CreateNewPassword setCurrentStep={setCurrentStep} />)}
 
 
             </div>

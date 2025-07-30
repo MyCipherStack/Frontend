@@ -1,16 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { adminLoginSuccess } from "@/features/auth/adminAuthSlice";
 import { loginSchema } from "@/validations/authSchemas";
 import { adminLogin } from "@/service/authService";
 import "@/app/Login/page.css";
 import { toastSuccess } from "@/utils/toast";
 import { AxiosError } from "axios";
+import { RootState } from "@/store/store";
 
 type LoginType = {
   username: string;
@@ -33,23 +34,35 @@ export default function AdminLoginPage() {
 
   // const formData = watch();
 
+  const admin = useSelector((state: RootState) => state.adminAuth.admin)
+
   const submitForm = async (data: LoginType) => {
     try {
       setIsSubmitting(true);
-      const response = await adminLogin( {
+      const response = await adminLogin({
         name: data.username,
         password: data.password,
       });
 
       toastSuccess("Admin login successful")
 
-      console.log(response,"loged data");
-      
+      console.log(response, "loged dataaaaa");
       dispatch(adminLoginSuccess(response.data.admin));
-      router.push("/admin/dashboard");
-    } catch (error:unknown) {
+
+      try {
+        router.push("/admin/dashboard");
+        console.log("try worked");
+        
+      } catch (err) {
+        console.error("Navigation failed:", err);
+      }
+
+
+
+
+    } catch (error: unknown) {
       console.error(error)
-      const axiosError = error as AxiosError<{message:string}>;
+      const axiosError = error as AxiosError<{ message: string }>;
       toast.error(
         axiosError.response?.data?.message || "Invalid admin credentials",
         {
@@ -68,11 +81,25 @@ export default function AdminLoginPage() {
     }
   };
 
+
+
+
+  useEffect(() => {
+
+    if (admin) {
+      console.log("token");
+
+      router.replace("/admin/dashboard")
+
+    }
+    console.log("notoken");
+  }, [admin,router])
+
   return (
     <div className="min-h-screen text-gray-100 flex flex-col relative">
       {/* Background Effects */}
       <div className="fixed inset-0 bg-noise-pattern pointer-events-none z-10"></div>
-      <div className="scan-line"></div>
+      <div className="  "></div>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-20 pb-16 flex-grow mt-2">
@@ -133,9 +160,8 @@ export default function AdminLoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full py-2 text-sm bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 uppercase tracking-wider ${
-                    isSubmitting && "opacity-50 cursor-not-allowed"
-                  }`}
+                  className={`w-full py-2 text-sm bg-transparent border border-[#0ef] text-[#0ef] rounded-md hover:bg-[#0ef] hover:text-black transition duration-300 uppercase tracking-wider ${isSubmitting && "opacity-50 cursor-not-allowed"
+                    }`}
                 >
                   {isSubmitting ? "Authenticating..." : "Login"}
                 </button>

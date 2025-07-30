@@ -16,9 +16,9 @@ import { joinPairProgramming } from '@/service/challengeServices';
 import { runProblemService, submitProblemService } from '@/service/problemService';
 import socket from '@/utils/socket';
 import { toastError } from '@/utils/toast';
-import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { FaHistory, FaBook } from 'react-icons/fa';
+import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { FaHistory, FaBook, FaSignOutAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 
@@ -52,9 +52,12 @@ const ProblemPage = () => {
   const params: { name: string, code: string } = useParams()
   const joinCode = decodeURIComponent(params.code)
 
+  const [pairUpdate, setpairUpdate] = useState(false)
 
 
+  const pairUpdateRef = useRef(0);
 
+  const router=useRouter()
 
   useEffect(() => {
     const getProblemData = async () => {
@@ -65,12 +68,13 @@ const ProblemPage = () => {
         console.log(response)
 
         const challenge = response.data.challengeData
+        console.log(challenge._id, "challenge")
         setChallengeData(challenge)
-        socket.emit("join-challenge", challenge._id, userData._id)
-        
-        // if(challenge.data.challengeData.navigator.name){
+        socket.emit("join-pairProgramming", { roomId: challenge._id, userName: userData.name })
 
-        //   setNavigatorName(challenge.data.challengeData.navigator.name)
+        // if(challenge.navigator.name){
+
+        //   setNavigatorName(challenge.navigator.name)
 
         // }
         const problem = response.data.challengeData.problems
@@ -79,11 +83,64 @@ const ProblemPage = () => {
         setCode(problem[0].starterCode['javascript'])
         const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
         setTestCases(testCase)
+
+
+
+
+
+        const handlePairUpdate = ({ userName }) => {
+          console.log("update name:", userName);
+          setNavigatorName(userName);
+
+          if (pairUpdateRef.current <= 2) {
+            console.log("emit join from update block");
+            pairUpdateRef.current += 1;
+
+            setTimeout(() => {
+
+              socket.emit("join-pairProgramming", {
+                roomId: challenge._id, // <-- challengeData from state
+                userName: userData.name,
+              });
+            }, 100)
+          }
+
+          setTimeout(() => {
+            pairUpdateRef.current = 0
+          }, 5000)
+        }
+
+
+
+
+
+
+        socket.on("pairProgram-update", handlePairUpdate)
+
+
+        return () => {
+          socket.off("pairProgram-update", handlePairUpdate)
+
+        }
+
+
+
+
       } catch (error: unknown) {
-        toastError(error.response.data.message)
+        // toastError(error.response.data.message ?? "error in pairprogramming")
+        toastError("error in pairprogramming")
       }
 
+
+
+
+
+
+
+
+
     }
+
     getProblemData()
 
     dispatch(startTimer())
@@ -194,7 +251,7 @@ const ProblemPage = () => {
           >
             <FaHistory className="inline " /> SUBMISSIONS
           </span>
-          <span
+          {/* <span
             className={`font-light cursor-pointer pb-1 ${activeTab === 'solution'
               ? 'text-neon-blue border-b-2 border-neon-blAAue'
               : 'text-gray-400 hover:text-neon-blue'
@@ -202,9 +259,12 @@ const ProblemPage = () => {
             onClick={() => setActiveTab('solution')}
           >
             <FaBook className=' inline' /> SOLUTIONS
-          </span>
+          </span> */}
 
           <Timer timerControler={true} />
+          <span onClick={()=>router.back()} className=" inline px-4 py-2 bg-transparent border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-black transition duration-300">
+            <span className='flex items-center'> <FaSignOutAlt /> Exit Session</span>
+          </span>
         </div>
 
 

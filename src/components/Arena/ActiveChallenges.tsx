@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Pagination } from "../Pagination";
 import { FaSearch } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { challenge } from "@/types/challenge";
 
 
 
@@ -13,8 +14,9 @@ import { useRouter } from "next/navigation";
 
 export const ActiveChallenges = ()=>{
 
-  const [privateChallenges,setPrivateChallenges]=useState([])
-  const [publicChallenges,setPublicChallenges]=useState([])
+  
+  const [privateChallenges,setPrivateChallenges]=useState<challenge[]>([])
+  const [publicChallenges,setPublicChallenges]=useState<challenge[]>([])
 
 
 
@@ -79,8 +81,11 @@ const router=useRouter()
             <span className="px-3 py-1 bg-green-900 text-green-400 rounded-full text-sm">{challenge.status}</span>
           </div>
           <div className="flex justify-between text-sm text-gray-400 mb-4">
-            <span><i className="fas fa-users mr-2"></i>8/12 participants</span>
-            <span><i className="fas fa-clock mr-2"></i>1:30:00 remaining</span>
+
+
+             <span><i className="fas fa-users mr-2"></i>created:{new Date(challenge.createdAt).toLocaleTimeString()}</span>
+
+            {/* <span><i className="fas fa-clock mr-2"></i>1:30:00 remaining</span> */}
           </div>
              <div className="flex space-x-2">
             <input type="text" value={challenge.joinCode} className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-sm" readOnly />
@@ -124,8 +129,7 @@ const router=useRouter()
             <span className="px-3 py-1 bg-yellow-900 text-yellow-400 rounded-full text-sm">{challenge.status}</span>
           </div>
           <div className="flex justify-between text-sm text-gray-400 mb-4">
-            <span><i className="fas fa-users mr-2"></i>4/6 participants</span>
-            <span><i className="fas fa-lock mr-2"></i>Invite Only</span>
+            <span><i className="fas fa-users mr-2"></i>created:{new Date(challenge.createdAt).toLocaleTimeString()}</span>
           </div>
          <button onClick={()=>joinChallenge(challenge.joinCode)} className=" w-full bg-neon-blue text-black  py-2 rounded font-bold bg-color transition duration-300">
             Join Challenge

@@ -2,6 +2,7 @@
 
 :root {
     --neon-blue: #0ef;
+    --danger: rgb(255, 119, 0);
     --dark-bg: #121111;
     --darker-bg: #000000;
     --card-bg: #111111;
@@ -123,6 +124,10 @@
 .neon-border {
   box-shadow: 0 0 8px var(--neon-blue);
   border: 1px solid var(--neon-blue);
+}
+.neon-border-danger{
+  box-shadow: 0 0 8px var(--danger);
+  border: 1px solid var(--danger);
 }
 
 .neon-text {

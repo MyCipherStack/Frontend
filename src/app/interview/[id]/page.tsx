@@ -2,13 +2,16 @@
 
 import socket from '@/utils/socket';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FaMicrophone, FaVideo, FaDesktop, FaRecordVinyl, FaCode, FaPaperPlane, FaComments, FaLock } from 'react-icons/fa';
+import { FaMicrophone, FaVideo, FaDesktop, FaPaperPlane, FaComments, FaLock } from 'react-icons/fa';
 import React from 'react';
 import Header from '@/components/Header';
 import { useParams, useRouter } from 'next/navigation';
 import { joinInteview } from '@/service/interviewService';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { MdClose } from 'react-icons/md';
+import { FaPhoneSlash } from 'react-icons/fa6';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 
 
@@ -18,18 +21,77 @@ const InterviewViewPage = () => {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const screenShareRef = useRef<HTMLVideoElement>(null);
-
   // State for media controls
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [timer, setTimer] = useState('00:00:00');
   const [message, setMessage] = useState('');
+  const [isLocked, setIsLocked] = useState(true);
+  const [timeRemaining, setTimeRemaining] = useState('');
+  const [scheduledTime, setScheduledTime] = useState<Date | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [isHost, setIsHost] = useState(false)
+  const [isScreenSharing, setIsScreenSharing] = useState(false)
 
-  const [messages, setMessages] = useState([
-    { sender: 'System', text: 'Interview session started' },
-    { sender: 'Interviewer', text: 'Hello! Welcome to your interview. Are you ready to begin?' }
+
+const [oppName,setOppName]=useState("")
+
+  interface MessageType {
+    text: string;
+    userName: string;
+    time: string 
+  }
+
+  const [messages, setMessages] = useState<MessageType[]>([
+    { text: 'Interview session started', userName: "you", time: new Date() },
+
   ]);
+
+
+
+  const user = useSelector((state:RootState) => state.auth.user)
+
+
+  // Chat functions
+  const sendMessage = () => {
+    console.log("sendmessage");
+    
+    if (message.trim()) {
+
+      setMessages([...messages, { userName: 'you', text: message, time: new Date().toLocaleDateString([], { hour: '2-digit', minute: '2-digit' }) }]);
+      setMessage('')
+      socket.emit("iSend-message", { roomId, userName: user?.name, text: message, time: new Date().toLocaleDateString([], { hour: "2-digit", minute: "2-digit" }) })
+
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
+  let run = true
+  useEffect(() => {
+
+    if (run) {
+      run = false
+      const handler = async (response: { userName: string, text: string, time: string }) => {
+
+        console.log(response, "message recived");
+
+        setMessages((prevState) => [...prevState, { ...response }])
+        console.log(response, "get message Data");
+      }
+
+
+      socket.on("receive-message", handler)
+
+      return () => { socket.off('signal') }
+    }
+  }, [])
+
 
   // Media stream references
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -38,27 +100,21 @@ const InterviewViewPage = () => {
   const startTimeRef = useRef<number | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
   const incomingTrackTypes = useRef<string[]>([]);
-  
-  
+
+
   const peerConnectionRef = useRef<RTCPeerConnection>(null)
   const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
 
 
 
-  const [isLocked, setIsLocked] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState('');
-  const [scheduledTime, setScheduledTime] = useState<Date | null>(null);
-  const [roomId, setRoomId] = useState<string | null>(null);
-  const [isHost,setIsHost]=useState(false)
-  const [isScreenSharing,setIsScreenSharing]=useState(false)
-  
 
-  
-  const params=useParams()
-  const id=decodeURIComponent(params.id)
 
-  const route=useRouter()
-  
+
+  const params = useParams()
+  const id = decodeURIComponent(params.id) 
+
+  const route = useRouter()
+
   useEffect(() => {
     if (!scheduledTime) return;
 
@@ -85,97 +141,98 @@ const InterviewViewPage = () => {
 
 
   useEffect(() => {
-    const handleTrackType = ({ type }) => {
+    const handleTrackType = ({ type }:{type:string}) => {
       incomingTrackTypes.current.push(type); // correctly tracks 'camera' or 'screen'
     };
-  
+
     socket.on("track-type", handleTrackType);
-  
+
     return () => {
       socket.off("track-type", handleTrackType); // cleanup must match the same function
     };
   }, []);
-  
-let alreadyInitialized=useRef(false)
 
-socket.on("joined",async({roomId})=>{
-  alreadyInitialized.current=false
-  console.log("ishost",isHost);
-  
-  if(isHost){
-    initializeMedia(roomId,true)
+  let alreadyInitialized = useRef(false)
 
-  }
-})
+  socket.on("joined", async ({ roomId,oppName }) => {
+    alreadyInitialized.current = false
+    setOppName(oppName)
+    console.log("ishost", isHost,oppName);
 
+    if (isHost) {
+      initializeMedia(roomId, true,user?.name!)
 
-
+    }
+  })
 
 
 
 
 
 
-const handleOffer =useCallback(async (data: RTCSessionDescriptionInit,roomId:string) => {
-  console.log("guest received offer", data);
-  console.log("guest received offer roomid,",roomId);
-
-  const pc = peerConnectionRef.current;
-
-  if (!pc) {
-    console.warn("Peer connection not ready");
-    return;
-  }
-
-  await pc.setRemoteDescription(new RTCSessionDescription(data));
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-  console.log("📡 Guest sending answer...");
-  socket.emit("answer", { roomId, data: answer });
-
-  // 🔥 Flush queued candidates
-  for (const c of pendingCandidatesRef.current) {
-    console.log("🌊 Flushing queued candidate", c);
-    await pc.addIceCandidate(c);
-  }
-  pendingCandidatesRef.current = [];
-},[])
 
 
-const handlerAnswer=useCallback(async (data: RTCSessionDescriptionInit) => {
 
-  if ( peerConnectionRef.current?.signalingState === "have-local-offer") {
+  const handleOffer = useCallback(async (data: RTCSessionDescriptionInit, roomId: string) => {
+    console.log("guest received offer", data);
+    console.log("guest received offer roomid,", roomId);
+
+    const pc = peerConnectionRef.current;
+
+    if (!pc) {
+      console.warn("Peer connection not ready");
+      return;
+    }
+
+    await pc.setRemoteDescription(new RTCSessionDescription(data));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    console.log("📡 Guest sending answer...");
+    socket.emit("answer", { roomId, data: answer });
+
+    // 🔥 Flush queued candidates
+    for (const c of pendingCandidatesRef.current) {
+      console.log("🌊 Flushing queued candidate", c);
+      await pc.addIceCandidate(c);
+    }
+    pendingCandidatesRef.current = [];
+  }, [])
+
+
+  const handlerAnswer = useCallback(async (data: RTCSessionDescriptionInit) => {
+
+    if (peerConnectionRef.current?.signalingState === "have-local-offer") {
       await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data));  //  this must happen only ONCE
     } else {
       console.warn("Unexpected signaling state:", peerConnectionRef.current?.signalingState);
     }
-  
-},[])
+
+  }, [])
 
 
 
 
 
-const handelCandidate =useCallback( async (candidate: RTCIceCandidateInit) => {
-const pc = peerConnectionRef.current;
-console.log(pc,"handlecandidate");
+  const handelCandidate = useCallback(async (candidate: RTCIceCandidateInit) => {
+    const pc = peerConnectionRef.current;
+    console.log(pc, "handlecandidate");
 
-if (!pc) {
-  console.warn("PeerConnection not ready yet");
-  return;
-}
+    if (!pc) {
+      console.warn("PeerConnection not ready yet");
+      return;
+    }
 
-if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
-  console.log("Remote description not set yet, queueing candidate");
-  pendingCandidatesRef.current.push(candidate);
-} else {
-  try {
-    await pc.addIceCandidate(candidate);
-  } catch (err) {
-    console.error("Error adding ICE candidate:", err);
-  }
-}
-},[])
+    if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
+      console.log("Remote description not set yet, queueing candidate");
+      pendingCandidatesRef.current.push(candidate);
+    } else {
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        console.error("Error adding ICE candidate:", err);
+      }
+    }
+  }, [])
 
 
 
@@ -189,47 +246,47 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
 
 
   useEffect(() => {
-    
 
-    let isInitiator=false
-    const join=async()=>{
-      try{
-            const response=await joinInteview(id)
-            // console.log(response);
-            
-            if(response?.data.status){
-                const startDate=response.data.interview.date
-                const startTime=response.data.interview.time
-                
-                const interviewDateTime = new Date(`${startDate} ${startTime}`);
-                setScheduledTime(interviewDateTime);
-                const now = new Date();
-                console.log(startDate,startTime,interviewDateTime,now);
-                setIsLocked(now < interviewDateTime);
-                setRoomId(response.data.interview.id)
-                
-                isInitiator = response.data.interview.isHost 
-                // console.log( response.data.interview.isHost);
-                setIsHost(isInitiator)
-                initializeMedia(response.data.interview.id, isInitiator);
-            }else{
-                 toastError("invalid interview or something wentwrong")
-                route.back()
-            }
 
-        }catch(error){
-            toastError("invalid interview or something wentwrong")
-            route.back()
+    let isInitiator = false
+    const join = async () => {
+      try {
+        const response = await joinInteview(id)
+        // console.log(response);
+
+        if (response?.data.status) {
+          const startDate = response.data.interview.date
+          const startTime = response.data.interview.time
+
+          const interviewDateTime = new Date(`${startDate} ${startTime}`);
+          setScheduledTime(interviewDateTime);
+          const now = new Date();
+          console.log(startDate, startTime, interviewDateTime, now);
+          setIsLocked(now < interviewDateTime);
+          setRoomId(response.data.interview.id)
+
+          isInitiator = response.data.interview.isHost
+          // console.log( response.data.interview.isHost);
+          setIsHost(isInitiator)
+          initializeMedia(response.data.interview.id, isInitiator);
+        } else {
+          toastError("invalid interview or something wentwrong")
+          route.back()
         }
+
+      } catch (error) {
+        toastError("invalid interview or something wentwrong")
+        route.back()
       }
-      if(!alreadyInitialized.current){
-        alreadyInitialized.current = true;
+    }
+    if (!alreadyInitialized.current) {
+      alreadyInitialized.current = true;
       join()
     }
 
 
 
- 
+
 
 
 
@@ -245,30 +302,30 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
         clearInterval(timerIntervalRef.current);
       }
 
-      socket.off("offer",handleOffer )
+      socket.off("offer", handleOffer)
 
 
-      socket.off("answer",handlerAnswer )
-      
+      socket.off("answer", handlerAnswer)
 
-      socket.off("candidate",handelCandidate )
+
+      socket.off("candidate", handelCandidate)
 
       peerConnectionRef.current?.close();
 
     };
-  }, [handleOffer,handlerAnswer,handelCandidate]);
+  }, [handleOffer, handlerAnswer, handelCandidate]);
 
 
 
-  
 
 
-  const initializeMedia = async (roomId,isInitiator) => {
+
+  const initializeMedia = async (roomId: string, isInitiator: boolean,userName:string) => {
     try {
-      
+
       console.log("interiview joined emit");
-      
-      socket.emit("join-interview",{roomId})
+
+      socket.emit("join-interview", { roomId,userName })
 
 
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -291,15 +348,15 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
         }
       };
 
-      
+
 
       stream.getTracks().forEach(track => pc.addTrack(track, stream))
 
       stream.getVideoTracks().forEach(() => {
         socket.emit("track-type", { roomId, kind: "video", type: "camera" });
       });
-      
-    
+
+
       // toggleScreenShare()
 
       // STEP 1
@@ -307,20 +364,20 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
       // WANT TO CREAT A INITIATOR FOR AVOID colliction to handshake
       if (isInitiator) {
         console.log("iam the host so i can offer the description");
-        
+
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         socket.emit("offer", { roomId, data: offer });
       }
 
 
-      socket.on("offer",(data)=>handleOffer(data,roomId) )
+      socket.on("offer", (data) => handleOffer(data, roomId))
 
 
-      socket.on("answer",(data)=>handlerAnswer(data,roomId) )
-      
+      socket.on("answer", (data) => handlerAnswer(data, roomId))
 
-      socket.on("candidate",(data)=>handelCandidate(data,roomId) )
+
+      socket.on("candidate", (data) => handelCandidate(data, roomId))
 
 
 
@@ -331,71 +388,72 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
       /// Localy show same screen 
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
-        
+
       }
 
 
-      
+
       pc.onicecandidate = (event) => {
 
-          if (event.candidate) {
-            socket.emit("candidate",{roomId,data: event.candidate})
+        if (event.candidate) {
+          socket.emit("candidate", { roomId, data: event.candidate })
+        }
+      }
+
+
+
+      pc.ontrack = (event) => {
+        console.log(event, "event");
+        console.log(event.streams);
+
+        const stream = event.streams[0]
+        const track = event.track
+
+
+
+        if (track.kind === "video") {
+          const label = track.label.toLowerCase()
+          console.log(label, "label");
+          const type = incomingTrackTypes.current.shift()
+
+
+
+          if (type === "screen") {
+            toastSuccess("screen")
+            toastSuccess("screen")
+            console.log("screen");
+
+            if (screenShareRef.current) {
+              screenShareRef.current.srcObject = stream
+              const screen = screenShareRef.current
+              setTimeout(() => {
+                screen.play().catch((e) => {
+                  console.log("Err playin screen", e)
+                })
+                toastError("loading screen.....")
+              }, 500)
+
+            }
+          } else {
+            // toastSuccess("camera")
+
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = stream
+              setTimeout(() => {
+                remoteVideoRef.current?.play().catch((e) =>
+                  console.error("Error playing remote video:", e)
+                );
+              }, 500);
+            }
           }
         }
 
 
-
-        pc.ontrack = (event) => {
-            console.log(event,"event");
-            console.log(event.streams);
-
-            const stream=event.streams[0]
-            const track=event.track
-
-            
-
-            if(track.kind==="video"){
-              const label=track.label.toLowerCase()
-              console.log(label,"label");
-              const type=incomingTrackTypes.current.shift()
-              
-
-          
-              if(type==="screen"){
-                toastSuccess("screen")
-                toastSuccess("screen")
-                console.log("screen");
-                
-                if(screenShareRef.current){
-                  screenShareRef.current.srcObject=stream
-                  const screen=  screenShareRef.current
-                  setTimeout(()=>{
-                    screen.play().catch((e)=>{
-                      console.log("Err playin screen",e)})
-                      toastError("loading screen.....")
-                    },500)
-
-                  }
-              }else{
-              toastSuccess("camera")
-
-                if(remoteVideoRef.current){
-                  remoteVideoRef.current.srcObject=stream
-                  setTimeout(() => {
-                    remoteVideoRef.current?.play().catch((e) =>
-                      console.error("Error playing remote video:", e)
-                    );
-                  }, 500);
-                }
-                }
-              }
-
-
-            }
+      }
 
 
 
-            
+
 
 
 
@@ -439,50 +497,50 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
       return;
     }
   }
-    const toggleScreenShare=async()=>{
-      console.log("open screenshare");
-      
-      const pc=peerConnectionRef.current
-      // const localStream=localStreamRef.current
-      
-      // if(!pc || !localStream) return
-      
-      if(!isScreenSharing){
-        try{
-          const screenStream=await navigator.mediaDevices.getDisplayMedia({video:true})
-          
-          const screenTrack=screenStream.getVideoTracks()[0]
-          
-          pc.addTrack(screenTrack,screenStream)
-          
-          socket.emit("track-type", { roomId, kind: "video", type: "screen" });
-          if(screenShareRef.current){
-            // screenShareRef.current.srcObject=screenStream
-          }
+  const toggleScreenShare = async () => {
+    console.log("open screenshare");
 
-          // screenShareRef.current=screenStream
+    const pc = peerConnectionRef.current
+    // const localStream=localStreamRef.current
 
-          // socket.emit("track-type", { roomId, kind: "video", type: "screen" });
-          setIsScreenSharing(true)
+    // if(!pc || !localStream) return
 
-        
-          
-          
-          screenTrack.onended=()=>{
-            screenShareRef.current!.srcObject = null;
-            // stopScreenShare()
-          }
-        }catch(error){
-          console.log(error);
-          
-          toastError("error in sharing screen try again")
+    if (!isScreenSharing) {
+      try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true })
+
+        const screenTrack = screenStream.getVideoTracks()[0]
+
+        pc.addTrack(screenTrack, screenStream)
+
+        socket.emit("track-type", { roomId, kind: "video", type: "screen" });
+        if (screenShareRef.current) {
+          // screenShareRef.current.srcObject=screenStream
         }
-      }
 
+        // screenShareRef.current=screenStream
+
+        // socket.emit("track-type", { roomId, kind: "video", type: "screen" });
+        setIsScreenSharing(true)
+
+
+
+
+        screenTrack.onended = () => {
+          screenShareRef.current!.srcObject = null;
+          // stopScreenShare()
+        }
+      } catch (error) {
+        console.log(error);
+
+        toastError("error in sharing screen try again")
+      }
     }
 
+  }
 
-   
+
+
 
   // // Timer functions
   // const startTimer = () => {
@@ -509,24 +567,11 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
     }
   };
 
-  // Chat functions
-  const sendMessage = () => {
-    if (message.trim()) {
-      setMessages([...messages, { sender: 'You', text: message }]);
-      setMessage('');
-      // Here you would typically send the message to the other participant
-    }
-  };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black text-gray-200 font-mono">
-      <Header/>
+      <Header />
       {isLocked && scheduledTime && <LockedModal timeRemaining={timeRemaining} setIsLocked={setIsLocked} scheduledTime={scheduledTime} route={route} />}
       {/* Main Content */}
       <div className="container mx-auto pt-16 px-4 flex h-[calc(100vh-80px)]">
@@ -540,9 +585,9 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
                 ref={remoteVideoRef}
                 className="w-full h-full  rounded-lg"
                 autoPlay
-                
+
               />
-              <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">Interviewer</div>
+              <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">Interviewer{oppName}</div>
             </div>
 
             {/* Participant Video */}
@@ -595,13 +640,11 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
               <FaDesktop className="text-xl" />
             </button>
 
-            <button className="p-3 rounded-full border border-[#00f3ff] text-[#00f3ff] hover:bg-[#00f3ff] hover:bg-opacity-20 transition">
-              <FaRecordVinyl className="text-xl" />
+            <button onClick={()=>route.back()}
+             className="p-3 rounded-full border border-[#00f3ff] text-[#00f3ff] hover:bg-[#00f3ff] hover:bg-opacity-20 transition">
+              <FaPhoneSlash className="text-xl" />
             </button>
 
-            <button className="p-3 rounded-full border border-[#00f3ff] text-[#00f3ff] hover:bg-[#00f3ff] hover:bg-opacity-20 transition">
-              <FaCode className="text-xl" />
-            </button>
           </div>
         </div>
 
@@ -615,7 +658,7 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-grow overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#00f3ff] scrollbar-track-gray-800">
+          {/* <div className="flex-grow overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-[#00f3ff] scrollbar-track-gray-800">
             {messages.map((msg, index) => (
               <div key={index} className="flex flex-col space-y-1">
                 <span className="text-xs text-gray-400">{msg.sender}</span>
@@ -624,6 +667,20 @@ if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
                 </div>
               </div>
             ))}
+          </div> */}
+           <div className="chat-messages flex-1 overflow-y-auto mb-3">
+            {messages.map((msg, index) => (
+              <div key={index} className="message mb-3 ml-2">
+                <div className="flex items-center mb-1">
+                   <span className={`font-bold ${msg.sender === 'partner' ? 'text-blue-400' : 'text-[#0ef]'}`}>
+                    {msg.userName === 'you' ? 'you' : msg.userName}
+                  </span>
+                  <span className="text-xs text-gray-500 ml-2">{new Date(msg.time).toLocaleTimeString()}</span>
+                </div>
+                <p className="text-gray-300">{msg.text}</p>
+              </div>
+            ))}
+          
           </div>
 
           {/* Message Input */}
@@ -657,48 +714,48 @@ export default InterviewViewPage;
 
 
 
-const LockedModal = ({setIsLocked,scheduledTime,timeRemaining,route}) => (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-      <div className="bg-[#111111] border-2 border-yellow-500 rounded-lg p-6 max-w-md w-full">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-yellow-400 flex items-center">
-            <FaLock className="mr-2" />
-            Interview Locked
-          </h2>
-          <button 
-            onClick={() =>route.back()}
-            className="text-gray-400 hover:text-white"
-          >
-            <MdClose size={24} />
-          </button>
+const LockedModal = ({ setIsLocked, scheduledTime, timeRemaining, route }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div className="bg-[#111111] border-2 border-yellow-500 rounded-lg p-6 max-w-md w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-yellow-400 flex items-center">
+          <FaLock className="mr-2" />
+          Interview Locked
+        </h2>
+        <button
+          onClick={() => route.back()}
+          className="text-gray-400 hover:text-white"
+        >
+          <MdClose size={24} />
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-gray-300">Scheduled Time:</span>
+          <span>{scheduledTime?.toLocaleDateString()} {scheduledTime?.toLocaleTimeString()}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-gray-300">Time Remaining:</span>
+          <span className="text-2xl font-mono text-yellow-400">{timeRemaining}</span>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-300">Scheduled Time:</span>
-            <span>{scheduledTime?.toLocaleDateString()} {scheduledTime?.toLocaleTimeString()}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-300">Time Remaining:</span>
-            <span className="text-2xl font-mono text-yellow-400">{timeRemaining}</span>
-          </div>
-
-          <div className="mt-6 p-4 bg-black rounded-lg border border-gray-700">
-            <p className="text-center text-gray-300">
-              This interview session will unlock automatically when it&apos;s time to start.
-            </p>
-            <p className="text-center text-yellow-400 mt-2">
-              Please come back at the scheduled time.
-            </p>
-          </div>
-
-          <button
-            onClick={() =>route.back()}
-            className="w-full mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition"
-          >
-            Close
-          </button>
+        <div className="mt-6 p-4 bg-black rounded-lg border border-gray-700">
+          <p className="text-center text-gray-300">
+            This interview session will unlock automatically when it&apos;s time to start.
+          </p>
+          <p className="text-center text-yellow-400 mt-2">
+            Please come back at the scheduled time.
+          </p>
         </div>
+
+        <button
+          onClick={() => route.back()}
+          className="w-full mt-4 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition"
+        >
+          Close
+        </button>
       </div>
     </div>
-  );
+  </div>
+);

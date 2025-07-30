@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  Dispatch, SetStateAction, useState } from "react";
 import Split from "react-split";
 import CodeEditorPanel from "./CodeEditorPanel";
 import {
@@ -7,6 +7,7 @@ import {
   FaThumbsDown,
   FaThumbsUp,
 } from "react-icons/fa";
+import { IProblem } from "@/types/problem";
 
 const ProblemDescription = ({
   problemDetails,
@@ -17,10 +18,24 @@ const ProblemDescription = ({
   handleRunCode,
   handleSubmitCode,
   pairEditor,
-  challengeId
+  challengeId,
+  resetCode
+}:{
+  problemDetails:IProblem,
+  language:string,
+  setLanguage:Dispatch<SetStateAction<string>>,
+  code:string,
+  setCode:Dispatch<SetStateAction<string>>,
+  handleRunCode: () => void;
+  handleSubmitCode: () => void;     
+  pairEditor:boolean;
+  challengeId:string;
+  resetCode: () => void;     
+
 }) => {
   const [showHint, setShowHint] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  console.log(problemDetails,"pairprogramming details");
+  
   return (
     <>
       <div className="flex flex-col md:flex-row gap-4  pb-5">
@@ -37,11 +52,12 @@ const ProblemDescription = ({
             <div className="bg-black px-6 py-3 border-b border-neon-blue flex justify-between items-center">
               <div className="text-neon-blue font-bold">Problem #{problemDetails.problemId}</div>
               <div className="flex gap-2">
-                <span className={`px-2 py-1  ${problemDetails.difficulty === "easy" ? "bg-green-800" : problemDetails.difficulty === "medium" ?  "bg-yellow-800"  : "bg-red-800"} text-white text-xs rounded`} >
+                <span className={`px-2 py-1  ${problemDetails.difficulty === "easy" ? "bg-green-800" : problemDetails.difficulty === "medium" ? "bg-yellow-800" : "bg-red-800"} text-white text-xs rounded`} >
 
-                  Easy
+                  {problemDetails.difficulty}
+                  
                 </span>
-                <span className="text-gray-400 text-xs mt-1">Acceptance:{problemDetails.acceptence}%</span>
+                <span className="text-gray-400 text-xs mt-1">Acceptance:{Math.round((problemDetails.acceptance?.accepted / problemDetails.acceptance?.submitted) * 100)}%</span>
               </div>
             </div>
             {/* Problem Content */}
@@ -155,17 +171,16 @@ const ProblemDescription = ({
           <CodeEditorPanel
             language={language}
             setLanguage={setLanguage}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
             code={code}
             setCode={setCode}
             handleRunCode={handleRunCode}
             handleSubmitCode={handleSubmitCode}
             pairEditor={pairEditor}
             challengeId={challengeId}
-          >
-            {" "}
-          </CodeEditorPanel>
+            resetCode={resetCode}
+
+          />
+          
         </Split>
       </div>
     </>

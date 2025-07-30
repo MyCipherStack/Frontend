@@ -16,9 +16,10 @@ const dispatch=useDispatch()
 useEffect(()=>{
     const name=searchParams.get("name")
     const email=searchParams.get("email")
+    const id=searchParams.get("id")
     router.push("/")
-    dispatch(loginSuccess({name,email}))
-},[])
+    dispatch(loginSuccess({name,email,id}))
+},[dispatch,router, searchParams])
     return(
         <>
         <p>Redirecting....</p>

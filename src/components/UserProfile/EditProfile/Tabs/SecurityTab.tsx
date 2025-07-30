@@ -1,34 +1,34 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState } from "react";
-import {actionServiceUpdate } from "@/service/postUpdateService";
 import { useForm } from "react-hook-form";
-import { resetPasswordSchema, signSchema } from "@/validations/authSchemas";
+import { resetPasswordSchema } from "@/validations/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { useSelector } from "react-redux";
 import { userResetPassword } from "@/service/passwordServices";
 
 
+
  export function SecurityTab() {
 
-    const{ register,handleSubmit,formState:{errors,isSubmitting},watch,setValue,reset}=useForm({resolver:zodResolver(resetPasswordSchema )})
-    const userData=useSelector((state:any)=>state.auth.user)
+    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+        resolver: zodResolver(resetPasswordSchema)
+    });
+    const userData = useSelector((state: any) => state.auth.user);
 
-    
-    const formData=watch()
-    const submit=async(e:React.FormEvent)=>{
-      try{
-        // e.preventDefault()
-        const response =await userResetPassword({formData,email:userData.email})
-        console.log(response);
-          toastSuccess("password updated")
-      }catch(error){
-        console.log(error);
-        
-          toastError(error.response.data.message)
-      }
-        
-      
+    const submit = async (data: any) => {
+        try {
+            const response = await userResetPassword({ formData: data, email: userData.email });
+            console.log(response);
+            toastSuccess("password updated");
+        } catch (error) {
+            const err = error as any;
+            if (err?.response?.data?.message) {
+                toastError(String(err.response.data.message));
+            } else {
+                toastError("An error occurred");
+            }
+        }
     }
 
   return (
@@ -40,32 +40,31 @@ import { userResetPassword } from "@/service/passwordServices";
             label="Current Password"
             register={register}
             type="current"
-            errors={ formData.current ? "": "*required"}
-            />
+            errors={errors.current?.message ?? ""}
+          />
           <PasswordInput
             label="New Password"
             register={register}
             type="password"
-            errors={errors.password?.message}
-
+            errors={errors.password?.message ?? ""}
           />
           <PasswordInput
             label="Confirm New Password"
             register={register}
             type="confirmPassword"
-            errors={errors.confirmPassword?.message}
-            
+            errors={errors.confirmPassword?.message ?? ""}
           />
         </div>
       </div>
 
       <button
-              type="button"   onClick={handleSubmit(submit)}
-              className="px-6 py-2 bg-[#0ef] text-black font-bold rounded-md hover:bg-opacity-80 transition-opacity disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Updating..." : "Upate Password"}
-            </button>
+        type="button"
+        onClick={handleSubmit(submit)}
+        className="px-6 py-2 bg-[#0ef] text-black font-bold rounded-md hover:bg-opacity-80 transition-opacity disabled:opacity-50"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Updating..." : "Update Password"}
+      </button>
     </div>
   );
 }
@@ -82,10 +81,9 @@ function PasswordInput({
   errors
 }: {
   label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type:string,
-  errors:string
+  register: any;
+  type: string;
+  errors: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
 

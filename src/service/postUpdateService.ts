@@ -1,4 +1,5 @@
 
+import { UserFormData } from "@/types/users"
 import axios from "../utils/axiosConfig"
 
 
@@ -17,7 +18,7 @@ export const usersDataUpdate=async(update:{email:string,status:string})=>{
 
     
 
-export const userProfileDataUpdate=async(update:{})=>{
+export const userProfileDataUpdate=async(update:Partial<UserFormData>)=>{
     try{
         const url="/api/user/profile"
         const response= await axios.patch(url,update,{withCredentials:true}) 

@@ -4,7 +4,7 @@ import { RootState } from '../store/store';
 import { useEffect, useState } from 'react';
 import { startTimer, resetTimer } from '../features/timerSlice';
 
-const Timer = ({timerControler,id}) => {
+const Timer = ({timerControler,id}:{timerControler:boolean,id:string}) => {
   const dispatch = useDispatch();
   const { startTime, isRunning } = useSelector((state: RootState) => state.timer);
   const [elapsed, setElapsed] = useState('00:00:00');

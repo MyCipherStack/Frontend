@@ -1,14 +1,14 @@
 import { FaBell, FaEnvelope } from "react-icons/fa";
 
 import { ToggleSwitch } from "../Components/ToggleSwitch";
-import { FormData } from "../EditProfile";
 import { SelectInput } from "../Components/SelectInput";
+import { UserFormData } from "@/types/users";
 
 export function PreferencesTab({
   data,
   onChange,
 }: {
-  data: FormData["preferences"];
+  data:UserFormData["preferences"];
   onChange: (field: string, value: boolean | string) => void;
 }) {
   console.log(data);

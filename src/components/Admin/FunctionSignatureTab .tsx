@@ -2,19 +2,30 @@ import { generateCodeTemplates } from "@/utils/generateCodeTemplates";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 
-export default function FunctionSignatureTab({ formData, setFormData, prevTab, nextTab }) {
+export default function FunctionSignatureTab({ formData, setFormData, prevTab, nextTab }:{
+  formData: {
+    functionSignatureMeta: {
+      name: string;
+      parameters: { name: string; type: string }[];
+      returnType: string;
+    };
+  };
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  prevTab: (tab: string) => void;
+  nextTab: (tab: string) => void;
+}) {
     const [localSignature, setLocalSignature] = useState(
       formData.functionSignatureMeta || {
         name: "",
         parameters: [],
-        returnType: ""
+        returnType:""
       }
     );
     const [activeLanguage, setActiveLanguage] = useState('javascript');
   
 
   
-    const templates = generateCodeTemplates(localSignature);
+    const templates:Record<string,string> = generateCodeTemplates(localSignature);
     
     const handleAddParameter = () => {
       setLocalSignature(prev => ({
@@ -23,14 +34,14 @@ export default function FunctionSignatureTab({ formData, setFormData, prevTab, n
       }));
     };
   
-    const handleRemoveParameter = (index) => {
+    const handleRemoveParameter = (index:number) => {
       setLocalSignature(prev => ({
         ...prev,
         parameters: prev.parameters.filter((_, i) => i !== index)
       }));
     };
-  
-    const handleParameterChange = (index, field, value) => {
+
+    const handleParameterChange = (index:number, field:string , value:string) => {
       setLocalSignature(prev => {
         const newParameters = [...prev.parameters];
         newParameters[index] = { ...newParameters[index], [field]: value };
@@ -40,7 +51,7 @@ export default function FunctionSignatureTab({ formData, setFormData, prevTab, n
   
 
     useEffect(()=>{
-        setFormData(prev => ({
+        setFormData((prev:FormData) => ({
             ...prev,
             functionSignatureMeta: localSignature,
             starterCode: generateCodeTemplates(localSignature)

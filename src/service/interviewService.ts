@@ -3,7 +3,7 @@ import axios from "../utils/axiosConfig"
 
 
 
-export const scheduleInterview=async(data)=>{
+export const scheduleInterview=async(data:unknown)=>{
     try{
         const url="api/user/scheduleInterview"
         const response= await axios.post(url,data,{withCredentials:true}) 

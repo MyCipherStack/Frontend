@@ -3,13 +3,15 @@
 
 import {
   FaCode, FaUsers, FaTrophy,
-  FaEdit, FaChartLine, FaFire, FaBolt, FaBug, FaChartPie, FaProjectDiagram, FaSitemap, FaTable,
-  FaTrophy as FaTrophyBadge, FaBrain, FaCheckCircle, FaTimesCircle,
+  FaEdit, FaChartLine,
+  FaTrophy as  FaCheckCircle,
   FaExclamationCircle, FaFistRaised,
   FaIdCard,
-  FaSyncAlt
+  FaSyncAlt,
+  FaLinkedinIn,
+  FaGithub
 } from 'react-icons/fa';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import "@/app/Profile/page"
 import Header from '@/components/Header';
 import EditProfileModal from '@/components/UserProfile/EditProfile/EditProfile';
@@ -20,42 +22,14 @@ import { getSubcriptionData } from '@/service/PremiumServices';
 const ProfilePage = () => {
 
 
-  type FormData = {
-    personal: {
-      displayName: string;
-      username: string;
-      email: string;
-      phone: string;
-      bio: string;
-      github: string;
-      linkedin: string;
-      avatar: string;
-      role: string,
-      subscripctionId: string
 
-    };
-    appearance: {
-      theme: string;
-    };
-    preferences: {
-      emailNotifications: boolean;
-      interviewReminders: boolean;
-      contestReminders: boolean;
-      language: string;
-      timezone: string;
-      publicProfile: boolean;
-      showActivity: boolean;
-    };
-    streak: object
-    ,
-  };
 
 
 
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<UserFormData>({
     personal: {
       displayName: "",
       username: "",
@@ -64,9 +38,9 @@ const ProfilePage = () => {
       bio: "",
       github: "",
       linkedin: "",
-      avatar: "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
+      image: "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
       role: "",
-      subscripctionId: ""
+      subscriptionId: ""
     },
     appearance: {
       theme: "cyberpunk",
@@ -80,7 +54,11 @@ const ProfilePage = () => {
       publicProfile: true,
       showActivity: false,
     },
-    streak: {}
+    streak: {
+            lastActiveDate: null,
+            currentStreak: 0,
+            higestStreak: 0
+          }
   });
 
 
@@ -104,10 +82,11 @@ const ProfilePage = () => {
             bio: data.bio || "",
             github: data.github || "",
             linkedin: data.linkedin || "",
-            avatar: data.image || "/default-avatar.jpg",
+            image: data.image || "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
             role: data.role || "regular",
-            subscripctionId: data.subscripctionId
+            subscriptionId: data.subscriptionId
           },
+    
           appearance: {
             theme: data.theme || "cyberpunk"
           },
@@ -133,6 +112,7 @@ const ProfilePage = () => {
     console.log(formData, "form data");
 
   }, []);
+
 
 
 
@@ -167,11 +147,21 @@ const ProfilePage = () => {
   );
 };
 
-const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }) => {
+const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }:{
+  setIsLoading:Dispatch<SetStateAction<boolean>>,
+  isLoading:boolean,
+  setFormData:Dispatch<SetStateAction<UserFormData>>
+  formData:UserFormData,
+}) => {
 
   const [premiumDetails, setPremiumDetails] = useState(null)
 
   const [isEditProfile, SetisEditProfile] = useState(false)
+  
+  const [solvedCount, setSolvedCount] = useState(false)
+  const [totalSubmissions, setTotalSubmissions] = useState(0)
+  const [totalProblems, setTotalProblems] = useState({difficulty:"",count:0})
+  const [problemCount, setproblemCount] = useState({ easy: 0, medium: 0, hard: 0 })
 
   const getSubcription = async () => {
     const res = await getSubcriptionData()
@@ -183,13 +173,34 @@ const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }) => {
   const router = useRouter()
 
   const onClose = () => {
+
     setPremiumDetails(null)
+
   }
+
+
+  useEffect(() => {
+    run()
+
+  }, [])
+  const run = async () => {
+    const res = await acceptedUserProblems()
+    const acceptedData=res.data.acceptedData
+    setproblemCount(acceptedData.problemCount)
+    setSolvedCount(acceptedData.datas.length)
+    setTotalSubmissions(acceptedData.totalSubmissions)
+    setTotalProblems(acceptedData.totalProblemsCount)
+    
+    console.log(res.data.acceptedData, "run problemmmmm");
+
+
+  }
+
 
 
   return (
     <div className="bg-[#111] rounded-lg neon-border overflow-hidden mb-6">
-      <div className="bg-black px-6 py-3 border-b border-[#0ef] flex items-center" onClick={() => getSubcriptionData(formData.personal.subscripctionId)}>
+      <div className="bg-black px-6 py-3 border-b border-[#0ef] flex items-center" onClick={() => getSubcriptionData()}>
         <div className="text-[#0ef] font-bold ml-4">User Profile <span onClick={() => getSubcription()} className='text-red-400 cursor-pointer'>({formData.personal.role} User)<span className='text-xs text-cyan-600'>i</span></span></div>
 
       </div>
@@ -202,22 +213,30 @@ const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }) => {
           {/* Profile Picture */}
           <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
             <div className="w-24 h-24 rounded-full bg-[#111] border-2 border-[#0ef] overflow-hidden">
-              <img src={formData.personal.avatar} alt="Profile" className="w-full h-full object-cover" />
+              <img src={formData.personal.image} alt="Profile" className="w-full h-full object-cover" />
             </div>
+        
           </div>
 
           {/* Profile Info */}
           <div className="flex-grow text-center md:text-left">
             <h1 className="text-2xl font-bold neon-text">{formData.personal.displayName ? formData.personal.displayName : formData.personal.username}</h1>
-            <p className="text-gray-400 text-sm">Member since October 2023</p>
-
+            <p className="text-gray-400 text-sm"> {formData.personal.bio}</p>
+      <div className="mt-2 flex gap-2 cursor-pointer">
+         <FaLinkedinIn className='' onClick={() => router.push(formData.personal.linkedin)}/>
+        <FaGithub className='' onClick={() => router.push(formData.personal.github)}/>
+       </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-4">
-              <StatBox value="1425" label="Global Rank" color="text-[#0ef]" />
-              <StatBox value="214" label="Problems Solved" color="text-green-400" />
-              <StatBox value="42" label="Submissions" color="text-orange-400" />
-              <StatBox value="15" label="Contest Rating" color="text-yellow-400" />
+              <StatBox value="14" label="Global Rank" color="text-[#0ef]" />
+              <StatBox value={solvedCount} label="Problems Solved" color="text-green-400" />
+              <StatBox value={totalSubmissions} label="Submissions" color="text-orange-400" />
             </div>
+
+ 
           </div>
+
+
+
 
           {/* Action Buttons */}
           <div className="flex-shrink-0 mt-4 md:mt-0 space-y-2">
@@ -241,23 +260,23 @@ const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }) => {
 
         {/* Progress Bars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-          <ProgressBar label="Easy Problems" value={126} max={350} color="green-100" />
-          <ProgressBar label="Medium Problems" value={82} max={783} color="yellow-100" />
-          <ProgressBar label="Hard Problems" value={6} max={204} color="red-100" />
+          <ProgressBar label="Easy Problems" value={problemCount.easy} max={totalProblems.easy ?? 0} color="green-400" />
+          <ProgressBar label="Medium Problems" value={problemCount.medium} max={totalProblems.medium ?? 0} color="yellow-400" />
+          <ProgressBar label="Hard Problems" value={problemCount.hard} max={totalProblems.hard ?? 0} color="red-400" />
         </div>
       </div>
     </div>
   );
 };
 
-const StatBox = ({ value, label, color }) => (
+const StatBox = ({ value, label, color }:{value:number| string| boolean,label:string,color:string}) => (
   <div className="text-center">
     <div className={`text-xl font-bold ${color}`}>{value}</div>
     <div className="text-gray-400 text-xs">{label}</div>
   </div>
 );
 
-const ProgressBar = ({ label, value, max, color }) => {
+const ProgressBar = ({ label, value, max, color }:{label:string,value:number,max:number,color:string}) => {
   const percentage = Math.round((value / max) * 100);
 
   return (
@@ -281,15 +300,13 @@ const ProgressBar = ({ label, value, max, color }) => {
 
 
 
-
-
-const ProfileTabs = ({ streak }) => {
+  const ProfileTabs = ({ streak }:{streak:{lastActiveDate: string | null,currentStreak: number,higestStreak: number}}) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <div className="bg-[#111] rounded-lg neon-border overflow-hidden">
       <div className="flex border-b border-gray-800">
-        {['overview', 'submissions', 'badges', 'contests', 'settings'].map((tab) => (
+        {['overview', 'submissions',].map((tab) => (
           <button
             key={tab}
             className={`px-6 py-4 capitalize ${activeTab === tab ? 'text-[#0ef] border-b-2 border-[#0ef]' : 'text-gray-400 hover:text-[#0ef]'}`}
@@ -302,16 +319,15 @@ const ProfileTabs = ({ streak }) => {
 
       <div className="p-6">
         {activeTab === 'overview' && <OverviewTab streak={streak} />}
-        {activeTab === 'submissions' && <SubmissionsTab />}
-        {activeTab === 'badges' && <BadgesTab />}
-        {activeTab === 'contests' && <ContestsTab />}
-        {activeTab === 'settings' && <SettingsTab />}
+        {activeTab === 'submissions' && <RecentSubmissions />}
+        {/* {activeTab === 'contests' && <ChallengeHistory />} */}
+
       </div>
     </div>
   );
 };
 
-const OverviewTab = ({ streak }) => {
+const OverviewTab = ({ streak }:{streak:{lastActiveDate: string | null,currentStreak: number,higestStreak: number}}) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -319,9 +335,6 @@ const OverviewTab = ({ streak }) => {
         <StatsSection streak={streak} />
       </div>
 
-      <EarnedBadges />
-      <RecentSubmissions />
-      <ChallengeHistory />
     </>
   );
 };
@@ -337,8 +350,9 @@ const RecentActivity = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold neon-text mb-4">Recent Activity</h2>
-      <div className="timeline-container pl-5">
+      <h2 className="text-xl font-bold neon-text mb-4"></h2>
+      {/* <h2 className="text-xl font-bold neon-text mb-4">Recent Activity</h2> */}
+      {/* <div className="timeline-container pl-5">
         {activities.map((activity, index) => (
           <div key={index} className="timeline-item mb-4">
             <div className="text-sm">
@@ -353,12 +367,12 @@ const RecentActivity = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
 
-const StatsSection = ({ streak }) => {
+const StatsSection = ({ streak }:{streak:{lastActiveDate: string | null,currentStreak: number,higestStreak: number}}) => {
 
   const [submissions, setSubmissions] = useState([]);
 
@@ -396,110 +410,106 @@ const StatsSection = ({ streak }) => {
 
 
 
-const CategoryStats = () => {
-  const categories = [
-    { icon: FaChartPie, name: "Arrays & Strings", count: 92 },
-    { icon: FaProjectDiagram, name: "LinkedList & Trees", count: 65 },
-    { icon: FaSitemap, name: "Graph Algorithms", count: 27 },
-    { icon: FaTable, name: "Dynamic Programming", count: 30 }
-  ];
-
-  return (
-    <>
-      <h2 className="text-xl font-bold neon-text mb-4">Category Stats</h2>
-      <div className="grid grid-cols-2 gap-4">
-        {categories.map((category, index) => (
-          <div key={index} className="bg-black bg-opacity-50 p-3 rounded border border-gray-800">
-            <div className="flex items-center">
-              <category.icon className="text-[#0ef] mr-3" />
-              <div>
-                <div className="text-sm">{category.name}</div>
-                <div className="text-xs text-gray-400">{category.count} problems</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-};
-
-const EarnedBadges = () => {
-  const badges = [
-    { icon: FaFire, name: "14-Day Streak" },
-    { icon: FaBolt, name: "Quick Solver" },
-    { icon: FaBug, name: "Bug Hunter" },
-    { icon: FaTrophyBadge, name: "Contest Winner" },
-    { icon: FaBrain, name: "Problem Solver" }
-  ];
-
-  return (
-    <div className="mt-8">
-      <h2 className="text-xl font-bold neon-text mb-4">Earned Badges</h2>
-      <div className="flex flex-wrap gap-6">
-        {badges.map((badge, index) => (
-          <div key={index} className="text-center">
-            <div className="badge w-20 h-20 flex items-center justify-center">
-              <badge.icon className="text-[#0ef] text-3xl" />
-            </div>
-            <div className="mt-2 text-sm">{badge.name}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const RecentSubmissions = () => {
-  const submissions = [
-    { status: "Accepted", problem: "Binary Hack", time: "2 hours ago", color: "green-400", icon: FaCheckCircle },
-    { status: "Wrong Answer", problem: "String to Integer (atoi)", time: "Yesterday", color: "red-400", icon: FaTimesCircle },
-    { status: "Time Limit", problem: "Regular Expression Matching", time: "3 days ago", color: "yellow-400", icon: FaExclamationCircle },
-    { status: "Accepted", problem: "Two Sum", time: "1 week ago", color: "green-400", icon: FaCheckCircle }
-  ];
+
+
+  const [submissions, SetSubmissions] = useState<submissions[]>([])
+
+  const run = async () => {
+    const submission = await recentSubmissions()
+    SetSubmissions(submission.data.submissions)
+
+  }
+
+  useEffect(() => {
+
+    run()
+
+  }, [])
+
+  const [submissionDetails, SetSubmissionDetails] = useState<submissions>({})
+  const [submissionTab, setSubmissionTab] = useState("allSubmission")
+
 
   return (
-    <div className="mt-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold neon-text">Recent Submissions</h2>
-        <a href="#" className="text-[#0ef] text-sm hover:underline">View All</a>
-      </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="bg-black text-gray-400 border-b border-gray-800">
-              <th className="py-3 px-4 text-left">Status</th>
-              <th className="py-3 px-4 text-left">Problem</th>
-              <th className="py-3 px-4 text-center">Language</th>
-              <th className="py-3 px-4 text-center">Runtime</th>
-              <th className="py-3 px-4 text-center">Memory</th>
-              <th className="py-3 px-4 text-center">Submitted</th>
-            </tr>
-          </thead>
-          <tbody>
-            {submissions.map((sub, index) => (
-              <tr key={index} className="border-b border-gray-800 hover:bg-black">
-                <td className="py-3 px-4">
-                  <span className={`text-${sub.color}`}>
-                    <sub.icon className="inline mr-1" /> {sub.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <a href="#" className="text-[#0ef] hover:underline">{sub.problem}</a>
-                </td>
-                <td className="py-3 px-4 text-center">Python</td>
-                <td className="py-3 px-4 text-center">{sub.status === "Accepted" ? "42ms" : "-"}</td>
-                <td className="py-3 px-4 text-center">{sub.status === "Wrong Answer" ? "-" : "14.2MB"}</td>
-                <td className="py-3 px-4 text-center text-gray-400">{sub.time}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+
+
+    <div className="mt-8">
+
+      {submissionTab == "allSubmission" && (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold neon-text">Recent Submissions</h2>
+            {/* <a href="#" className="text-[#0ef] text-sm hover:underline">View All</a> */}
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead>
+
+                <tr className="bg-black text-gray-400 border-b border-gray-800">
+                  <th className="px-4 py-2 text-left">Status</th>
+                  <th className="px-4 py-2 text-left">Language</th>
+                  <th className="px-4 py-2 text-left">Runtime</th>
+                  <th className="px-4 py-2 text-left">Memory</th>
+                  <th className="px-4 py-2 text-left">Date</th>
+                  <th className="px-4 py-2 text-left">Code</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-700">
+                {submissions.map((submission, idx) => (
+                  <tr key={idx} onClick={() => {
+                    setSubmissionTab("submissionDetail")
+                    SetSubmissionDetails(submission)
+
+                  }}>
+                    <td className="px-4 py-2">
+                      {submission.status === 'Accepted' ? (
+                        <span className="text-green-400 flex items-center">
+                          <FaCheckCircle className="mr-1" /> {submission.status}
+                        </span>
+                      ) : (
+                        <span className="text-red-400 flex items-center">
+                          <FaExclamationCircle className="mr-1" /> {submission.status}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">{submission.language}</td>
+                    <td className="px-4 py-2">{Math.round(submission.runTime)}</td>
+                    <td className="px-4 py-2">{submission.memory}</td>
+                    <td className="px-4 py-2">{submission.createdAt ? new Date(submission.createdAt).toDateString(): "N/A"}</td>
+                    <td className="px-4 py-2">
+                      <button className="text-neon-blue hover:underline">
+                        <FaCode /> View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {submissionTab === "submissionDetail" && (
+        <SubmissionDetail setSubmissionTab={setSubmissionTab} submissionDetails={submissionDetails} />
+      )}
     </div>
   );
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 const ChallengeHistory = () => {
   return (
@@ -606,10 +616,7 @@ const PointsSection = () => {
   );
 };
 
-const SubmissionsTab = () => <div>Submissions content</div>;
-const BadgesTab = () => <div>Badges content</div>;
-const ContestsTab = () => <div>Contests content</div>;
-const SettingsTab = () => <div>Settings content</div>;
+
 
 const Footer = () => {
   return (
@@ -631,12 +638,20 @@ export default ProfilePage;
 
 import { FaTimes, FaCalendarAlt } from 'react-icons/fa';
 import CalendarHeatmapComponent from '@/components/CalendarHeatmap';
-import { userSubmissionsService } from '@/service/problemService';
+import { acceptedUserProblems, userSubmissionsService } from '@/service/problemService';
 import { toastError } from '@/utils/toast';
+import { recentSubmissions } from '@/service/getSubmissions';
+import { SubmissionDetail } from '@/components/Problems/Submissions';
+import { UserFormData } from '@/types/users';
+import { submissions } from '@/types/problem';
+import { count } from 'console';
 
 
 
-const PremiumDetailsModal = ({ premiumDetails, onClose }) => {
+const PremiumDetailsModal = ({ premiumDetails, onClose }:{
+  premiumDetails:{}
+  onClose:()=>void
+}) => {
   useEffect(() => {
     console.log("Modal received premiumDetails:", premiumDetails);
   }, [premiumDetails]);
@@ -644,9 +659,8 @@ const PremiumDetailsModal = ({ premiumDetails, onClose }) => {
   if (!premiumDetails) return null;
 
   // Format dates
-  const formatDate = (dateString) => {
+  const formatDate = (dateString:string) => {
 
-    console.log(dateString);
 
     const date = new Date(dateString);
 
@@ -707,7 +721,7 @@ const PremiumDetailsModal = ({ premiumDetails, onClose }) => {
                 ? 'bg-green-500 text-black'
                 : 'bg-gray-600 text-white'
                 }`}>
-                {premiumDetails.status.toUpperCase()}
+                {premiumDetails.status}
               </span>
               {/* {premiumDetails.trial && (
                 <span className="inline-block bg-[#0ef] text-black text-xs px-3 py-1 rounded-full">
@@ -750,7 +764,7 @@ const PremiumDetailsModal = ({ premiumDetails, onClose }) => {
               <FaCalendarAlt className="text-[#0ef] mt-1 mr-3 flex-shrink-0" />
               <div>
                 <p className="text-sm text-gray-400">Renews On</p>
-                <p className="text-white">{formatDate(premiumDetails.endDate)}</p>
+                <p className="text-white">{new Date(premiumDetails.endDate).toDateString()}</p>
               </div>
             </div>
 

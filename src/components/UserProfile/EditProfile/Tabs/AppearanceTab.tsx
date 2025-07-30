@@ -1,12 +1,12 @@
 import { FaCheckCircle } from "react-icons/fa";
-import { FormData } from "../EditProfile";
 import { useEffect } from "react";
+import { UserFormData } from "@/types/users";
 
  export function AppearanceTab({
     data,
     onChange,
   }: {
-    data: FormData["appearance"];
+    data: UserFormData["appearance"];
     onChange: (field: string, value: string) => void;
   }) {
     const themes = [

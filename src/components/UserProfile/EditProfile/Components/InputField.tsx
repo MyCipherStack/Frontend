@@ -12,7 +12,7 @@ export function InputField({
     value: string;
     rows?: number;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  }) {
+  } & React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>) {
     return (
       <div>
         <label className="block text-gray-400 mb-2 text-sm">{label}</label>

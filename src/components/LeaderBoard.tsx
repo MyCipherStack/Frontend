@@ -21,7 +21,7 @@ type LeaderboardDetailsProps = {
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     leaderBoard: typeLeaderBoad[],
     ProblemCount: number,
-    challengeTime: string
+    challengeTime: number
 };
 
 const LeaderboardDetails = ({ challengeTime, ProblemCount, isModalOpen, setIsModalOpen, leaderBoard }: LeaderboardDetailsProps) => {
@@ -33,7 +33,9 @@ const LeaderboardDetails = ({ challengeTime, ProblemCount, isModalOpen, setIsMod
 
         let totalPossible = leaderBoard.length * ProblemCount
 
-        const totalSolved = leaderBoard.reduce((acc, data) => data.solvedCount ?? 0, 0)
+        const totalSolved = leaderBoard.reduce((acc, data) =>acc+data.solvedCount, 0)
+    
+
 
         let overallComplection = (totalSolved / totalPossible)  * 100
         console.log(totalPossible,totalSolved,overallComplection,ProblemCount);
@@ -77,7 +79,7 @@ const LeaderboardDetails = ({ challengeTime, ProblemCount, isModalOpen, setIsMod
                                     <div className="text-gray-400 text-sm">Problems</div>
                                 </div>
                                 <div className="bg-[#0a0a0a] p-4 rounded-lg border border-[#0ef] text-center">
-                                    <div className="text-2xl font-bold text-[#0ef]">{challengeTime /60}</div>
+                                    <div className="text-2xl font-bold text-[#0ef]">{Number(challengeTime /60)}</div>
                                     <div className="text-gray-400 text-sm">Hour</div>
                                 </div>
                             </div>

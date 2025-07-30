@@ -3,12 +3,30 @@
 
 
 import React from 'react'
-import { FaBug, FaExpandAlt, FaPlay, FaRedoAlt } from 'react-icons/fa'
+import { FaPlay, FaRedoAlt } from 'react-icons/fa'
 import CodeEditorMonaco from './Problems/CodeEditorMonaco'
 import PairEditor from './PairProgammingEditor'
+import { useDispatch } from 'react-redux'
+import { removeProblem } from '@/features/problemSlice'
 
 
-const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, setCode, handleRunCode, handleSubmitCode, pairEditor,challengeId}) => {
+const CodeEditorPanel = ({ language, setLanguage, code, setCode, handleRunCode, handleSubmitCode, pairEditor, challengeId, resetCode }:
+  {
+    language: string;
+    setLanguage: React.Dispatch<React.SetStateAction<string>>;
+    code: string;
+    setCode: React.Dispatch<React.SetStateAction<string>>;
+    handleRunCode: () => void;
+    handleSubmitCode: () => void;
+    pairEditor: boolean;
+    challengeId: string;
+    resetCode: () => void
+
+  }
+) => {
+
+  const dispatch = useDispatch()
+
 
 
   return (
@@ -30,7 +48,7 @@ const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, s
                 <option value="cpp">C++</option>
                 <option value="c">C</option>
               </select>
-              <button className="text-gray-400 hover:text-neon-blue text-sm flex items-center">
+              <button onClick={resetCode} className="text-gray-400 hover:text-neon-blue text-sm flex items-center">
                 <FaRedoAlt className="mr-1" /> Reset
               </button>
             </div>
@@ -56,10 +74,10 @@ const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, s
         {/* Code Editor */}
         <div className="flex ">
           {pairEditor ? (
-            <PairEditor code={code}  setCode={setCode}  language={language} roomId={challengeId}/>
+            <PairEditor code={code} setCode={setCode} language={language} roomId={challengeId} />
 
-          ):(
-           <CodeEditorMonaco code={code} language={language} setCode={setCode}></CodeEditorMonaco>
+          ) : (
+            <CodeEditorMonaco code={code} language={language} setCode={setCode}></CodeEditorMonaco>
 
           )}
         </div>
@@ -77,9 +95,9 @@ const CodeEditorPanel = ({ language, setLanguage, darkMode, setDarkMode, code, s
             >
               <FaPlay className="mr-2" /> Run
             </button>
-            <button className="px-4 py-2 bg-transparent text-gray-400 border border-gray-700 rounded hover:border-[#0ff] hover:text-[#0ff] transition duration-300 flex items-center">
+            {/* <button className="px-4 py-2 bg-transparent text-gray-400 border border-gray-700 rounded hover:border-[#0ff] hover:text-[#0ff] transition duration-300 flex items-center">
               <FaBug className="mr-2" /> Debug
-            </button>
+            </button> */}
           </div>
           <button
             className="px-6 py-2 boarder border border-gray-800 font-bold rounded  hover:border-[#0ff] hover:text-[#0ff] transition duration-300"

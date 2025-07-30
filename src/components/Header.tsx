@@ -22,9 +22,9 @@ import SettingsModal from "./UserProfile/Settings/Settings";
 import { useRouter } from "next/navigation";
 import NotificationSystem from "./Notification";
 
-const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
+const ProfileDropdown = ({ user, setIsSettings }: { user: any; setIsSettings: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [isOpen, setIsOpen] = useState(false);
- 
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -60,17 +60,14 @@ const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#0ef]">
-          {user?.image ? (
-            <img
-              src={user.image}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <FaUser className="text-gray-400" />
-            </div>
-          )}
+
+          <img
+            src={user.image ?? "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png"}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+
+
         </div>
         <span className="text-gray-300 hidden md:inline">{user?.name || 'User'}</span>
         <FaChevronDown className={`text-gray-400 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} />
@@ -80,17 +77,11 @@ const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
         <div className="absolute right-0 mt-2 w-46 bg-neutral-950 neon-border rounded-md shadow-lg border border-gray-950 z-50 overflow-hidden">
           <div className="flex items-center px-4 py-3 border-b border-gray-900 bg-neutral-950">
             <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3">
-              {user?.image ? (
-                <img
-                  src={user.image}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-950 flex items-center justify-center">
-                  <FaUser className="text-gray-400 text-xl" />
-                </div>
-              )}
+              <img
+                src={user.image ?? "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png"}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <p className="font-medium text-white">{user?.name || 'User'}</p>
@@ -106,7 +97,7 @@ const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
                 <span>My Profile</span>
               </Link>
             </div>
-            <div onClick={()=>setIsSettings(true)} className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
+            <div onClick={() => setIsSettings(true)} className="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-[#0ef] transition"
             >
 
               <FaCog className="mr-3 text-gray-400" />
@@ -129,21 +120,21 @@ const ProfileDropdown = ({ user,setIsSettings }: { user: any }) => {
 const Header = () => {
   const userData = useSelector((state: any) => state.auth.user);
 
-  const [Issettings,setIsSettings]=useState(false)
-  const onClose=()=>{
+  const [Issettings, setIsSettings] = useState(false)
+  const onClose = () => {
     setIsSettings(false)
   }
-  const router=useRouter()
+  const router = useRouter()
 
 
-  const signInhandler=()=>{
+  const signInhandler = () => {
     router.push("/login?mode=signup")
   }
-  
+
   return (
     <nav className="bg-black border-b border-gray-800 fixed w-full z-40">
-      {Issettings &&  <SettingsModal onClose={onClose}/> }
-     
+      {Issettings && <SettingsModal onClose={onClose} />}
+
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-8">
@@ -177,10 +168,19 @@ const Header = () => {
               </Link>
             </div>
           </div>
-          <NotificationSystem/>
-          <div className="flex items-center space-x-4">
+          { }
+          <div className="flex space-x-10">
             {userData ? (
-              <ProfileDropdown user={userData} setIsSettings={setIsSettings} />
+              <>
+                <div>
+                  <NotificationSystem />
+                </div>
+                <div>
+                  <ProfileDropdown user={userData} setIsSettings={setIsSettings} />
+
+                </div>
+              </>
+
             ) : (
               <>
                 <Link href={"/login"} >

@@ -1,25 +1,31 @@
+import { IProblem, typeTestCase } from '@/types/problem';
 import { useEffect, useState } from 'react';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
-export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }) {
-  const [testCases, setTestCases] = useState(formData.testCases || [
-    { input: '', output: '', isSample: false },
-    { input: '', output: '', isSample: true }
+export default function TestCasesTab({ formData, setFormData, prevTab, nextTab }:{
+  formData:IProblem,
+  setFormData: React.Dispatch<React.SetStateAction<IProblem>>,
+  prevTab: (tabName: string) => void,
+  nextTab: (tabName: string) => void
+}) {
+  const [testCases, setTestCases] = useState<typeTestCase[]>(formData.testCases || [
+    { input: '', output: '', isSample: false ,_id:"",testCaseNo:1, status:true,explanation:""},
+    { input: '', output: '', isSample: true ,_id:"",testCaseNo:2, status:true,}
   ]);
 
   const addTestCase = () => {
-    const newTestCases = [...testCases, { input: '', output: '', isSample: false,testCaseNo:1}];
+    const newTestCases = [...testCases, {input: '', output: '', isSample: false,testCaseNo:1, status:true,explanation:""}];
     setTestCases(newTestCases);
     setFormData({...formData, testCases: newTestCases});
   };
 
-  const deleteTestCase = (index) => {
-    const newTestCases = testCases.filter((_, i) => i !== index);
+  const deleteTestCase = (index:number) => {
+    const newTestCases = testCases.filter((_id, i) => i !== index);
     setTestCases(newTestCases);
     setFormData({...formData, testCases: newTestCases});
   };
 
-  const updateTestCase = (index, field, value) => {
+  const updateTestCase = (index:number, field:string, value:string | number | boolean) => {
     const newTestCases = [...testCases];
     newTestCases[index][field] = value;
     setTestCases(newTestCases);

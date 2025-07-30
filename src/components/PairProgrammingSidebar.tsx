@@ -1,20 +1,23 @@
 import { RootState } from '@/store/store';
 import socket from '@/utils/socket';
 import { useEffect, useRef, useState } from 'react';
-import { FaMicrophone, FaMicrophoneSlash, FaCog, FaPhoneSlash, FaVolumeUp, FaPaperPlane, FaInfoCircle } from 'react-icons/fa';
+import { FaMicrophone, FaMicrophoneSlash, FaCog, FaPaperPlane, FaInfoCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 
-const PairProgrammingSidebar = ({ challengeId ,navigatorName,setNavigatorName}) => {
+const PairProgrammingSidebar = ({ challengeId, navigatorName }:{
+  challengeId: string;
+  navigatorName: string;  
+}) => {
   const roomId = challengeId
   const [isMuted, setIsMuted] = useState(false);
   const [message, setMessage] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user)
-  const bottomRef = useRef(null)
-  const localStremRef=useRef(null)
-  const peerConnectionRef=useRef(null)
-  const remoteAudioRef=useRef(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const localStremRef = useRef<MediaStream| null>(null)
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
+  const remoteAudioRef = useRef<HTMLAudioElement>(null)
 
   const [messages, setMessages] = useState([
     { userName: 'you', text: 'Hey', time: '10:22 AM' },
@@ -32,85 +35,109 @@ const PairProgrammingSidebar = ({ challengeId ,navigatorName,setNavigatorName}) 
 
   };
 
-  const startVoiceCall=async()=>{
-    const localStream=await navigator.mediaDevices.getUserMedia({audio:true})
-    localStremRef.current=localStream
-    const peerConnection=new RTCPeerConnection()
+  const startVoiceCall = async () => {
+    const localStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    localStremRef.current = localStream
+    const peerConnection = new RTCPeerConnection()
 
-    peerConnectionRef.current=peerConnection
+    peerConnectionRef.current = peerConnection
 
-    localStream.getTracks().forEach((track)=>{
-      peerConnection.addTrack(track,localStream)
+    localStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, localStream)
     })
 
-    peerConnection.onicecandidate=(event)=>{
-      if(event.candidate){
-        socket.emit('signal',{roomId,data:{candidate:event.candidate}})
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit('signal', { roomId, data: { candidate: event.candidate } })
       }
-    } 
+    }
 
     peerConnection.ontrack = (event) => {
-      remoteAudioRef.current.srcObject = event.streams[0];
-      remoteAudioRef.current.play().catch((err) => console.error("Audio play error", err));
+      if(remoteAudioRef.current){
+
+        remoteAudioRef.current.srcObject = event.streams[0];
+        remoteAudioRef.current.play().catch((err) => console.error("Audio play error", err));
+      }else{
+         console.warn("remoteAudioRef is not ready yet");
+      }
     };
 
-    const offer=await peerConnection.createOffer()
+    const offer = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(offer)
-    socket.emit('signal',{roomId,data:offer})
+    socket.emit('signal', { roomId, data: offer })
   }
 
 
 
 
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     startVoiceCall()
-    socket.on('signal',async(data)=>{
-      if(data.type==='offer'){
-        await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data))
-        const answer=await peerConnectionRef.current.createAnswer()
+
+
+    socket.on('signal', async (data) => {
+      if(!peerConnectionRef.current) return;
+      if (data.type === 'offer') {
+        await peerConnectionRef?.current.setRemoteDescription(new RTCSessionDescription(data))
+        const answer = await peerConnectionRef.current.createAnswer()
         await peerConnectionRef.current.setLocalDescription(answer)
-        socket.emit('signal',{roomId,data:answer})
-      }else if(data.type=='answer'){
+        socket.emit('signal', { roomId, data: answer })
+      } else if (data.type == 'answer') {
         await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data))
-      }else if(data.candidate){
+      } else if (data.candidate) {
         await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(data.candidate))
       }
     })
 
-  
 
-  },[roomId])
 
-let renderOnes=true
+
+  }, [roomId])
+
 
   useEffect(() => {
 
 
-    if(renderOnes){
-      renderOnes=false
-      const handler = async (response: { userName: string, text: string, time: string }) => {
-        console.log(response, "message recived");
-        
-        setMessages((prevState) => [...prevState, { ...response }])
-        console.log(response, "get message Data");
-      }
-      socket.on("receive-message", handler)
-      return () => {
-        // socket.off("receive-message", handler);
+    const handler = async (response: { userName: string, text: string, time: string }) => {
 
-      }
+      console.log(response, "message recived");
+
+      setMessages((prevState) => [...prevState, { ...response }])
+      console.log(response, "get message Data");
     }
 
 
-      socket.on("pairProgram-update",({userName})=>{
-      console.log("user joined",userName)
-      setNavigatorName(userName)
-    })
+        socket.on("receive-message", handler)
+
+
+    // const pairUpdate = false
+
+    // if (!pairUpdate) {
+
+    //   socket.emit("join-pairProgramming", { roomId: challenge._id, userName: userData.name })
+
+    //   socket.on("pairProgram-update", ({ userName }) => {
+    //     setNavigatorName(userName)
+    //     pairUpdate
+
+
+    //     if (userName)
+    //       console.log("user joined", userName)
+
+    //     return () => {
+    //       // socket.off("receive-message", handler);
+
+    //     }
 
 
 
-    return ()=>{socket.off('signal')}
+
+    //   })
+
+    // }
+
+
+    return () => { socket.off('signal') }
   }, [])
 
 
@@ -120,42 +147,45 @@ let renderOnes=true
 
     socket.emit('mute-status-changed', {
       roomId,
-      userId: user._id, // or user.name if unique
+      userId: user?.id, // or user.name if unique
       isMuted: newMuteState,
     });
-  
+
     // Optional: actually mute/unmute microphone
     localStremRef.current?.getAudioTracks().forEach(track => {
       track.enabled = !newMuteState;
     });
   };
-  
 
 
-//REMOTE USER MUTE STATUS
-const [remoteUserMuted, setRemoteUserMuted] = useState(false);
 
-useEffect(() => {
-  const handleRemoteMuteChange = ({ userId, isMuted }) => {
-    console.log(userId,isMuted);
-    
-    if (userId !== user._id) {
-      setRemoteUserMuted(isMuted);
-    }
-  };
+  //REMOTE USER MUTE STATUS
+  const [remoteUserMuted, setRemoteUserMuted] = useState(false);
 
-  socket.on('mute-status-changed', handleRemoteMuteChange);
+  useEffect(() => {
+    const handleRemoteMuteChange = ({ userId, isMuted }:{
+      userId: string,
+      isMuted: boolean
+    }) => {
+      console.log(userId, isMuted);
 
-  return () => {
-    socket.off('mute-status-changed', handleRemoteMuteChange);
-  };
-}, [user._id]);
+      if (userId !== user?.id) {
+        setRemoteUserMuted(isMuted);
+      }
+    };
 
-// ---------------------------------------------------------------------
-  
+    socket.on('mute-status-changed', handleRemoteMuteChange);
+
+    return () => {
+      socket.off('mute-status-changed', handleRemoteMuteChange);
+    };
+  }, [user?.id]);
+
+  // ---------------------------------------------------------------------
 
 
-useEffect(() => {
+
+  useEffect(() => {
 
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" })
@@ -167,7 +197,7 @@ useEffect(() => {
     <div className={`fixed top-16 right-0 h-[calc(100vh-64px)] w-80 z-30 overflow-auto bg-[#000000] border border-[#0ef] shadow-[0_0_10px_#0ef] transition-transform duration-300 ${isCollapsed ? 'translate-x-[270px]' : ''}`}>
 
       {/* Header */}
-      <div className='p-1' onClick={() => setIsCollapsed(!isCollapsed)}>{isCollapsed ? "Open" : "Close"}</div>
+      <div className='p-1 cursor-pointer' onClick={() => setIsCollapsed(!isCollapsed)}>{isCollapsed ? "Open" : "Close"}</div>
       <div className="bg-black px-6 py-1 relative border-b border-[#0ef]">
         <div className="text-[#0ef] font-bold ml-20">Collaboration</div>
       </div>
@@ -182,7 +212,7 @@ useEffect(() => {
                 <img src="https://via.placeholder.com/32" alt="You" className="w-full h-full object-cover" />
               </div>
               <div>
-                <div className="text-sm">You ({user.name})</div>
+                <div className="text-sm">You ({user?.name})</div>
                 <div className="text-xs text-green-400">Driver</div>
               </div>
             </div>
@@ -206,7 +236,7 @@ useEffect(() => {
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-green-400">Live collaboration active</span>
             </div>
-     
+
           </div>
           <div className="text-xs text-gray-400 mt-2">
             <p>Both participants can edit code simultaneously in real-time</p>
@@ -255,7 +285,7 @@ useEffect(() => {
                   )}
                 </div>
               </div>
-              <div className="text-sm">You({user.name})</div>
+              <div className="text-sm">You({user?.name})</div>
             </div>
             <div className="flex gap-2">
               <button
@@ -298,11 +328,11 @@ useEffect(() => {
                   <div className="w-1 h-2 bg-gray-700 rounded"></div>
                 </div>
               </div>
-              <span className="text-xs text-gray-500">{!remoteUserMuted ? "" :"Muted"}</span>
+              <span className="text-xs text-gray-500">{!remoteUserMuted ? "" : "Muted"}</span>
             </div>
           </div>
 
-          <div className="mt-3 pt-3 border-t border-gray-800">
+          {/* <div className="mt-3 pt-3 border-t border-gray-800">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs text-gray-400">Voice Connection: <span className="text-green-400">Strong</span></span>
               <div className="flex items-center">
@@ -320,7 +350,7 @@ useEffect(() => {
                 <FaVolumeUp className="inline mr-1" /> Volume
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Chat Section */}

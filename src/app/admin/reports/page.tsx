@@ -16,7 +16,10 @@ const UserManagement = () => {
   const [page, setPage] = useState("1")
   const [totalReports, setTotalReports] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [reports, setReports] = useState([{ descriptions: "", pageInfo: "", reportType: "", submittedBy: "", createdAt: "" }])
+  const [reports, setReports] = useState([{status:"",
+     descriptions: "", pageInfo: "", reportType: "", submittedUser: "",role:"",id:"",
+      createdAt: "" ,reportedUserDetails:"",description:"",
+    updatedAt:""}])
   const [trigger, setTrigger] = useState(false)
 
   const limit="10"
@@ -139,7 +142,6 @@ const UserManagement = () => {
                         <div className="flex items-center gap-2">
                           <div>
                             <div>{report.submittedUser}</div>
-                            <div className="text-xs text-gray-400">#{report.submittedUser?.name}</div>
                           </div>
                         </div>
                       </td>
@@ -163,7 +165,7 @@ const UserManagement = () => {
                         </button> */}
               
                           <select value={report.status} onChange={(e) => actionHandler(report.id, e.target.value)} className="search-input px- py-1 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
-                            <option value="">All Status</option>
+          
                             <option value="pending">pending</option>
                             <option value="in_progress">in_progress</option>
                             <option value="solved">solved</option>

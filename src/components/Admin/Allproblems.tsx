@@ -5,15 +5,19 @@ import React, { useEffect, useState } from "react";
 import { FaSearch, FaEdit, FaBan, FaCheck, FaCheckCircle, FaPlus } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 import { useRouter } from "next/navigation";
-import { editProblemService, IProblem } from "@/service/problemService";
+import { editProblemService } from "@/service/problemService";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { confirmationAlert } from "@/utils/confirmationAlert";
+import { IProblem } from "@/types/problem";
 
 
 
 
 
-const Allproblems = ({showEditProblem,showAddProblem}) => {
+const Allproblems = ({showEditProblem,showAddProblem}:{
+  showEditProblem: (e: React.MouseEvent, problem: IProblem) => void,
+  showAddProblem: (show: boolean) => void
+}) => {
 const [search,setSearch]=useState("")
 const [difficulty,setDifficulty]=useState("")
 const [status,setStatus]=useState("")
@@ -69,7 +73,7 @@ const router=useRouter()
   const handleSubmit =async (e:React.MouseEvent ,problem:IProblem) => {
     e.stopPropagation()
     setLimit("0")
-    const alert=await confirmationAlert(`change this program ${problem.status ? "active" :"block"}`)
+    const alert=await confirmationAlert(`change this program ${problem.status ? "block" :"active"}`)
     if(alert){
         if(problem.status){
             problem.status=false
@@ -183,7 +187,8 @@ const router=useRouter()
                       <span className={`px-2 py-1 ${problem.difficulty=="easy" ? "text-yellow-500" :"text-red-500"} text-xs rounded`}>{problem.difficulty}</span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1  text-xs rounded`}>{problem.status}</span>
+                  <span className={`px-2 py-1  text-xs rounded`}>{Math.round((problem.acceptance.accepted/problem.acceptance.submitted)*100)}%</span>
+
                     </td>
                     <td className="py-3 px-4">{problem.tags}</td>
                     <td className="py-3 px-4">{new Date(problem.updatedAt).toLocaleDateString()}</td>

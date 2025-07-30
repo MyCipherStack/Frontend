@@ -2,21 +2,30 @@
   "use client"
 import Link from 'next/link';
 import LineChartComponet from './LineChart';
-import { useEffect, useState } from 'react';
-import { getAdminDashBoardData } from '@/service/getDataService';
+import React, { useEffect, useState } from 'react';
+import { getAdminDashBoardData, getAllTransactions } from '@/service/getDataService';
 import { toastError } from '@/utils/toast';
 
 
+// update total problems
 
-export default function DashBoard() {
+
+const DashBoard=()=> {
 
   const [range,setRange]=useState("")
-  const [chartData,setChartData]=useState()
-  const [revenueChartData,setRevenueChartData]=useState()
+  const [chartData,setChartData]=useState([])
+  const [revenueChartData,setRevenueChartData]=useState([])
   const [totalUsers,setTotalUsers]=useState()
   const [premiumUsers,setPremiumUsers]=useState()
   const [thisMonthRevenu,setThisMonthRevenu]=useState()
 
+const [status]=useState("")
+const [page]=useState("6")
+const [limit]=useState("4")
+const [totalTransaction,setTotalTransaction]=useState(0)
+const [totalPages,setTotalPages]=useState(0)
+const [Transaction,setTransaction]=useState([{amount:"",paymentMethord:"",status:""}])
+const [trigger,setTrigger]=useState(false)
 
   const params=new  URLSearchParams({range:range})
   useEffect(()=>{
@@ -41,6 +50,29 @@ export default function DashBoard() {
   
   },[range])
 
+
+
+    useEffect(()=>{
+  
+      const timeOut=setTimeout(()=>{  //Debounce
+  
+        const params=new URLSearchParams({page,status,limit})
+        const fetchData = async () => {
+          const response = await getAllTransactions(params.toString());
+          setTotalPages(response.data.transactions.totalPages,)
+          setTotalTransaction(response.data.transactions.totalTransaction)
+          setTransaction(response.data.transactions.transaction)
+          
+        };
+        
+        fetchData();
+  
+      },500)
+  
+      return ()=> clearTimeout(timeOut)
+  
+    },[page,status,trigger])
+
   return (
     <>
 
@@ -50,17 +82,17 @@ export default function DashBoard() {
         {/* Main Content Area */}
         <div className="content-area">
           {/* Header */}
-          <div className="flex justify-between iteuuuuuuuuums-center mb-8">
+          <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold neon-text">Dashboard Overview</h1>
             <div className="flex items-center gap-4">
-              <select onClick={(e)=>setRange(e.target.value)} className="bg-black border border-gray-800 text-gray-300 px-4 py-2 rounded">
+              <select onClick={(e:React.MouseEvent<HTMLSelectElement>)=>setRange(e.currentTarget.value)} className="bg-black border border-gray-800 text-gray-300 px-4 py-2 rounded">
                 <option value="24h">Last 24 Hours</option>
                 <option value="7d">Last 7 Days</option>
                 <option value="30d">Last 30 Days</option>
                 <option value="1y">This Year</option>
               </select>
               <button className="px-4 py-2 bg-[#0ef] text-black rounded hover:bg-[#0df] transition duration-300">
-                <i className="fas fa-download mr-2"></i>Export Report
+                {/* <i className="fas fa-download mr-2"></i>Export Report */}
               </button>
             </div>
           </div>
@@ -123,7 +155,7 @@ export default function DashBoard() {
               <div className="flex justify-between items-start">
                 <div>
                   <div className="text-gray-400 mb-2">Total Problems</div>
-                  <div className="text-3xl font-bold text-white">325</div>
+                  <div className="text-3xl font-bold text-white">2</div>
                   <div className="text-sm mt-2">
                     <span className="text-green-400"><i className="fas fa-arrow-up mr-1"></i>5.2%</span>
                     <span className="text-gray-400 ml-2">vs last month</span>
@@ -166,7 +198,7 @@ export default function DashBoard() {
           {/* Premium Content Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Premium Problems */}
-            <div className="bg-[#111111] rounded-lg neon-border overflow-hidden">
+            {/* <div className="bg-[#111111] rounded-lg neon-border overflow-hidden">
               <div className="bg-black px-6 py-3 relative terminal-dots border-b border-[#0ef]">
                 <div className="text-[#0ef] font-bold ml-20">Premium Problems</div>
               </div>
@@ -210,10 +242,10 @@ export default function DashBoard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Subscription Plans */}
-            <div className="bg-[#111111] rounded-lg neon-border overflow-hidden">
+            {/* <div className="bg-[#111111] rounded-lg neon-border overflow-hidden">
               <div className="bg-black px-6 py-3 relative terminal-dots border-b border-[#0ef]">
                 <div className="text-[#0ef] font-bold ml-20">Active Subscriptions</div>
               </div>
@@ -232,46 +264,32 @@ export default function DashBoard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Recent Transactions */}
             <div className="bg-[#111111] rounded-lg neon-border overflow-hidden">
               <div className="bg-black px-6 py-3 relative terminal-dots border-b border-[#0ef]">
                 <div className="text-[#0ef] font-bold ml-20">Recent Transactions</div>
               </div>
-              <div className="p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-2 bg-black rounded border border-gray-800">
-                    <div className="flex items-center">
-                      <img src="https://via.placeholder.com/32" className="w-8 h-8 rounded-full mr-3" alt="User" />
-                      <div>
-                        <div className="font-medium">Annual Plan</div>
-                        <div className="text-xs text-gray-400">2 minutes ago</div>
-                      </div>
-                    </div>
-                    <div className="text-green-400">+$199.99</div>
+              <div>
+
+                {Transaction.map((transaction,index) => (
+                  <div key={index} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue bg-black-400">
+                 
+                    {/* <td className="py-3 px-4">{transaction.userId}</td> */}
+                    <span className="py-3 px-4">{transaction.amount}</span>
+                    <span className="py-3 px-4">{transaction.paymentMethord}</span>
+                  
+                    <span className="py-3 px-4">
+                      <span className={`px-2 py-1 ${transaction.status=="success" ? "text-green-500" :"text-red-500"} text-xs rounded`}>{transaction.status}</span>
+                    </span>
+                
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-black rounded border border-gray-800">
-                    <div className="flex items-center">
-                      <img src="https://via.placeholder.com/32" className="w-8 h-8 rounded-full mr-3" alt="User" />
-                      <div>
-                        <div className="font-medium">Monthly Plan</div>
-                        <div className="text-xs text-gray-400">15 minutes ago</div>
-                      </div>
-                    </div>
-                    <div className="text-green-400">+$19.99</div>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-black rounded border border-gray-800">
-                    <div className="flex items-center">
-                      <img src="https://via.placeholder.com/32" className="w-8 h-8 rounded-full mr-3" alt="User" />
-                      <div>
-                        <div className="font-medium">Monthly Plan</div>
-                        <div className="text-xs text-gray-400">32 minutes ago</div>
-                      </div>
-                    </div>
-                    <div className="text-green-400">+$19.99</div>
-                  </div>
+                ))}
+
                 </div>
+
+              <div className="p-4">
                 <div className="mt-4 text-right">
                   <Link href="/admin/transactions" className="text-[#0ef] hover:underline text-sm">
                     View all transactions <i className="fas fa-arrow-right ml-1"></i>
@@ -281,49 +299,14 @@ export default function DashBoard() {
             </div>
           </div>
 
-          {/* Recent Activity */}
-          <div className="bg-[#111111] rounded-lg neon-border overflow-hidden">
-            <div className="bg-black px-6 py-3 relative terminal-dots border-b border-[#0ef]">
-              <div className="text-[#0ef] font-bold ml-20">Recent Activity</div>
-            </div>
-            <div className="p-4">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 p-3 bg-black rounded border border-gray-800">
-                  <div className="w-8 h-8 bg-green-900 rounded-full flex items-center justify-center text-green-400">
-                    <i className="fas fa-user-plus"></i>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium">New Premium User</div>
-                    <div className="text-sm text-gray-400">CyberNinja upgraded to premium membership</div>
-                  </div>
-                  <div className="text-sm text-gray-400">2 mins ago</div>
-                </div>
-                <div className="flex items-center gap-4 p-3 bg-black rounded border border-gray-800">
-                  <div className="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center text-blue-400">
-                    <i className="fas fa-code"></i>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium">New Problem Added</div>
-                    <div className="text-sm text-gray-400">Admin added "Dynamic Programming Challenge"</div>
-                  </div>
-                  <div className="text-sm text-gray-400">15 mins ago</div>
-                </div>
-                <div className="flex items-center gap-4 p-3 bg-black rounded border border-gray-800">
-                  <div className="w-8 h-8 bg-yellow-900 rounded-full flex items-center justify-center text-yellow-400">
-                    <i className="fas fa-trophy"></i>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-medium">Contest Completed</div>
-                    <div className="text-sm text-gray-400">Weekly Challenge #42 ended with 86 participants</div>
-                  </div>
-                  <div className="text-sm text-gray-400">1 hour ago</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
 
     </>
   );
 }
+
+
+
+export default DashBoard

@@ -26,7 +26,7 @@ console.log(error);
             store.dispatch(logOut())
             toastError(error.response.message || "Unauthorized access Login to continue")
             setTimeout(()=>{
-                window.location.href="login"
+                window.location.href="/login"
 
             },600)
         }

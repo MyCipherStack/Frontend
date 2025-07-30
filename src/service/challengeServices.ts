@@ -1,28 +1,21 @@
 
+import { challenge } from "@/types/challenge";
 import axios from "../utils/axiosConfig"
+import { string } from "zod";
 
 
-
-type GroupChallenge = {
-    challengeName: string;
-    participants:string
-    duration:string
-    problems:string[],
-    type:string
-
-  };
 
 
  export type pairProgramming = {
     challengeName: string;
-    problems: string[],
+    problems: {name:string,id:string}[],
     type: string,
     invitedUsers:string[],
     sessionType:string
 
   };
 
-export const createGroupChallengeService=async(data:GroupChallenge)=>{
+export const createGroupChallengeService=async(data:challenge)=>{
     const url="/api/user/arena/createGroupChallenge"
     try{
         const response= await axios.post(url,data,{withCredentials:true}) 
@@ -74,9 +67,9 @@ export const joinPairProgramming=async(params:string)=>{
 
 
 
-export const getAllGroupChallenges=async()=>{
+export const getAllGroupChallenges=async(params:string)=>{
     try{
-        const url="/api/admin/getAllGroupChallenges"
+        const url=`/api/admin/getAllGroupChallenges?${params}`
         const response= await axios.get(url,{withCredentials:true}) 
         return response
 
@@ -86,9 +79,9 @@ export const getAllGroupChallenges=async()=>{
 }
 
 
-export const getAllPairProgramming=async()=>{
+export const getAllPairProgramming=async(params:string)=>{
     try{
-        const url="/api/admin/getAllPairProgramming"
+        const url=`/api/admin/getAllPairProgramming?${params}`
         const response= await axios.get(url,{withCredentials:true}) 
         return response
 
@@ -99,10 +92,10 @@ export const getAllPairProgramming=async()=>{
 
 
 
-export const challengeChangeStatus=async(status:string,id:string)=>{
+export const challengeChangeStatus=async(isBlocked:string,id:string)=>{
     try{
         const url="/api/admin/challengeChangeStatus"
-        const response= await axios.patch(url,{status,id},{withCredentials:true}) 
+        const response= await axios.patch(url,{isBlocked,id},{withCredentials:true}) 
         return response
 
     }catch(error){
@@ -112,10 +105,10 @@ export const challengeChangeStatus=async(status:string,id:string)=>{
 
 
 
-export const changeStatusPairProgarm=async(status:string,id:string)=>{
+export const changeStatusPairProgarm=async(isBlocked:string,id:string)=>{
     try{
         const url="/api/admin/changeStatusPairProgarm"
-        const response= await axios.patch(url,{status,id},{withCredentials:true}) 
+        const response= await axios.patch(url,{isBlocked,id},{withCredentials:true}) 
         return response
 
     }catch(error){
@@ -127,6 +120,53 @@ export const changeStatusPairProgarm=async(status:string,id:string)=>{
 export const getUserAciveChallenges=async(params:string)=>{
     try{
         const url=`/api/user/activeChallenges?${params}`
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+
+
+export const startChallenge=async(id:string)=>{
+    try{
+        const url='/api/user/startChallenge'
+        const response= await axios.patch(url,{id},{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+export const challengeResults=async()=>{
+    try{
+        const url='/api/user/challengeResults'
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+
+export const challengeLeaderBoard=async(challengeId:string)=>{
+    try{
+        const url=`/api/user/challenge/${challengeId}/leaderBoard`
+        
+        const response= await axios.get(url,{withCredentials:true}) 
+        return response
+
+    }catch(error){
+        throw error
+    }
+}
+export const pairProgrammingRequest=async()=>{
+    try{
+        const url=`/api/user/pairProgrammingRequest`
+        
         const response= await axios.get(url,{withCredentials:true}) 
         return response
 

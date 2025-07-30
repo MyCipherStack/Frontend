@@ -1,5 +1,23 @@
+import { pairProgrammingRequest } from "@/service/challengeServices"
+import { useEffect } from "react"
 
-export const BattleRequests = () => (
+export const BattleRequests = () => {
+
+
+  useEffect(() => {
+    run()
+  }, [])
+  
+  const run=async()=>{
+    const data=await pairProgrammingRequest()
+
+  }
+
+
+  return (
+
+
+
     <div className="mt-12">
       <h2 className="text-2xl font-bold neon-text mb-6">Pair  Programming Requests</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -41,7 +59,7 @@ export const BattleRequests = () => (
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-10 h-10 rounded-full bg-card-bg border-2 border-neon-blue overflow-hidden">
-                <img src="https://widget.cloudinary.com/v2.0/global/all.js" alt="Opponent" className="w-full h-full object-cover" />
+                  <img src="https://widget.cloudinary.com/v2.0/global/all.js" alt="Opponent" className="w-full h-full object-cover" />
                 </div>
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
               </div>
@@ -63,4 +81,6 @@ export const BattleRequests = () => (
         </div>
       </div>
     </div>
-  );
+  )
+
+}

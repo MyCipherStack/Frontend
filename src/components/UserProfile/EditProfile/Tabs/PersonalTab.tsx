@@ -1,12 +1,20 @@
 import { FaCamera, FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { InputField } from "../Components/InputField";
-import { FormData } from "../EditProfile";
 
 export function PersonalTab({
   data,
   onChange,
 }: {
-  data: FormData["personal"];
+  data: {
+    image: string;
+    displayName: string;
+    username: string;
+    email: string;
+    phone: string;
+    bio: string;
+    github: string;
+    linkedin: string;
+  };
   onChange: (field: string, value: string) => void;
 }) {
 
@@ -18,7 +26,7 @@ export function PersonalTab({
     (error, result) => {
       if (!error && result && result.event === "success") { 
       console.log(result.info.url); 
-      onChange("avatar",result.info.url)
+      onChange("image",result.info.url)
     }
     console.log(error);
     
@@ -31,7 +39,7 @@ export function PersonalTab({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6">
         <div className="relative self-start">
-          <img src={data.avatar}
+          <img src={data.image}
 
             className="w-24 h-24 rounded-full border-2 border-[#0ef] object-cover"
             alt="Profile"
@@ -86,13 +94,13 @@ export function PersonalTab({
           icon={<FaGithub />}
           placeholder="GitHub Username"
           value={data.github}
-          onChange={(value) => onChange("github", value)}
+          onChange={(value) => onChange("github", value.trim())}
         />
         <SocialInput
           icon={<FaLinkedin />}
           placeholder="LinkedIn Username"
           value={data.linkedin}
-          onChange={(value) => onChange("linkedin", value)}
+          onChange={(value) => onChange("linkedin", value.trim())}
         />
       </div>
     </div>

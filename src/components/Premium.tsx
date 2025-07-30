@@ -2,12 +2,12 @@
 // Best value tag show when name contain anuval
 // ]
 
-import { getUserProfile } from '@/service/getDataService';
 import { getAllPlanDetails, getSubcriptionData, subscribePlan } from '@/service/PremiumServices';
 import { IRazorpayHandler, verifyPayment } from '@/service/verifyPayment';
+import { RootState } from '@/store/store';
 import { toastError, toastSuccess } from '@/utils/toast';
 import { useEffect, useState } from 'react';
-import { FaCheckCircle, FaCrown, FaChartLine } from 'react-icons/fa';
+import { FaCheckCircle, FaCrown, FaChartLine, FaRupeeSign } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 
 export interface Plan {
@@ -45,7 +45,7 @@ export default function Premium() {
   const [currentPlanId, setCurrentPlanId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const user=useSelector((state)=>state.auth.user)
+  const user = useSelector((state: RootState) => state.auth.user)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,20 +53,20 @@ export default function Premium() {
         setIsLoading(true);
         // Fetch all plans
         const plansResponse = await getAllPlanDetails();
-        console.log("paln",plansResponse.data.plans)
+        console.log("paln", plansResponse.data.plans)
         setPlans(plansResponse.data.plans);
-        
+
         // Fetch current subscription
         try {
-          if(user){
+          if (user) {
 
             const subscriptionData = await getSubcriptionData();
-            console.log("subcriotion Data",subscriptionData.data.data.planId);
-            
-            if(subscriptionData && subscriptionData.data.data.planId){
+            console.log("subcriotion Data", subscriptionData.data.data.planId);
+
+            if (subscriptionData && subscriptionData.data.data.planId) {
               setCurrentPlanId(subscriptionData.data.data.planId);
             }
-                
+
           }
           // if (subscriptionResponse.data && subscriptionResponse.data.plan) {
           //   setCurrentPlanId(subscriptionResponse.data.plan._id);
@@ -81,7 +81,7 @@ export default function Premium() {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -94,19 +94,19 @@ export default function Premium() {
     const loadRazorpayScript = (): Promise<boolean> => {
       return new Promise((resolve) => {
         const script = document.createElement("script")
-        script.src = "https://checkout.razorpay.com/v1/checkout.js"
+        script.src = process.env.NEXT_PUBLIC_RAZORPAY_SCRIPT_URL || "https://checkout.razorpay.com/v1/checkout.js"
         script.onload = () => resolve(true)
         script.onerror = () => resolve(false)
         document.body.appendChild(script)
       })
     }
-    
+
     const loadScript = await loadRazorpayScript()
     if (!loadScript) {
       toastError("Failed to load Razorpay")
       return
     }
-    
+
     try {
       const response = await subscribePlan(id)
       let orderId = response.data.orderId
@@ -120,7 +120,7 @@ export default function Premium() {
         order_id: orderId,
         handler: async (response: IRazorpayHandler) => {
           const res = await verifyPayment(response)
-          if (res.status) { 
+          if (res.status) {
             toastSuccess("Payment success");
             setCurrentPlanId(id); // Update current plan after successful payment
           } else {
@@ -143,8 +143,10 @@ export default function Premium() {
       }
 
       const razorpay = new (window as any).Razorpay(options)
-      razorpay.on("payment.failed", function (response) {
+      razorpay.on("payment.failed", function (response: unknown) {
         toastError("Payment failed")
+        console.log(response);
+
       })
       razorpay.open()
     } catch (err: unknown) {
@@ -167,14 +169,14 @@ export default function Premium() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-center gap-10">
           {/* Text Content */}
-          <div className="w-full md:w-1/2 ">
+          <div className="w-full md:w-1/2 mt-18">
             <h2 className="text-3xl font-bold mb-4 text-[#0ef]">
               <FaCrown className="inline mr-2" />
               {currentPlanId ? 'Your Premium Membership' : 'Upgrade to Premium'}
             </h2>
             <p className="text-xl text-gray-300 mb-6">
-              {currentPlanId 
-                ? 'Manage your premium subscription and enjoy exclusive features' 
+              {currentPlanId
+                ? 'Manage your premium subscription and enjoy exclusive features'
                 : 'Unlock exclusive features and accelerate your coding journey'}
             </p>
 
@@ -194,13 +196,12 @@ export default function Premium() {
           {/* Pricing Cards */}
           <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
             {plans.map((plan, index) => (
-              <div 
-                key={index} 
-                className={`flex flex-col rounded-lg border p-6 relative transition-all duration-300 ${
-                  plan._id === currentPlanId 
-                    ? 'border-[#0ef] bg-[#0ef]/10' 
+              <div
+                key={index}
+                className={`flex flex-col rounded-lg border p-6 relative transition-all duration-300 ${plan._id === currentPlanId
+                    ? 'border-[#0ef] bg-[#0ef]/10'
                     : 'border-gray-800 hover:border-[#0ef] bg-black'
-                }`}
+                  }`}
               >
                 {plan?.name?.toLowerCase().includes("annual") && (
                   <div className="absolute -top-3 right-3 bg-[#0ef] text-black text-xs px-3 py-1 rounded-full">
@@ -215,25 +216,25 @@ export default function Premium() {
                 <h3 className="text-xl font-bold text-[#0ef] mb-2">
                   {plan.name}
                 </h3>
-                <div className="text-3xl font-bold mt-2 mb-4">
-                  ${plan.price}
-                  <span className="text-sm text-gray-400">/{plan.cycle}</span>
+                <div className="text-3xl font-bold mt-2 mb-4 flex ">
+                  <FaRupeeSign className='size-6 mt-1' />
+                     {plan.price}
+                  <span className="text-sm mt-2 text-gray-400">/{plan.cycle}</span>
                 </div>
                 <div className="space-y-3 mb-4">
                   {plan.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center text-gray-300">
-                      <FaCheckCircle className="text-green-400 mr-2" />
-                      {feature.text}
+                      <span><FaCheckCircle className="text-green-400 mr-2" /></span>
+                      <span>{feature.text}</span>
                     </div>
                   ))}
                 </div>
-                <button 
-                  onClick={() => subscribe(plan._id)} 
-                  className={`mt-auto w-full px-4 py-2 rounded font-bold cursor-pointer transition duration-300 ${
-                    plan._id === currentPlanId
+                <button
+                  onClick={() => subscribe(plan._id)}
+                  className={`mt-auto w-full px-4 py-2 rounded font-bold cursor-pointer transition duration-300 ${plan._id === currentPlanId
                       ? 'bg-gray-600 text-white cursor-not-allowed'
                       : 'bg-[#0ef] text-black hover:bg-[#0df]'
-                  }`}
+                    }`}
                   disabled={plan._id === currentPlanId}
                 >
                   {plan._id === currentPlanId ? 'Current Plan' : 'Subscribe'}

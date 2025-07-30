@@ -1,49 +1,30 @@
 "use client"
 
 import { getSubmissions } from '@/service/getSubmissions';
+import { submissions } from '@/types/problem';
 import { toastError } from '@/utils/toast';
 import { useEffect, useState } from 'react';
 import { FaCheckCircle, FaExclamationCircle, FaCode, FaArrowRight, FaChevronLeft } from 'react-icons/fa';
   // Sample submission data
-  const submissionw = [
-    {
-      id: 1,
-      date: '2023-05-15',
-      language: 'Python',
-      runtime: '45 ms',
-      memory: '14.2 MB',
-      status: 'Accepted',
-      code: `class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        num_map = {}
-        for i, num in enumerate(nums):
-            complement = target - num
-            if complement in num_map:
-                return [num_map[complement], i]
-            num_map[num] = i
-        return []`
-    },
-    {
-      id: 2,
-      date: '2023-05-14',
-      language: 'Python',
-      runtime: '52 ms',
-      memory: '14.3 MB',
-      status: 'Time Limit Exceeded',
-      code: `class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        for i in range(len(nums)):
-            for j in range(i+1, len(nums)):
-                if nums[i] + nums[j] == target:
-                    return [i, j]
-        return []`
-    }
-  ];
   
-  const Submissions = ({submissionTab,setSubmissionTab,SetSubmissionDetails,submissionDetails,problemId,}) => {
 
 
-    const[submissions,SetSubmissions]=useState([])
+
+
+
+
+
+
+  const Submissions = ({submissionTab,setSubmissionTab,SetSubmissionDetails,submissionDetails,problemId}:{
+  submissionTab: string;
+  setSubmissionTab: React.Dispatch<React.SetStateAction<string>>;   
+  SetSubmissionDetails: React.Dispatch<React.SetStateAction<submissions>>;
+  submissionDetails: submissions;
+  problemId: string;
+  }) => {
+
+
+    const[submissions,SetSubmissions]=useState<submissions[]>([])
     console.log(submissionDetails);
     console.log(problemId);
     
@@ -91,15 +72,15 @@ import { FaCheckCircle, FaExclamationCircle, FaCode, FaArrowRight, FaChevronLeft
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
-                  {submissions.map((submission) => (
-                    <tr key={submission._id} onClick={()=>{
+                  {submissions.map((submission,idx) => (
+                    <tr key={idx} onClick={()=>{
                       setSubmissionTab("submissionDetail")
                       SetSubmissionDetails(submission)
                       
                     }}>
-                      <td className="px-4 py-2">{new Date(submission.createdAt).toDateString()}</td>
+                      <td className="px-4 py-2">{new Date(submission.createdAt ?? "").toDateString()}</td>
                       <td className="px-4 py-2">{submission.language}</td>
-                      <td className="px-4 py-2">{submission.runTime}</td>
+                      <td className="px-4 py-2">{Math.round(submission.runTime)}</td>
                       <td className="px-4 py-2">{submission.memory}</td>
                       <td className="px-4 py-2">
                         {submission.status === 'Accepted' ? (
@@ -147,7 +128,10 @@ import {
   FaInfoCircle
 } from 'react-icons/fa';
 
-const SubmissionDetail = ({setSubmissionTab, submissionDetails }) => {
+export const SubmissionDetail = ({setSubmissionTab, submissionDetails }:{
+  setSubmissionTab: React.Dispatch<React.SetStateAction<string>>;
+  submissionDetails: submissions;
+}) => {
   const [showFailingTest, setShowFailingTest] = useState(false);
   const [showCode, setShowCode] = useState(true);
 
@@ -169,9 +153,13 @@ const SubmissionDetail = ({setSubmissionTab, submissionDetails }) => {
             <span className="ml-1">{submissionDetails.status}</span>
           </div>
         </div>
-        <div className="text-gray-400">
-          Submitted: {new Date(submissionDetails.createdAt).toLocaleString()}
-        </div>
+              <div className="text-gray-400">
+            Submitted:{" "}
+            {submissionDetails.createdAt
+              ? new Date(submissionDetails.createdAt).toLocaleString()
+              : "N/A"}
+      </div>
+
       </div>
 
       {/* Stats Grid */}

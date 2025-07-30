@@ -1,10 +1,11 @@
 
 
 
-import React, from 'react'
+import { typeTestCase } from '@/types/problem';
+import React from 'react'
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
 
-const Results = ({testCases,showTestCase}) => {
+const Results = ({testCases,showTestCase}:{testCases: typeTestCase[]; showTestCase: boolean}) => {
   console.log(testCases,"results");
   return (
     <>
@@ -26,7 +27,7 @@ const Results = ({testCases,showTestCase}) => {
                       <>
 
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm">Case {testCase.id}</span>
+                      <span className="text-sm">Case {testCase._id}</span>
                       {testCase.status == true ? (
                         <span className="text-green-400 text-xs flex items-center">
                           <FaCheckCircle className="mr-1" /> Passed

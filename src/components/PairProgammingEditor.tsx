@@ -1,5 +1,5 @@
 // PairEditor.jsx
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import socket from "@/utils/socket";
@@ -8,7 +8,12 @@ import { RootState } from "@/store/store";
 import debounce from "lodash.debounce"
 
 
-const PairEditor = ({ code, setCode, language, roomId }) => {
+const PairEditor = ({ code, setCode, language, roomId }:{
+  code: string;
+  setCode:Dispatch<SetStateAction<string>>,
+  language: string,
+  roomId:string
+}) => {
 
 
 
@@ -20,23 +25,23 @@ const PairEditor = ({ code, setCode, language, roomId }) => {
 
   const user = useSelector((state: RootState) => state.auth.user)
 
-  const userId = user.name
-  const editorRef = useRef(null);
+  const userId = user?.name
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const pairnameRef = useRef("me")
-  const [remoteDecorations, setRemoteDecorations] = useState({});
+  const [remoteDecorations, setRemoteDecorations] = useState<Record<string,string[]>>({});
 
-  const handleEditorDidMount = (editor) => {
+  const handleEditorDidMount = (editor:monaco.editor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
     const model = editor.getModel()
     const sendCodeChange = debounce(() => {
-      const value = model.getValue();
+      const value = model?.getValue();
       console.log("code chanage ", roomIdRef.current);
 
       socket.emit("code-change", { roomId: roomIdRef.current, code: value });
     }, 500); // 500ms debounce 
 
-    model.onDidChangeContent(() => {
-      const value = model.getValue()
+    model?.onDidChangeContent(() => {
+      const value = model?.getValue()
       setCode(value);
       sendCodeChange()
 
@@ -60,12 +65,12 @@ const PairEditor = ({ code, setCode, language, roomId }) => {
   roomIdRef.current = roomId
 
 
-  const colorMap = {
+  const colorMap:Record<string,string> = {
     "akhil": "green",
     "john": "red",
   };
 
-  const addUserStyles = (name) => {
+  const addUserStyles = (name:string) => {
 
     const safeName = name.replace(/[^a-zA-Z0-9_-]/g, "_"); // sanitize
 
@@ -92,8 +97,8 @@ const PairEditor = ({ code, setCode, language, roomId }) => {
   useEffect(() => {
 
 
-    console.log(roomId, "join roomIddd");
-    socket.emit("join-pairProgramming", { roomId, userName: user.name });
+    // console.log(roomId, "join roomIddd");
+    // socket.emit("join-pairProgramming", { roomId,userName:user.name });
 
     socket.on("code-change", (newCode) => {
       if (editorRef.current && newCode !== editorRef.current.getValue()) {
@@ -114,8 +119,8 @@ const PairEditor = ({ code, setCode, language, roomId }) => {
       pairnameRef.current = otherId
       console.log("after if case");
       
-
-      addUserStyles(pairnameRef.current)
+      //
+      // addUserStyles(pairnameRef.current)  
 
       const range = new monaco.Range(
         position.lineNumber,
@@ -157,7 +162,7 @@ const PairEditor = ({ code, setCode, language, roomId }) => {
       socket.off("cursor-change");
       if (editorRef.current) {
         Object.values(remoteDecorations).forEach(decorationIds => {
-          editorRef.current.deltaDecorations(decorationIds, []);
+          editorRef.current?.deltaDecorations(decorationIds, []);
         });
       }
     };

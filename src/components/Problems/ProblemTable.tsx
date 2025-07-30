@@ -4,8 +4,10 @@ import { getAllProblems } from "@/service/getDataService";
 import React, { useEffect, useState } from "react";
 import { FaSearch, FaCheckCircle } from "react-icons/fa";
 import { Pagination } from "../Pagination";
+import ReportButton from "../Report";
+import { ServerInsertedHTMLContext } from "next/navigation";
 
-const ProblemTable = ({ openProblem }) => {
+const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) => void }) => {
   const [search, setSearch] = useState("")
   const [difficulty, setDifficulty] = useState("")
   const [status, setStatus] = useState("true")
@@ -14,7 +16,9 @@ const ProblemTable = ({ openProblem }) => {
   const [limit, setLimit] = useState("10")
   const [totalProblem, setTotalProblem] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [Problem, setProblem] = useState([{ _id: "", title: "", tags: "", difficulty: "", status: "", category: "" }])
+  const [Problem, setProblem] = useState([{ _id: "", title: "", tags: "", difficulty: "", status: "", category: "",
+   acceptance:{submitted:1,accepted:1}
+   }])
 
 
 
@@ -187,7 +191,7 @@ const ProblemTable = ({ openProblem }) => {
                 </tr>
               </thead>
               <tbody>
-                {Problem.map((problem) => (
+                {Problem.map((problem,index) => (
                   <tr key={problem._id} onClick={() => openProblem(problem.title, problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
                     <td className="py-3 px-4 ">
                       <FaCheckCircle />
@@ -196,7 +200,7 @@ const ProblemTable = ({ openProblem }) => {
                       <div className="flex items-center gap-2">
                         {/* <img src={problem.image} className="w-8 h-8 rounded-full" alt="problem" /> */}
                         <div>
-                          <div className="text-xs text-gray-400">#{1}</div>
+                          <div className="text-xs text-gray-400">{index+1}</div>
                         </div>
                       </div>
                     </td>
@@ -205,14 +209,15 @@ const ProblemTable = ({ openProblem }) => {
                       <span className={`px-2 py-1 ${problem.difficulty == "easy" ? "text-yellow-500" : "text-red-500"} text-xs rounded`}>{problem.difficulty}</span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1  text-xs rounded`}>{problem.status}</span>
+                      <span className={`px-2 py-1  text-xs rounded`}>{Math.round((problem.acceptance.accepted/problem.acceptance.submitted)*100)}%</span>
                     </td>
                     <td className="py-3 px-4">{problem.tags}</td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
 
 
-                      </div>
+
+                      </div>  
                     </td>
                   </tr>
                 ))}

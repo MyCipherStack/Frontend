@@ -2,10 +2,14 @@
 import { resendOtpService } from "@/service/resendOtp";
 import { toastError, toastSuccess } from "@/utils/toast";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 
-const EnterOtp = ({ VerifyOtp, setOTP, email }) => {
+const EnterOtp = ({ verifyOtp, setOTP, email }:{
+  verifyOtp:() => void,
+  setOTP:Dispatch<SetStateAction<string[]>>,
+  email:string
+}) => {
 
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   //   const [currentStep, setCurrentStep] = useState(2);
@@ -101,7 +105,7 @@ const EnterOtp = ({ VerifyOtp, setOTP, email }) => {
           {code.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (codeInputs.current[index] = el)}
+              ref={(el) =>{ (codeInputs.current[index] = el)}}
               type="text"
               maxLength={1}
               value={digit}
@@ -122,7 +126,7 @@ const EnterOtp = ({ VerifyOtp, setOTP, email }) => {
         <button
           onClick={() => {
             setOTP(code)
-            VerifyOtp()
+            verifyOtp()
           }}
           className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300"
         >

@@ -1,8 +1,9 @@
 import { FaWindowClose } from "react-icons/fa";
 import ProblemTable from "./ProblemTable";
+import { Dispatch, SetStateAction } from "react";
 
 // Problem Selection Modal  
-export const ProblemSelectionModal = ({ openProblem, selectedProblemsCount, setShowProblemModal, groupChallenge,deleteProblem }) => (
+export const ProblemSelectionModal = ({ openProblem, selectedProblemsCount, setShowProblemModal, groupChallenge,deleteProblem }:{ openProblem: (title:string,id:string) => void; selectedProblemsCount: number; setShowProblemModal: Dispatch<SetStateAction<boolean>>; groupChallenge: any; deleteProblem: (problemName: string) => void; }) => (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center z-50 overflow-y-auto pt-20">
     <div className="bg-card-bg neon-border rounded-lg w-full max-w-5xl overflow-hidden">
       <div className="bg-black px-6 py-3 border-b border-neon-blue flex justify-between items-center">

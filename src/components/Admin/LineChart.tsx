@@ -6,7 +6,11 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 
 
-const  LineChartComponet=({chartData,XAxisData,YAxisData})=> {
+const  LineChartComponet=({chartData,XAxisData,YAxisData}:{
+  chartData: unknown[];
+  XAxisData: string;
+  YAxisData: string;
+})=> {
   
 
 

@@ -1,4 +1,11 @@
-export default function BasicInfoTab({ formData, setFormData, nextTab }) {
+import { IProblem } from "@/types/problem";
+import React from "react";
+
+export default function BasicInfoTab({ formData, setFormData, nextTab }:{
+  formData:IProblem,
+  setFormData: React.Dispatch<React.SetStateAction<IProblem>>,
+  nextTab: (tabName: string) => void
+}) {
     return (
       <div id="basic-info" className="tab-content active">
         <div className="bg-[#111111] rounded-lg neon-border p-6 mb-6">
@@ -43,7 +50,7 @@ export default function BasicInfoTab({ formData, setFormData, nextTab }) {
                 className="input-field w-full px-4 py-2 rounded" 
                 placeholder="e.g. 1000" 
                 value={formData.timeLimit}
-                onChange={(e) => setFormData({...formData, timeLimit: e.target.value})}
+                onChange={(e:React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, timeLimit: Number(e.target.value)})}
               />
             </div>
             <div>
@@ -53,7 +60,7 @@ export default function BasicInfoTab({ formData, setFormData, nextTab }) {
                 className="input-field w-full px-4 py-2 rounded" 
                 placeholder="e.g. 128" 
                 value={formData.memoryLimit}
-                onChange={(e) => setFormData({...formData, memoryLimit: e.target.value})}
+                onChange={(e:React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, memoryLimit: Number(e.target.value)})}
               />
             </div>
             <div>

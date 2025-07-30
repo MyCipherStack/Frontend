@@ -1,14 +1,22 @@
+import { typeTestCase } from '@/types/problem'
 import React, { useState } from 'react'
 import { FaEdit, FaPlusCircle, FaTrash, FaCheck, FaTimes } from 'react-icons/fa'
 
-const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAddTestCase, setTestCases }) => {
-  const [editingCase, setEditingCase] = useState(null)
+const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAddTestCase, setTestCases }:{
+  testCases: typeTestCase[],
+  selectedTestCase: number | null| string,
+  setSelectedTestCase: React.Dispatch<React.SetStateAction<number | string>>,
+  handleAddTestCase: () => void,
+  setTestCases: React.Dispatch<React.SetStateAction<typeTestCase[]>>,
+
+}) => {
+  const [editingCase, setEditingCase] = useState<number |string |  null>(null)
   const [editedValues, setEditedValues] = useState({ input: '', output: '' })
 
   console.log("test case", testCases);
 
 
-  const handleEditClick = (testCase) => {
+  const handleEditClick = (testCase:typeTestCase) => {
     setEditingCase(testCase._id)
     setEditedValues({
       input: testCase.input,
@@ -17,7 +25,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
     })
   }
 
-  const handleSaveEdit = (id) => {
+  const handleSaveEdit = (id:number) => {
     const updatedTestCases = testCases.map(tc => {
       if (tc._id === id) {
         return {
@@ -38,15 +46,15 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
     setEditingCase(null)
   }
 
-  const handleDeleteCase = (id) => {
+  const handleDeleteCase = (id:string) => {
     const updatedTestCases = testCases.filter(tc => tc._id !== id)
     setTestCases(updatedTestCases)
     if (selectedTestCase === id) {
-      setSelectedTestCase(updatedTestCases[0]?.id || null)
+      setSelectedTestCase(updatedTestCases[0]?._id )
     }
   }
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setEditedValues(prev => ({
       ...prev,
@@ -67,17 +75,17 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
         </button>
       </div>
 
-      {testCases.map((testCase, index) => (
+      {testCases.map((testCase: typeTestCase, index:number) => (
         <div
           key={index}
-          className={` test-case-card mb-2 p-3 rounded border ${selectedTestCase === testCase.id ? 'border-neon-blue' : 'border-gray-800'
+          className={` test-case-card mb-2 p-3 rounded border ${selectedTestCase === testCase._id ? 'border-neon-blue' : 'border-gray-800'
             } ${testCase.status === 'passed' ? 'bg-green-900 bg-opacity-20' : ''}`}
-          onClick={() => !editingCase && setSelectedTestCase(testCase.id)}
+          onClick={() => !editingCase && setSelectedTestCase(testCase?._id)}
         >
           {editingCase === testCase._id ? (
             <div className="space-y-2">
               <div>
-                <label className="text-xs text-gray-400">input</label>
+                <label className="text-xs text-gray-400">inputs</label>
                 <input
                   type="text"
                   name="input"
@@ -96,16 +104,7 @@ const TestCases = ({ testCases, setSelectedTestCase, selectedTestCase, handleAdd
                   className="w-full bg-gray-800 border border-gray-700 rounded p-1 text-sm"
                 />
               </div>
-              <div>
-                <label className="text-xs text-gray-400">output</label>
-                <input
-                  type="text"
-                  name="output"
-                  value={editedValues.output}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-800 border border-gray-700 rounded p-1 text-sm"
-                />
-              </div>
+          
               <div className="flex justify-end gap-2 mt-2">
                 <button
                   onClick={handleCancelEdit}

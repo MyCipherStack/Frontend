@@ -7,23 +7,24 @@
 import { resetPasswordService } from "@/service/resetPassword";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { SetStateAction } from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCheck, FaEye, FaEyeSlash } from "react-icons/fa";
-import { resetPasswordSchema } from "@/validations/authSchemas";
+import { resetPasswordLogoutUserSchema, ResetPasswordSchema, resetPasswordSchema } from "@/validations/authSchemas";
 import { toastError, toastSuccess } from "@/utils/toast";
+import { Dispatch } from "react"; 
 
 
 
 
-const CreateNewPassword = ({ setCurrentStep }) => {
+const CreateNewPassword = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<number>> }) => {
 
   const [showPassword, setShowPassword] = useState({ new: false, confirm: false });
   const [password, setPassword] = useState("")
   const [conformPassword, setConfromPassword] = useState("")
   const router = useRouter()
-  const { register, handleSubmit, formState: { errors, isSubmitting }, watch, setValue, reset } = useForm({ resolver: zodResolver(resetPasswordSchema) })
+  const { register, handleSubmit, formState: { errors, isSubmitting }, watch, setValue, reset } = useForm({ resolver: zodResolver(resetPasswordLogoutUserSchema) })
   const formData = watch()
 
   const togglePassword = (field: 'new' | 'confirm') => {
@@ -33,7 +34,7 @@ const CreateNewPassword = ({ setCurrentStep }) => {
   const resetHandler = async () => {
     try {
 
-      console.log(formData);
+      console.log(formData,"reset handler");
 
       const response = await resetPasswordService({ password: formData.password })
       console.log(response);
@@ -105,7 +106,7 @@ const CreateNewPassword = ({ setCurrentStep }) => {
         </ul>
       </div>
 
-      <button onClick={handleSubmit(resetHandler)} className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300">
+      <button type="submit" onClick={handleSubmit(resetHandler)} className="w-full bg-[#00eeff] text-black font-bold py-3 px-4 rounded hover:bg-opacity-80 transition duration-300">
         Reset Password
       </button>
     </div>

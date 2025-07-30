@@ -10,10 +10,10 @@ import InvitedUsers from '../UsersInvite';
 
 
 
-const PairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
+const CreatePairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
 
   const [problemType, setProblemType] = useState<'select' | 'random'>('select');
-  const [sessionType, setSessionType] = useState<'invite' | 'share code'>('invite');
+  const [sessionType, setSessionType] = useState<'invite' | 'sharecode'>('invite');
   const [showProblemModal, setShowProblemModal] = useState(false)
   const [selectedProblemsCount, setSelectedProblemsCount] = useState(0)
 
@@ -66,6 +66,8 @@ const PairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
 
   const startSession = async () => {
     try {
+      console.log(challengeDetails.problems.length,problemType);
+      
       if (!challengeDetails.challengeName.trim()) {
         return toastError("enter session name")
       }
@@ -83,7 +85,7 @@ const PairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
 
       const response = await createPairprogramming(challengeDetails)
 
-      // router.push(`/pairProgramming/${response.data.joinCode}`)
+      router.push(`/pairProgramming/${response.data.joinCode}`)
 
     } catch (error) {
       console.log(error, "Err creating pairprogrmming");
@@ -214,4 +216,4 @@ const PairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-export default PairProgrammingModal;
+export default CreatePairProgrammingModal;
