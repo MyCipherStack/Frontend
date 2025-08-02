@@ -28,7 +28,7 @@ const NotificationDrawer = () => {
       socket.emit("join-user-room", user.id)
     }
 
-    console.log(socket.rooms, "rooms"); // Set with all joined rooms
+    // console.log(socket.rooms, "rooms"); // Set with all joined rooms
 
 
     console.log(user, "joined user");

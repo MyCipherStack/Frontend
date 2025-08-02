@@ -81,7 +81,7 @@ const ProblemPage = () => {
         setProblems(problem)
         SetproblemDetails(problem[0])
         setCode(problem[0].starterCode['javascript'])
-        const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
+          const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
         setTestCases(testCase)
 
 

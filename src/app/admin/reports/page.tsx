@@ -16,13 +16,15 @@ const UserManagement = () => {
   const [page, setPage] = useState("1")
   const [totalReports, setTotalReports] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [reports, setReports] = useState([{status:"",
-     descriptions: "", pageInfo: "", reportType: "", submittedUser: "",role:"",id:"",
-      createdAt: "" ,reportedUserDetails:"",description:"",
-    updatedAt:""}])
+  const [reports, setReports] = useState([{
+    status: "",
+    descriptions: "", pageInfo: "", reportType: "", submittedUser:{name:"",role:""}, role: "", id: "",
+    createdAt: "", reportedUserDetails:{name:"",id:""}, description: "",
+    updatedAt: ""
+  }])
   const [trigger, setTrigger] = useState(false)
 
-  const limit="10"
+  const limit = "10"
 
   useEffect(() => {
 
@@ -52,7 +54,7 @@ const UserManagement = () => {
   }
 
   const actionHandler = async (id: string, status: string) => {
- 
+
 
     const alert = await confirmationAlert(`change the status to ${status}`)
 
@@ -132,7 +134,7 @@ const UserManagement = () => {
                 {reports.
                   filter((report) => {
                     return role == "" ? report :
-                      role !== "" && role === report.role
+                      role !== "" && role === report.submittedUser.role
                   })
                   .map((report, index) => (
 
@@ -141,14 +143,14 @@ const UserManagement = () => {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <div>
-                            <div>{report.submittedUser}</div>
+                            <div>{report.submittedUser.name}</div>
                           </div>
                         </div>
                       </td>
                       <td className="py-3 px-4">{report.reportType}
                       </td>
                       <td className="py-3 px-4">
-                        {report.reportType === "user" ? `${report.reportedUserDetails}` : ""}
+                        {report.reportType === "user" ? `${report.reportedUserDetails.name}` : ""}
                       </td>
                       <td className="py-3 px-4">{report.description}</td>
                       <td className="py-3 px-4">
@@ -163,15 +165,15 @@ const UserManagement = () => {
                           {/* <button className="p-1 text-gray-400 hover:text-neon-blue" title="Edit">
                           <FaEdit />
                         </button> */}
-              
+
                           <select value={report.status} onChange={(e) => actionHandler(report.id, e.target.value)} className="search-input px- py-1 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
-          
+
                             <option value="pending">pending</option>
                             <option value="in_progress">in_progress</option>
                             <option value="solved">solved</option>
                             <option value="rejected">rejected</option>
                           </select>
-                     
+
 
                         </div>
                       </td>

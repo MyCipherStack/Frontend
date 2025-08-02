@@ -19,6 +19,7 @@ import { challenge } from '@/types/challenge';
 import Timer from '@/components/Timer';
 import { FaSignOutAlt } from 'react-icons/fa';
 import axios from 'axios';
+import { IProblem } from '@/types/problem';
 
 
 
@@ -28,13 +29,19 @@ const GroupChallenge = () => {
   const [activeTab, setActiveTab] = useState('description');
   const [showTestCase, setShowTestCase] = useState(true)
   const [submissionDetails, SetSubmissionDetails] = useState({})
-  const [problemDetails, SetproblemDetails] = useState({ starterCode: "Javascript" })
+  const [problemDetails, setProblemDetails] = useState<IProblem>({ starterCode:{Javascript:""}
+  ,acceptance:"",constraints:"",difficulty:"",functionSigcnatureMeta })
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState();
   const [testCases, setTestCases] = useState([]);
   const params: { code: string } = useParams()
   const [selectedTestCase, setSelectedTestCase] = useState(1);
-  const [challengeData, setChallengeData] = useState<challenge>({})
+  const [challengeData, setChallengeData] = useState<challenge>({
+    _id: "",
+    challengeName: "",
+    createdAt: "", duration: 30, joinCode: "", maxParticipants: 6, participants: "",
+    problems: [], status: "", type: ""
+  })
   const userData = useSelector((state: RootState) => state.auth.user)
   const [problems, setProblems] = useState([])
   const joinCode = decodeURIComponent(params.code)
@@ -65,75 +72,75 @@ const GroupChallenge = () => {
   useEffect(() => {
     // if (!alreadyRun) {
 
-      // alreadyRun = true
-      const getProblemData = async () => {
-        const params = new URLSearchParams({ joinCode })
-        try {
-          const response = await joinGroupChallenge(params.toString());
+    // alreadyRun = true
+    const getProblemData = async () => {
+      const params = new URLSearchParams({ joinCode })
+      try {
+        const response = await joinGroupChallenge(params.toString());
 
-          const challenge = response.data.challengeData
+        const challenge = response.data.challengeData
 
-          dispatch(startTimer(challenge._id))
+        dispatch(startTimer(challenge._id))
 
-          setIsHost(challenge.isHost)
-          console.log(challenge, "challegeData");
+        setIsHost(challenge.isHost)
+        console.log(challenge, "challegeData");
 
-          if (new Date(challenge.endTime).getTime() < Date.now()) {
-            toastError("Challenge Time Ended")
-            challengeEnd();
-          }
-
-
-          setChallengeData(challenge)
-
-
-          console.log("useriddd check", userData);
-          socket.emit("join-challenge", challenge._id, userData.id)
-
-          const problem = response.data.challengeData.problems
-
-          setProblems(problem)
-
-          SetproblemDetails(problem[0])
-
-          setCode(problem[0].starterCode['javascript'])
-
-          const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
-
-          setTestCases(testCase)
-
-
-          socket.on("update-challenge-status", updatedChallengeData => {
-
-            toastSuccess("updating leaderboard..........")
-            setChallengeData(updatedChallengeData)
-
-
-          })
-
-
-
-        } catch (error) {
-          const err = error as any;
-          if (axios.isAxiosError(error)) {
-            toastError(error?.response?.data?.message || 'Failed to join challenge');
-          }
-          // if (err?.response?.data?.message) {v
-          //   toastError(String(err.response.data.message));
-          // } else {
-          //   toastError("An error occurred");
-          // }
-          if (!err?.response?.data?.status) {
-        
-            route.back()
-          }
-
+        if (new Date(challenge.endTime).getTime() < Date.now()) {
+          toastError("Challenge Time Ended")
+          challengeEnd();
         }
 
 
+        setChallengeData(challenge)
+
+
+        console.log("useriddd check", userData);
+        socket.emit("join-challenge", challenge._id, userData?.id)
+
+        const problem = response.data.challengeData.problems
+
+        setProblems(problem)
+
+        setProblemDetails(problem[0])
+
+        setCode(problem[0].starterCode['javascript'])
+
+        const testCase = problem[0].testCases.filter(testCase => testCase.isSample)
+
+        setTestCases(testCase)
+
+
+        socket.on("update-challenge-status", updatedChallengeData => {
+
+          toastSuccess("updating leaderboard..........")
+          setChallengeData(updatedChallengeData)
+
+
+        })
+
+
+
+      } catch (error) {
+        const err = error as any;
+        if (axios.isAxiosError(error)) {
+          toastError(error?.response?.data?.message || 'Failed to join challenge');
+        }
+        // if (err?.response?.data?.message) {v
+        //   toastError(String(err.response.data.message));
+        // } else {
+        //   toastError("An error occurred");
+        // }
+        if (!err?.response?.data?.status) {
+
+          route.back()
+        }
+
       }
 
-      getProblemData()
+
+    }
+
+    getProblemData()
     // }
 
 
@@ -164,7 +171,7 @@ const GroupChallenge = () => {
   const handleStartChallenge = async () => {
     setIsStarting(true);
 
-    const response = await startChallenge(challengeData._id)
+    const response = await startChallenge(challengeData._id!)
 
     // emit staring data to all participants
     socket.emit("update-challenge-status", challengeData._id, response);
@@ -356,7 +363,7 @@ const GroupChallenge = () => {
                 <button
                   key={index}
                   onClick={() => {
-                    SetproblemDetails(problem);
+                    setProblemDetails(problem);
                     setCode(problem.starterCode['javascript']);
                     setTestCases(problem.testCases);
                   }}

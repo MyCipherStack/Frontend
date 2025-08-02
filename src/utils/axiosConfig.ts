@@ -8,7 +8,7 @@ import { store } from "@/store/store"
 
 axios.interceptors.request.use(
     (config:InternalAxiosRequestConfig<unknown>)=>{
-        config.baseURL="http://localhost:5000/"
+        config.baseURL=process.env.NEXT_PUBLIC_BACKEND_URL
         return config
     },(error)=>Promise.reject(error)
 )

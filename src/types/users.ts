@@ -25,8 +25,8 @@ export interface nofication {
       github: string;
       linkedin: string;
       image: string;
-      role: string,
-      subscriptionId: string
+      role?: string,
+      subscriptionId?: string
 
     };
     appearance: {

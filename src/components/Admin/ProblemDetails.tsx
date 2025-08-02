@@ -2,7 +2,7 @@
 
 
 import { toastError } from '@/utils/toast';
-import React, { MouseEvent, useEffect, useState } from 'react'
+import React, { FormEvent, MouseEvent, useEffect, useState } from 'react'
 import Link from 'next/link';
 import BasicInfoTab from './BasicInfoTab';
 import ProblemDescTab from './ProblemDescTab';
@@ -17,7 +17,7 @@ import { FaList } from 'react-icons/fa';
 
 
 const ProblemDetails = ({ handleSubmit, Addproblem, formData, setFormData, showAllProblems }: {
-  handleSubmit: ((e: MouseEvent<HTMLButtonElement>) => void)
+  handleSubmit: ((e: MouseEvent<HTMLButtonElement> | FormEvent) => void)
   Addproblem: boolean;
   formData: any;
   setFormData: React.Dispatch<React.SetStateAction<any>>;

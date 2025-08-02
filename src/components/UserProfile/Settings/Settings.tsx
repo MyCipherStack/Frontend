@@ -11,6 +11,7 @@ import { loginSuccess } from "@/features/auth/userAuthSlice";
 import { getUserProfile } from "@/service/getDataService";
 import { AppearanceTab } from "../EditProfile/Tabs/AppearanceTab";
 import { PreferencesTab } from "../EditProfile/Tabs/PreferencesTab";
+import { UserFormData } from "@/types/users";
 
 
 export default function SettingsModal({ onClose }:{onClose:()=>void}) {
@@ -50,7 +51,7 @@ export default function SettingsModal({ onClose }:{onClose:()=>void}) {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<UserFormData>({
     personal: {
       displayName: "",
       username: "",
@@ -59,7 +60,7 @@ export default function SettingsModal({ onClose }:{onClose:()=>void}) {
       bio: "",
       github: "",
       linkedin: "",
-      avatar: "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
+      image: "http://res.cloudinary.com/dmvffxx3d/image/upload/v1745539383/wlz7zbayznqdofk1hja9.png",
     },
     appearance: {
       theme: "cyberpunk",
@@ -118,7 +119,7 @@ export default function SettingsModal({ onClose }:{onClose:()=>void}) {
             bio: data.bio || "",
             github: data.github || "",
             linkedin: data.linkedin || "",
-            avatar: data.image || "/default-avatar.jpg",
+            image: data.image || "/default-avatar.jpg",
           },
           appearance: {
             theme: data.theme || "cyberpunk"
@@ -157,7 +158,7 @@ export default function SettingsModal({ onClose }:{onClose:()=>void}) {
   const [activeTab, setActiveTab] = useState("appearance");
   const dispatch = useDispatch()
 
-  const handleInputChange = (section: keyof FormData, field: string, value: string | boolean) => {
+  const handleInputChange = (section: keyof UserFormData, field: string, value: string | boolean) => {
     setFormData((prev) => ({
       ...prev,
       [section]: {
