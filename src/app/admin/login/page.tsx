@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { adminLoginSuccess } from "@/features/auth/adminAuthSlice";
 import { loginSchema } from "@/validations/authSchemas";
 import { adminLogin } from "@/service/authService";
-import "@/app/Login/page.css";
+import "@/app/login/page.css";
 import { toastSuccess } from "@/utils/toast";
 import { AxiosError } from "axios";
 import { RootState } from "@/store/store";
@@ -20,7 +20,7 @@ type LoginType = {
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
