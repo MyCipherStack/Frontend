@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import "@/app/Login/page.css"
+import "@/app/login/page.css"
 import { toast } from "react-toastify"
 import { userLogin, userRegister } from "@/service/authService";
 import {  useRouter, useSearchParams } from "next/navigation";
