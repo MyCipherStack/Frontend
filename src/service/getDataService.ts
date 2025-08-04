@@ -1,4 +1,5 @@
 
+import { API_ROUTES } from "@/constants/routes";
 import axios from "../utils/axiosConfig"
 
 
@@ -8,7 +9,7 @@ export const getUserProfile=async()=>{
         console.log("get profile");
         
         const url='/api/user/profile'
-        const response= await axios.get(url,{withCredentials:true}) 
+        const response= await axios.get(API_ROUTES.USER.PROFILE,{withCredentials:true}) 
         return response
     }
     catch(error){
@@ -20,7 +21,8 @@ export const getUserProfile=async()=>{
 export const getAllProblems=async(params:string)=>{
     try{
 
-        const url=`/api/user/problems?${params}`
+        // const url=`/api/user/problems?${params}`
+        const url=`${API_ROUTES.USER.PROBLEMS}?${params}`
         const response= await axios.get(url,{withCredentials:true}) 
         return response
     }
@@ -75,7 +77,7 @@ export const getAllTransactions=async(params:string)=>{
     try{
 
         const url=`/api/admin/transations?${params}`
-        const response=await axios.get(url,{withCredentials:true}) 
+        const response=await axios.get(API_ROUTES.ADMIN.TRANSACTIONS(params),{withCredentials:true}) 
         return response
     }
     catch(error){
@@ -89,7 +91,7 @@ export const getAdminDashBoardData=async(params:string)=>{
     try{
 
         const url=`/api/admin/dashboard?${params}`
-        const response= await axios.get(url,{withCredentials:true}) 
+        const response= await axios.get(API_ROUTES.ADMIN.DASHBOARD(params),{withCredentials:true}) 
         return response
     }
     catch(error){

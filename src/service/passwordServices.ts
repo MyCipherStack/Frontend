@@ -1,27 +1,24 @@
 import axios from "../utils/axiosConfig"
+import { API_ROUTES } from "../constants/routes"
 
 
 
-export const forgotPasswordOtp=async(body:object)=>{
-    try{
-        const url="/api/user/forgotPasswordOtp"
-        const response= await axios.post(url,body,{withCredentials:true}) 
+export const forgotPasswordOtp = async (body: object) => {
+    try {
+        const response = await axios.post(API_ROUTES.USER.FORGOT_PASSWORD_OTP, body, { withCredentials: true })
         return response
-    }
-    catch(error){
+    } catch (error) {
         throw error
     }
 }
 
 
 
-export const userResetPassword=async(body:object)=>{
-    try{
-        const url="/api/user/profile/resetPassword"
-        const response= await axios.patch(url,body,{withCredentials:true}) 
+export const userResetPassword = async (body: object) => {
+    try {
+        const response = await axios.patch(API_ROUTES.USER.PROFILE_RESET_PASSWORD, body, { withCredentials: true })
         return response
-    }
-    catch(error){
+    } catch (error) {
         throw error
     }
 }

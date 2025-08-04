@@ -21,7 +21,7 @@ const Transactions = () => {
   const [limit] = useState("10")
   const [totalTransaction, setTotalTransaction] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [transactions, setTransaction] = useState<{ userId: string, amount: string, paymentMethord: string, orderId: string, status: string }[]>([])
+  const [transactions, setTransaction] = useState<{ userName: string, amount: string, paymentMethord: string, orderId: string, status: string }[]>([])
   const [trigger] = useState(false)
 
 
@@ -94,7 +94,7 @@ const Transactions = () => {
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">userId</th>
+                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">UserName</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Amount</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">PaymentMethord</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">OrderId</th>
@@ -105,7 +105,7 @@ const Transactions = () => {
                 {transactions.map((transaction, index) => (
                   <tr key={index} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue">
 
-                    <td className="py-3 px-4">{transaction.userId}</td>
+                    <td className="py-3 px-4">{transaction.userName}</td>
                     <td className="py-3 px-4">{transaction.amount}</td>
                     <td className="py-3 px-4">{transaction.paymentMethord}</td>
                     <td className="py-3 px-4">{transaction.orderId}</td>

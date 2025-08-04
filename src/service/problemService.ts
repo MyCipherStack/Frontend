@@ -1,6 +1,7 @@
 
 import { IProblem, typeTestCase } from "@/types/problem";
 import axios from "../utils/axiosConfig"
+import { API_ROUTES } from "../constants/routes"
 
 
 
@@ -8,12 +9,10 @@ import axios from "../utils/axiosConfig"
 
 
 export const addProblemService = async (data: Partial<IProblem>) => {
-    const url = "/api/admin/addProblem"  //
     try {
-        const response = await axios.post(url, data, { withCredentials: true })
+        const response = await axios.post(API_ROUTES.USER.PROBLEM.ADD, data, { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }
@@ -21,25 +20,21 @@ export const addProblemService = async (data: Partial<IProblem>) => {
 
 
 export const editProblemService = async (data: Partial<IProblem>) => {
-    const url = "/api/admin/editProblem"
     try {
-        const response = await axios.post(url, data, { withCredentials: true })
+        const response = await axios.post(API_ROUTES.USER.PROBLEM.EDIT, data, { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }
 
 
 
-export const runProblemService = async (data:{code?:string,testCases:typeTestCase[],language:string,problemDetails?:IProblem}) => {
-    const url = "/api/user/problem/run"
+export const runProblemService = async (data: { code?: string, testCases: typeTestCase[], language: string, problemDetails?: IProblem }) => {
     try {
-        const response = await axios.post(url, data, { withCredentials: true })
+        const response = await axios.post(API_ROUTES.USER.PROBLEM.RUN, data, { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }
@@ -48,24 +43,20 @@ export const runProblemService = async (data:{code?:string,testCases:typeTestCas
 
 
 
-export const submitProblemService = async ( data:{code?:string,testCases:typeTestCase[],language:string,problemDetails?:IProblem}) => {
-    const url = "/api/user/problem/submit"
+export const submitProblemService = async (data: { code?: string, testCases: typeTestCase[], language: string, problemDetails?: IProblem }) => {
     try {
-        const response = await axios.post(url, data, { withCredentials: true })
+        const response = await axios.post(API_ROUTES.USER.PROBLEM.SUBMIT, data, { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }
 
 export const userSubmissionsService = async () => {
-    const url = "/api/user/userSubmissions"
     try {
-        const response = await axios.get(url, { withCredentials: true })
+        const response = await axios.get(API_ROUTES.USER.PROBLEM.USER_SUBMISSIONS, { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }
@@ -73,12 +64,10 @@ export const userSubmissionsService = async () => {
 
 
 export const acceptedUserProblems = async () => {
-    const url = "/api/user/acceptedUserProblems"
     try {
-        const response = await axios.get(url, { withCredentials: true })
+        const response = await axios.get(API_ROUTES.USER.PROBLEM.ACCEPTED_USER_PROBLEMS, { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }
@@ -87,13 +76,11 @@ export const acceptedUserProblems = async () => {
 
 
 
-export const getSolution = async (problemId:string) => {
-    const url = `/api/user/problem/${problemId}/solution`
+export const getSolution = async (problemId: string) => {
     try {
-        const response = await axios.get(url, { withCredentials: true })
+        const response = await axios.get(API_ROUTES.USER.PROBLEM.SOLUTION(problemId), { withCredentials: true })
         return response
-    }
-    catch (error) {
+    } catch (error) {
         throw error
     }
 }

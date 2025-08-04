@@ -30,6 +30,7 @@ const [trigger,setTrigger]=useState(false)
         setTotalPages(response.data.usersData.totalPages,)
         setTotalUsers(response.data.usersData.totalUsers)
         setUsers(response.data.usersData.users)
+        console.log(response.data.usersData.users);
         
       };
       
@@ -157,7 +158,7 @@ if(alert){
                     <td className="py-3 px-4">
                       <span className={`px-2 py-1  text-xs rounded`}>{user.status}</span>
                     </td>
-                    <td className="py-3 px-4">{new Date(user.createdAt).toDateString()}</td>
+                    <td className="py-3 px-4">{new Date(user.createdAt).toDateString()}</td> 
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
                         {/* <button className="p-1 text-gray-400 hover:text-neon-blue" title="Edit">
