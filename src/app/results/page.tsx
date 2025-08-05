@@ -3,6 +3,7 @@
 
 import Header from '@/components/Header';
 import LeaderboardDetails from '@/components/LeaderBoard';
+import { Pagination } from '@/components/Pagination';
 import { challengeLeaderBoard, challengeResults } from '@/service/challengeServices';
 import { challenge } from '@/types/challenge';
 import React, { useEffect, useState } from 'react';
@@ -12,8 +13,10 @@ const BattleResults = () => {
 
 
 
-  const [allChallenge, setAllChallenge] = useState<{challengeId:challenge,userId:string,
-    totalscore:number, solvedProblems:{name:string,id:string}[], _id:string}[]>([])
+  const [allChallenge, setAllChallenge] = useState<{
+    challengeId: challenge, userId: string,
+    totalscore: number, solvedProblems: { name: string, id: string }[], _id: string
+  }[]>([])
   const [leaderBoard, setLeaderBoard] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [ProblemCount, setProblemCount] = useState(0)
@@ -28,28 +31,57 @@ const BattleResults = () => {
 
 
 
+
+
+  const [search, setSearch] = useState("")
+  const [difficulty, setDifficulty] = useState("")
+  const [status, setStatus] = useState("true")
+  const [category, setCategory] = useState("")
+  const [page, setPage] = useState("1")
+  const [limit, setLimit] = useState("10")
+  const [totalProblem, setTotalProblem] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+
+
+
+  const pageChange = (page: number) => {
+    setPage(page + "")
+  }
+
+
+  const params = new URLSearchParams({ page, limit, status, search })
+
+
+
+
+
+
+
+
   // challengeTime, ProblemCount, isModalOpen, setIsModalOpen, leaderBoard
   useEffect(() => {
     run()
 
 
-  }, [])
+  }, [page])
   const run = async () => {
 
-    const response = await challengeResults()
+    const response = await challengeResults(params.toString())
 
     console.log(response.data.allChallenge);
 
-    setAllChallenge(response.data.allChallenge)
+    setAllChallenge(response.data.allChallenge.leaderBoard)
 
+    setTotalPages(response.data.allChallenge.totalPages,)
+    setTotalProblem(response.data.allChallenge.totalData)
 
-    let total = response.data.allChallenge.reduce((acc:number, data:{totalscore:number}) => acc + data.totalscore, 0)
+    let total = response.data.allChallenge.leaderBoard.reduce((acc: number, data: { totalscore: number }) => acc + data.totalscore, 0)
     setTotalPoints(total)
 
-    let totalChallengeCout = response.data.allChallenge.length
+    let totalChallengeCout = response.data.allChallenge.leaderBoard.length
     setTotalChallenges(totalChallengeCout)
 
-    let win = response.data.allChallenge.reduce((acc:number, data:{challengeId:{winner:string}, userId:string}) => data.challengeId.winner == data.userId ? acc + 1 : acc, 0)
+    let win = response.data.allChallenge.leaderBoard.reduce((acc: number, data: { challengeId: { winner: string }, userId: string }) => data.challengeId.winner == data.userId ? acc + 1 : acc, 0)
     setWins(win)
 
     if (win > 0 && totalChallengeCout > 0) {
@@ -59,14 +91,17 @@ const BattleResults = () => {
   }
 
 
-  let viewLeaderBoard = async (challegeData:challenge) => {
+
+
+
+  let viewLeaderBoard = async (challegeData: challenge) => {
 
 
     setProblemCount(challegeData.problems.length)
 
     setChallengeTime(challegeData.duration)
     setIsModalOpen(true)
-    const leaderBoad = await challengeLeaderBoard(challegeData._id)
+    const leaderBoad = await challengeLeaderBoard(challegeData._id!)
     console.log(leaderBoad.data);
 
     setLeaderBoard(leaderBoad.data.response)
@@ -74,7 +109,6 @@ const BattleResults = () => {
 
 
   }
-
 
 
 
@@ -127,7 +161,7 @@ const BattleResults = () => {
                     <span className="text-[#0ef] text-sm">{data?.challengeId?.challengeName ?? "no name"}</span>
                     <span className="text-green-400">#2 of 12</span>
                   </div>
-                  <div className="text-gray-400 text-sm">{data.challengeId.problems.length} Problems</div>
+                  <div className="text-gray-400 text-sm">{data.challengeId.problems?.length} Problems</div>
                 </div>
                 <div className="grid grid-cols-5 gap-2 text-sm">
                   <div className="text-gray-400">Points: <span className="text-[#0ef]">+{data.totalscore}</span></div>
@@ -144,6 +178,9 @@ const BattleResults = () => {
               </div>
             })
             }
+
+            <Pagination currentPage={+page} limit={+limit} onPageChange={pageChange} totalData={totalProblem} totalPages={totalPages}></Pagination>
+
           </div>
         </div>
 

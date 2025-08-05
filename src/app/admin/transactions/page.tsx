@@ -7,6 +7,7 @@ import { getAllTransactions } from "@/service/getDataService";
 import React, { useEffect, useState } from "react";
 import { Pagination } from "@/components/Pagination";
 import AdminNavbar from "@/components/Admin/NavBar";
+import { FaSearch } from "react-icons/fa";
 
 
 
@@ -23,6 +24,7 @@ const Transactions = () => {
   const [totalPages, setTotalPages] = useState(0)
   const [transactions, setTransaction] = useState<{ userName: string, amount: string, paymentMethord: string, orderId: string, status: string }[]>([])
   const [trigger] = useState(false)
+  const [search,setSearch]=useState("")
 
 
 
@@ -30,7 +32,7 @@ const Transactions = () => {
 
     const timeOut = setTimeout(() => {  //Debounce
 
-      const params = new URLSearchParams({ page, status })
+      const params = new URLSearchParams({ page, status,search })
       const fetchData = async () => {
         const response = await getAllTransactions(params.toString());
         setTotalPages(response.data.transactions.totalPages,)
@@ -45,7 +47,7 @@ const Transactions = () => {
 
     return () => clearTimeout(timeOut)
 
-  }, [page, status, trigger])
+  }, [page, status, trigger,search])
 
   const pageChange = (page: number) => {
     setPage(page + "")
@@ -76,6 +78,17 @@ const Transactions = () => {
               <option value="failed">failed</option>
               <option value="pending">pending</option>
             </select>
+
+            <div className="flex-grow relative">
+              <input
+                type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search user and transaction..."
+                className="search-input w-full px-4 py-2 pl-10 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaSearch className="text-gray-500" />
+              </div>
+            </div>
 
           </div>
         </div>

@@ -142,10 +142,15 @@ export const startChallenge=async(id:string)=>{
     }
 }
 
-export const challengeResults=async()=>{
+export const challengeResults=async(params:string)=>{
     try{
+<<<<<<< Updated upstream
         const url='/api/user/challengeResults'
         const response= await axios.get(API_ROUTES.USER.CHALLENGE_RESULTS,{withCredentials:true}) 
+=======
+        const url=`/api/user/challengeResults${params}`
+        const response= await axios.get(API_ROUTES.USER.CHALLENGE_RESULTS(params),{withCredentials:true}) 
+>>>>>>> Stashed changes
         return response
 
     }catch(error){

@@ -4,8 +4,7 @@ import { getAllProblems } from "@/service/getDataService";
 import React, { useEffect, useState } from "react";
 import { FaSearch, FaCheckCircle } from "react-icons/fa";
 import { Pagination } from "../Pagination";
-import ReportButton from "../Report";
-import { ServerInsertedHTMLContext } from "next/navigation";
+
 
 const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) => void }) => {
   const [search, setSearch] = useState("")

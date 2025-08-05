@@ -16,7 +16,11 @@ export const API_ROUTES = {
     JOIN_PAIR_PROGRAMMING: "/api/user/joinPairProgramming",
     ACTIVE_CHALLENGES: "/api/user/activeChallenges",
     START_CHALLENGE: "/api/user/startChallenge",
+<<<<<<< Updated upstream
     CHALLENGE_RESULTS: "/api/user/challengeResults",
+=======
+    CHALLENGE_RESULTS:(params:string)=> `/api/user/challengeResults?${params}`,
+>>>>>>> Stashed changes
     CHALLENGE_LEADERBOARD: (challengeId: string) => `/api/user/challenge/${challengeId}/leaderBoard`,
     PAIR_PROGRAMMING_REQUEST: "/api/user/pairProgrammingRequest",
     VERIFY_PAYMENT: "/api/user/verifyPayment",
