@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
 import { useEffect } from 'react';
-import { FaVideo, FaCode, FaPlus, FaCalendar, FaClock, FaUser, FaUsers, FaStickyNote, FaPlay, FaEdit, FaEye } from 'react-icons/fa';
+import { FaVideo, FaCode, FaPlus, FaCalendar, FaClock, FaUser, FaUsers, FaStickyNote, FaPlay, FaEdit, FaEye, FaRocket } from 'react-icons/fa';
 import { getUserInteviews, scheduleInterview } from '@/service/interviewService';
 import React from 'react';
 import InvitedUsers from '@/components/UsersInvite';
@@ -120,17 +120,17 @@ const InterviewPortal = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-black-100">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         {/* Create Interview Modal */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+          <div className="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto border border-gray-700">
+              <div className="flex justify-between items-center p-6 border-b border-gray-700 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-2xl">
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900">Schedule New Interview</h2>
-                  <p className="text-gray-600 mt-1">Create a professional interview session</p>
+                  <h2 className="text-2xl font-bold text-white">Schedule New Interview</h2>
+                  <p className="text-blue-100 mt-1">Create a professional interview session</p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <button onClick={() => setIsModalOpen(false)} className="text-white hover:text-blue-100 transition-colors">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -140,9 +140,9 @@ const InterviewPortal = () => {
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Position</label>
                     <select name="position" value={formData.position} onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
                       <option value="">Select Position</option>
                       <option value="senior-dev">Senior Developer</option>
                       <option value="frontend-dev">Frontend Developer</option>
@@ -153,9 +153,9 @@ const InterviewPortal = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Interview Type</label>
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Interview Type</label>
                     <select name="interviewType" value={formData.interviewType} onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
                       <option value="">Select Type</option>
                       <option value="technical">Technical Interview</option>
                       <option value="coding">Coding Challenge</option>
@@ -168,21 +168,21 @@ const InterviewPortal = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Date</label>
                     <input type="date" name="date" value={formData.date} onChange={handleInputChange}
-                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                           className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Time</label>
                     <input type="time" name="time" value={formData.time} onChange={handleInputChange}
-                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                           className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2">Duration</label>
                   <select name="duration" value={formData.duration} onChange={handleInputChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
                     <option value="30">30 minutes</option>
                     <option value="45">45 minutes</option>
                     <option value="60">60 minutes</option>
@@ -194,19 +194,20 @@ const InterviewPortal = () => {
                 <InvitedUsers allowedUser={1} invitedUsers={invitedUsers} setInvitedUsers={setInvitedUsers} sessionType={sessionType} setSessionType={setSessionType} />
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2">Additional Notes</label>
                   <textarea name="notes" value={formData.notes} onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32 resize-none"
+                            className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white h-32 resize-none"
                             placeholder="Add any specific requirements, topics to cover, or special instructions..."></textarea>
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
                   <button type="button" onClick={() => setIsModalOpen(false)}
-                          className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors">
+                          className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-all duration-200 font-medium">
                     Cancel
                   </button>
                   <button onClick={schedule}
-                          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+                          className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
+                    <FaRocket className="inline mr-2" />
                     Schedule Interview
                   </button>
                 </div>
@@ -217,159 +218,166 @@ const InterviewPortal = () => {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header Section */}
-          <div className="mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Interview Portal</h1>
-                <p className="mt-2 text-gray-600">Manage and schedule your technical interviews</p>
-              </div>
-              <div className="mt-4 sm:mt-0">
-                <button onClick={() => setIsModalOpen(true)}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
-                  <FaPlus className="mr-2" />
-                  Create Interview
-                </button>
-              </div>
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full mb-6 shadow-lg">
+              {/* <FaVideo className="mr-3" /> */}
+         
             </div>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-200 to-indigo-200 bg-clip-text text-transparent">
+              Ace Your Interviews
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Experience the future of technical interviews with our AI-powered platform. 
+              Real-time coding, system design challenges, and professional evaluation.
+            </p>
+          </div>
+
+          {/* Action Button */}
+          <div className="flex justify-center mb-12">
+            <button onClick={() => setIsModalOpen(true)}
+                    className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+              <FaRocket className="inline mr-3 group-hover:animate-bounce" />
+              Create New Interview
+            </button>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+          {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <FaVideo className="text-blue-600" />
+                <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-white">
+                  <FaVideo className="text-xl" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Interviews</p>
-                  <p className="text-2xl font-semibold text-gray-900">1,247</p>
+                  <p className="text-sm font-medium text-gray-400">Total Interviews</p>
+                  <p className="text-2xl font-bold text-white">1,247</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <MdTrendingUp className="text-green-600" />
+                <div className="p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-xl text-white">
+                  <MdTrendingUp className="text-xl" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                  <p className="text-2xl font-semibold text-gray-900">94.2%</p>
+                  <p className="text-sm font-medium text-gray-400">Success Rate</p>
+                  <p className="text-2xl font-bold text-white">94.2%</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <FaUsers className="text-purple-600" />
+                <div className="p-3 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl text-white">
+                  <FaUsers className="text-xl" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Active Users</p>
-                  <p className="text-2xl font-semibold text-gray-900">5,892</p>
+                  <p className="text-sm font-medium text-gray-400">Active Users</p>
+                  <p className="text-2xl font-bold text-white">5,892</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <MdSecurity className="text-orange-600" />
+                <div className="p-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl text-white">
+                  <MdSecurity className="text-xl" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Security Score</p>
-                  <p className="text-2xl font-semibold text-gray-900">99.9%</p>
+                  <p className="text-sm font-medium text-gray-400">Security Score</p>
+                  <p className="text-2xl font-bold text-white">99.9%</p>
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Tab Navigation */}
           <div className="mb-8">
-            <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
+            <div className="bg-gray-800 rounded-2xl shadow-lg p-2 border border-gray-700 max-w-md mx-auto">
+              <div className="flex">
                 <button onClick={() => SetTab('usersInterview')} 
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${tab === 'usersInterview' 
-                          ? 'border-blue-500 text-blue-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+                        className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'usersInterview' 
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                          : 'text-gray-400 hover:text-white'}`}>
                   <FaEye className="inline mr-2" />
                   Scheduled for Me
                 </button>
                 <button onClick={() => SetTab('userCreatedInterview')} 
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${tab === 'userCreatedInterview' 
-                          ? 'border-blue-500 text-blue-600' 
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+                        className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'userCreatedInterview' 
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                          : 'text-gray-400 hover:text-white'}`}>
                   <FaEdit className="inline mr-2" />
                   Created by Me
                 </button>
-              </nav>
+              </div>
             </div>
           </div>
 
           {/* Interview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {interviews.map((interview, index) => (
-              <div key={index} className="bg-white rounded-lg shadow border border-gray-200 hover:shadow-lg transition-shadow">
+              <div key={index} className="group bg-gray-800 rounded-2xl shadow-lg border border-gray-700 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                 <div className="p-6">
                   {/* Header */}
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex justify-between items-start mb-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{interview.position}</h3>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <h3 className="text-xl font-bold text-white mb-2">{interview.position}</h3>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-900 to-indigo-900 text-blue-200 border border-blue-700">
                         {interview.interviewType}
                       </span>
                     </div>
-                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                      <FaEdit className="w-4 h-4" />
+                    <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-blue-400">
+                      <FaEdit className="w-5 h-5" />
                     </button>
                   </div>
 
                   {/* Details */}
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center text-gray-600">
-                      <FaCalendar className="text-gray-400 mr-3 w-4" />
-                      <span className="text-sm">{interview.date}</span>
+                  <div className="space-y-4 mb-6">
+                    <div className="flex items-center text-gray-300">
+                      <FaCalendar className="text-blue-400 mr-3 w-5" />
+                      <span className="font-medium">{interview.date}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
-                      <FaClock className="text-gray-400 mr-3 w-4" />
-                      <span className="text-sm">{interview.time}</span>
+                    <div className="flex items-center text-gray-300">
+                      <FaClock className="text-blue-400 mr-3 w-5" />
+                      <span className="font-medium">{interview.time}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
-                      <MdAccessTime className="text-gray-400 mr-3 w-4" />
-                      <span className="text-sm">{interview.duration} minutes</span>
+                    <div className="flex items-center text-gray-300">
+                      <MdAccessTime className="text-blue-400 mr-3 w-5" />
+                      <span className="font-medium">{interview.duration} minutes</span>
                     </div>
                   </div>
 
                   {/* Participants */}
-                  <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center text-gray-600 mb-1">
-                      <FaUser className="text-gray-400 mr-2 w-3" />
-                      <span className="text-xs">Host: User_{interview.hostId}</span>
+                  <div className="mb-6 p-4 bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl border border-gray-600">
+                    <div className="flex items-center text-gray-300 mb-2">
+                      <FaUser className="text-blue-400 mr-3 w-4" />
+                      <span className="text-sm font-medium">Host: User_{interview.hostId}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
-                      <FaUsers className="text-gray-400 mr-2 w-3" />
-                      <span className="text-xs">Participant: User_{interview.participantId}</span>
+                    <div className="flex items-center text-gray-300">
+                      <FaUsers className="text-blue-400 mr-3 w-4" />
+                      <span className="text-sm font-medium">Participant: User_{interview.participantId}</span>
                     </div>
                   </div>
 
                   {/* Notes */}
                   {interview.notes && (
-                    <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <FaStickyNote className="text-gray-400 mr-2 w-3" />
-                        <span className="text-xs font-medium">Notes</span>
+                    <div className="mb-6 p-4 bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl border border-gray-600">
+                      <div className="flex items-center text-gray-300 mb-2">
+                        <FaStickyNote className="text-blue-400 mr-3 w-4" />
+                        <span className="text-sm font-semibold">Notes</span>
                       </div>
-                      <p className="text-gray-600 text-xs leading-relaxed">{interview.notes}</p>
+                      <p className="text-gray-400 text-sm leading-relaxed">{interview.notes}</p>
                     </div>
                   )}
 
                   {/* Footer */}
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                    <div className="flex items-center bg-gray-100 px-2 py-1 rounded text-xs font-mono text-gray-600">
-                      <FaCode className="mr-1" />
-                      {interview.code}
+                  <div className="flex justify-between items-center pt-6 border-t border-gray-700">
+                    <div className="flex items-center bg-gray-700 px-3 py-2 rounded-lg border border-gray-600">
+                      <FaCode className="text-blue-400 mr-2" />
+                      <span className="text-sm font-mono text-gray-300">{interview.code}</span>
                     </div>
                     <button onClick={() => joinInterview(interview.id)} 
-                            className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors">
-                      <FaPlay className="mr-1 w-3" />
+                            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
+                      <FaPlay className="inline mr-2" />
                       Join
                     </button>
                   </div>
@@ -380,44 +388,44 @@ const InterviewPortal = () => {
 
           {/* Empty State */}
           {interviews.length === 0 && (
-            <div className="text-center py-12">
-              <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                <FaVideo className="text-gray-400 text-3xl" />
+            <div className="text-center py-16">
+              <div className="mx-auto w-32 h-32 bg-gradient-to-r from-gray-700 to-gray-800 rounded-full flex items-center justify-center mb-8 border border-gray-600">
+                <FaVideo className="text-blue-400 text-4xl" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No interviews scheduled</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              <h3 className="text-2xl font-bold text-white mb-4">No interviews scheduled</h3>
+              <p className="text-gray-400 mb-8 max-w-md mx-auto text-lg">
                 You don't have any interviews scheduled yet. Create your first interview to get started.
               </p>
               <button onClick={() => setIsModalOpen(true)}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
-                <FaPlus className="mr-2" />
+                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl">
+                <FaRocket className="mr-3" />
                 Schedule Your First Interview
               </button>
             </div>
           )}
 
           {/* Features Section */}
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <MdHighQuality className="text-blue-600 text-xl" />
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-8 bg-gray-800 rounded-2xl shadow-lg border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                <MdHighQuality className="text-white text-2xl" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">HD Video Quality</h3>
-              <p className="text-gray-600 text-sm">Crystal clear video and audio for professional interviews</p>
+              <h3 className="text-xl font-bold text-white mb-4">HD Video Quality</h3>
+              <p className="text-gray-400">Crystal clear video and audio for professional interviews</p>
             </div>
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                <FaCode className="text-green-600 text-xl" />
+            <div className="text-center p-8 bg-gray-800 rounded-2xl shadow-lg border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6">
+                <FaCode className="text-white text-2xl" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Real-time Coding</h3>
-              <p className="text-gray-600 text-sm">Live code editor with syntax highlighting and collaboration</p>
+              <h3 className="text-xl font-bold text-white mb-4">Real-time Coding</h3>
+              <p className="text-gray-400">Live code editor with syntax highlighting and collaboration</p>
             </div>
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                <MdSecurity className="text-purple-600 text-xl" />
+            <div className="text-center p-8 bg-gray-800 rounded-2xl shadow-lg border border-gray-700 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
+                <MdSecurity className="text-white text-2xl" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Secure & Private</h3>
-              <p className="text-gray-600 text-sm">End-to-end encryption and secure interview sessions</p>
+              <h3 className="text-xl font-bold text-white mb-4">Secure & Private</h3>
+              <p className="text-gray-400">End-to-end encryption and secure interview sessions</p>
             </div>
           </div>
         </div>
@@ -425,19 +433,19 @@ const InterviewPortal = () => {
         <ReportButton />
         
         {/* Footer */}
-        <footer className="bg-white border-t border-gray-200 mt-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <footer className="bg-gray-900 border-t border-gray-800 mt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center">
-              <div className="flex items-center justify-center mb-4">
-                <FaVideo className="text-blue-600 mr-2" />
-                <span className="text-xl font-semibold text-gray-900">CipherStack</span>
+              <div className="flex items-center justify-center mb-6">
+                <FaVideo className="text-blue-400 mr-3 text-2xl" />
+                <span className="text-2xl font-bold text-white">CipherStack</span>
               </div>
-              <p className="text-gray-600 mb-4">© 2024 CipherStack. All rights reserved.</p>
-              <div className="flex justify-center space-x-6">
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">Privacy Policy</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">Terms of Service</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">Support</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">Documentation</a>
+              <p className="text-gray-400 mb-6">© 2024 CipherStack. All rights reserved.</p>
+              <div className="flex justify-center space-x-8">
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors font-medium">Privacy Policy</a>
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors font-medium">Terms of Service</a>
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors font-medium">Support</a>
+                <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors font-medium">Documentation</a>
               </div>
             </div>
           </div>
