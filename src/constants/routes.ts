@@ -11,10 +11,10 @@ export const API_ROUTES = {
     ARENA: {
       CREATE_GROUP_CHALLENGE: "/api/user/arena/createGroupChallenge",
     },
-    JOIN_GROUP_CHALLENGE: "/api/user/joinGroupChallenge",
+    JOIN_GROUP_CHALLENGE:(params:string)=>`/api/user/joinGroupChallenge?${params}`,
     CREATE_PAIR_PROGRAMMING: "/api/user/createPairProgramming",
-    JOIN_PAIR_PROGRAMMING: "/api/user/joinPairProgramming",
-    ACTIVE_CHALLENGES: "/api/user/activeChallenges",
+    JOIN_PAIR_PROGRAMMING:(params:string)=>`/api/user/joinPairProgramming?${params}`,
+    ACTIVE_CHALLENGES:(params:string)=>`/api/user/activeChallenges?${params}`,
     START_CHALLENGE: "/api/user/startChallenge",
     CHALLENGE_RESULTS:(params:string)=> `/api/user/challengeResults?${params}`,
     CHALLENGE_LEADERBOARD: (challengeId: string) => `/api/user/challenge/${challengeId}/leaderBoard`,
@@ -56,7 +56,7 @@ export const API_ROUTES = {
   ADMIN: {
     LOGIN: "/api/admin/login",
     LOGOUT: "/api/admin/logout",
-    GET_ALL_GROUP_CHALLENGES: "/api/admin/getAllGroupChallenges",
+    GET_ALL_GROUP_CHALLENGES:(params:string)=>`/api/admin/getAllGroupChallenges?${params}`,
     GET_ALL_PAIR_PROGRAMMING:(params:string)=> `/api/admin/getAllPairProgramming?${params}`,
     CHALLENGE_CHANGE_STATUS: "/api/admin/challengeChangeStatus",
     CHANGE_STATUS_PAIR_PROGRAM: "/api/admin/changeStatusPairProgarm",

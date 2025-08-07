@@ -29,8 +29,27 @@ const GroupChallenge = () => {
   const [activeTab, setActiveTab] = useState('description');
   const [showTestCase, setShowTestCase] = useState(true)
   const [submissionDetails, SetSubmissionDetails] = useState({})
-  const [problemDetails, setProblemDetails] = useState<IProblem>({ starterCode:{Javascript:""}
-  ,acceptance:"",constraints:"",difficulty:"",functionSigcnatureMeta })
+  const [problemDetails, setProblemDetails] = useState<Partial<IProblem>>({
+    starterCode: { Javascript: "" }
+    , acceptance: {
+      submitted: 0,
+      accepted: 0
+    }, constraints: "", difficulty: "", functionSignatureMeta: {
+      name: "",
+      parameters: [],
+      returnType: { type: "" }
+
+    },
+    title: "",
+    problemId: "",
+    timeLimit: 0,
+    memoryLimit: 0,
+    hint: "",
+    tags: "",
+    statement: "", inputFormat: "", outputFormat: "", 
+  
+
+  })
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState();
   const [testCases, setTestCases] = useState([]);

@@ -16,6 +16,7 @@ const CreatePairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
   const [sessionType, setSessionType] = useState<'invite' | 'sharecode'>('invite');
   const [showProblemModal, setShowProblemModal] = useState(false)
   const [selectedProblemsCount, setSelectedProblemsCount] = useState(0)
+  const [loading, setLoading] = useState(false)
 
   const [invitedUsers, setInvitedUsers] = useState<string[]>([])
 
@@ -66,8 +67,8 @@ const CreatePairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
 
   const startSession = async () => {
     try {
-      console.log(challengeDetails.problems.length,problemType);
-      
+      console.log(challengeDetails.problems.length, problemType);
+
       if (!challengeDetails.challengeName.trim()) {
         return toastError("enter session name")
       }
@@ -81,6 +82,7 @@ const CreatePairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
 
 
 
+      setLoading(true)
 
 
       const response = await createPairprogramming(challengeDetails)
@@ -203,10 +205,10 @@ const CreatePairProgrammingModal = ({ onClose }: { onClose: () => void }) => {
             Cancel
           </button>
           <button
-            onClick={startSession}
-            className="flex-1 bg-[#0ef] text-black py-2 rounded font-bold hover:bg-[#0df] transition duration-300"
+            onClick={startSession} disabled={loading}
+            className={`flex-1 bg-[#0ef] text-black py-2 rounded font-bold hover:bg-[#0df] transition duration-300 ${loading ? 'opacity-45 ' : " "} `}
           >
-            Start Session
+            {loading ? "Starting...." : "Start Session"}
           </button>
         </div>
       </div>

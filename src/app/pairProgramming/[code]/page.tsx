@@ -65,7 +65,7 @@ const ProblemPage = () => {
       try {
         const response = await joinPairProgramming(params.toString());
 
-        console.log(response)
+        console.log(response,"response join")
 
         const challenge = response.data.challengeData
         console.log(challenge._id, "challenge")
@@ -78,6 +78,8 @@ const ProblemPage = () => {
 
         // }
         const problem = response.data.challengeData.problems
+        console.log(problem,"problems");
+        
         setProblems(problem)
         SetproblemDetails(problem[0])
         setCode(problem[0].starterCode['javascript'])

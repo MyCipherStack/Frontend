@@ -61,7 +61,7 @@ const ProblemPage = () => {
 
       const response = await getProblemDetails(params.toString());
       const problem = response.data.problem
-      console.log(problem)
+      console.log(problem,"problem detail in that coding page")
       SetproblemDetails(problem)
       const testCases = problem.testCases as typeTestCase[]
       const testCase = testCases.filter(testCase => testCase.isSample)

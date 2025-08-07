@@ -22,32 +22,36 @@ const NotificationDrawer = () => {
 
 
 
-  useEffect(() => {
+    useEffect(() => {
 
-    if (user) {
-      socket.emit("join-user-room", user.id)
+      if (user) {
+        socket.emit("join-user-room", user.id)
+      }
+
+      // console.log(socket.rooms, "rooms"); // Set with all joined rooms
+
+
+      console.log(user, "joined user");
+
+
+
+
+      const handleNotification=(data)=>{
+
+        console.log("haii notification", data);
+        toastLite(data.message)
+        
+        setNotifications(prev => [...prev, data])
+        
+      }
+      socket.on("notification",handleNotification)
+
+    return ()=>{
+      socket.off("notification",handleNotification)
     }
+    
 
-    // console.log(socket.rooms, "rooms"); // Set with all joined rooms
-
-
-    console.log(user, "joined user");
-
-
-
-
-    socket.on("notification", (data) => {
-
-      console.log("haii notification", data);
-
-      // toastSuccess(data.message)
-      toastLite(data.message)
-
-      setNotifications(prev => [...prev, data])
-
-    })
-
-  }, [])
+    }, [])
 
 
 

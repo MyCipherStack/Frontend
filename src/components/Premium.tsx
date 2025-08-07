@@ -85,7 +85,18 @@ export default function Premium() {
     fetchData();
   }, []);
 
+
   const subscribe = async (id: string) => {
+
+    //CHECKING IF ALREADY EXITS THIS SUBSCRIPTION
+    const subscriptionData = await getSubcriptionData();
+
+
+    if (subscriptionData && subscriptionData?.data?.data?.planId) {
+      setCurrentPlanId(subscriptionData.data.data.planId);
+    }
+
+
     if (id === currentPlanId) {
       toastError("You are already subscribed to this plan");
       return;
@@ -100,15 +111,17 @@ export default function Premium() {
         document.body.appendChild(script)
       })
     }
-
-    const loadScript = await loadRazorpayScript()
-    if (!loadScript) {
-      toastError("Failed to load Razorpay")
-      return
-    }
-
     try {
+
+
       const response = await subscribePlan(id)
+
+      const loadScript = await loadRazorpayScript()
+      if (!loadScript) {
+        toastError("Failed to load Razorpay")
+        return
+      }
+
       let orderId = response.data.orderId
 
       const options = {
@@ -152,7 +165,7 @@ export default function Premium() {
     } catch (err: unknown) {
       console.log(err);
       if (err instanceof Error)
-        toastError(err.message)
+        toastError(err.response.data.message)
     }
   }
 
@@ -199,8 +212,8 @@ export default function Premium() {
               <div
                 key={index}
                 className={`flex flex-col rounded-lg border p-6 relative transition-all duration-300 ${plan._id === currentPlanId
-                    ? 'border-[#0ef] bg-[#0ef]/10'
-                    : 'border-gray-800 hover:border-[#0ef] bg-black'
+                  ? 'border-[#0ef] bg-[#0ef]/10'
+                  : 'border-gray-800 hover:border-[#0ef] bg-black'
                   }`}
               >
                 {plan?.name?.toLowerCase().includes("annual") && (
@@ -218,7 +231,7 @@ export default function Premium() {
                 </h3>
                 <div className="text-3xl font-bold mt-2 mb-4 flex ">
                   <FaRupeeSign className='size-6 mt-1' />
-                     {plan.price}
+                  {plan.price}
                   <span className="text-sm mt-2 text-gray-400">/{plan.cycle}</span>
                 </div>
                 <div className="space-y-3 mb-4">
@@ -232,8 +245,8 @@ export default function Premium() {
                 <button
                   onClick={() => subscribe(plan._id)}
                   className={`mt-auto w-full px-4 py-2 rounded font-bold cursor-pointer transition duration-300 ${plan._id === currentPlanId
-                      ? 'bg-gray-600 text-white cursor-not-allowed'
-                      : 'bg-[#0ef] text-black hover:bg-[#0df]'
+                    ? 'bg-gray-600 text-white cursor-not-allowed'
+                    : 'bg-[#0ef] text-black hover:bg-[#0df]'
                     }`}
                   disabled={plan._id === currentPlanId}
                 >

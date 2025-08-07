@@ -1,7 +1,6 @@
 
 import { challenge } from "@/types/challenge";
 import axios from "../utils/axiosConfig"
-import { string } from "zod";
 import { API_ROUTES } from "@/constants/routes";
 
 
@@ -31,7 +30,7 @@ export const createGroupChallengeService=async(data:challenge)=>{
 export const joinGroupChallenge=async(params:string)=>{
     try{
         const url=`/api/user/joinGroupChallenge?${params}`
-        const response= await axios.post(API_ROUTES.USER.JOIN_GROUP_CHALLENGE,{},{withCredentials:true}) 
+        const response= await axios.post(API_ROUTES.USER.JOIN_GROUP_CHALLENGE(params),{},{withCredentials:true}) 
         return response
 
     }catch(error){
@@ -58,7 +57,7 @@ export const createPairprogramming=async(data:pairProgramming)=>{
 export const joinPairProgramming=async(params:string)=>{
     try{
         const url=`/api/user/joinPairProgramming?${params}`
-        const response= await axios.post(API_ROUTES.USER.JOIN_PAIR_PROGRAMMING,{},{withCredentials:true}) 
+        const response= await axios.post(API_ROUTES.USER.JOIN_PAIR_PROGRAMMING(params),{},{withCredentials:true}) 
         return response
 
     }catch(error){
@@ -71,7 +70,7 @@ export const joinPairProgramming=async(params:string)=>{
 export const getAllGroupChallenges=async(params:string)=>{
     try{
         const url=`/api/admin/getAllGroupChallenges?${params}`
-        const response= await axios.get(API_ROUTES.ADMIN.GET_ALL_GROUP_CHALLENGES,{withCredentials:true}) 
+        const response= await axios.get(API_ROUTES.ADMIN.GET_ALL_GROUP_CHALLENGES(params),{withCredentials:true}) 
         return response
 
     }catch(error){
@@ -121,7 +120,7 @@ export const changeStatusPairProgarm=async(isBlocked:string,id:string)=>{
 export const getUserAciveChallenges=async(params:string)=>{
     try{
         const url=`/api/user/activeChallenges?${params}`
-        const response= await axios.get(API_ROUTES.USER.ACTIVE_CHALLENGES,{withCredentials:true}) 
+        const response= await axios.get(API_ROUTES.USER.ACTIVE_CHALLENGES(params),{withCredentials:true}) 
         return response
 
     }catch(error){
