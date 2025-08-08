@@ -64,15 +64,20 @@ export default function Arena() {
   }, [])
   const run = async () => {
 
+  const params = new URLSearchParams({limit:"100"})  //its need to change
 
-    const response = await challengeResults()
+    const response = await challengeResults(params.toString())
+    console.log(response.data,"resu");
+    
+    // setAllChallenge(response.data.allChallenge.leaderBoard)
 
-    const res: { totalscore: number, challengeId: { winner: string }, userId: string }[] = response.data.allChallenge
+
+    const res: { totalscore: number, challengeId: { winner: string }, userId: string }[] = response.data.allChallenge.leaderBoard
 
     const total = res.reduce((acc: number, data) => acc + data.totalscore, 0)
     setTotalPoints(total)
 
-    const totalChallengeCout = response.data.allChallenge.length
+    const totalChallengeCout = response.data.allChallenge.leaderBoard.length
 
     const win = res.reduce((acc: number, data) => data.challengeId.winner == data.userId ? acc + 1 : acc, 0)
     setWins(win)

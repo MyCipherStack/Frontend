@@ -49,6 +49,7 @@ export const API_ROUTES = {
     CREATE_PAYMENT: "/api/user/createPayment",
     SUBSCRIPTION_DATA: "/api/user/subscriptionData",
     REPORT: "/api/user/report",
+    FILE_UPLOAD:"/api/user/uploadImage"
   },
 
 

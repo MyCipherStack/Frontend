@@ -97,6 +97,9 @@ const GroupChallenge = () => {
       try {
         const response = await joinGroupChallenge(params.toString());
 
+console.log("login challenge data",response);
+
+
         const challenge = response.data.challengeData
 
         dispatch(startTimer(challenge._id))
@@ -132,7 +135,9 @@ const GroupChallenge = () => {
         socket.on("update-challenge-status", updatedChallengeData => {
 
           toastSuccess("updating leaderboard..........")
-          setChallengeData(updatedChallengeData)
+          console.log("update challenge data by starting",updatedChallengeData);
+          
+          setChallengeData(updatedChallengeData.challegeData)
 
 
         })

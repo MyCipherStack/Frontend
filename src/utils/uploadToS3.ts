@@ -16,7 +16,7 @@ const s3 =new S3Client({
 
 
 export const uploadToS3=async(file:File):Promise<string>=>{
-    const fileName=`${Date.now()}-${file.name}}` ;
+    const fileName=`${Date.now()}-${file.name}  ` ;
     const bucketName="cipherstack"
 
     const params={

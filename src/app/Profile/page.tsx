@@ -4,7 +4,7 @@
 import {
   FaCode, FaUsers, FaTrophy,
   FaEdit, FaChartLine,
-  FaTrophy as  FaCheckCircle,
+  FaTrophy as FaCheckCircle,
   FaExclamationCircle, FaFistRaised,
   FaIdCard,
   FaSyncAlt,
@@ -55,10 +55,10 @@ const ProfilePage = () => {
       showActivity: false,
     },
     streak: {
-            lastActiveDate: null,
-            currentStreak: 0,
-            higestStreak: 0
-          }
+      lastActiveDate: null,
+      currentStreak: 0,
+      higestStreak: 0
+    }
   });
 
 
@@ -86,7 +86,7 @@ const ProfilePage = () => {
             role: data.role || "regular",
             subscriptionId: data.subscriptionId
           },
-    
+
           appearance: {
             theme: data.theme || "cyberpunk"
           },
@@ -147,20 +147,20 @@ const ProfilePage = () => {
   );
 };
 
-const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }:{
-  setIsLoading:Dispatch<SetStateAction<boolean>>,
-  isLoading:boolean,
-  setFormData:Dispatch<SetStateAction<UserFormData>>
-  formData:UserFormData,
+const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }: {
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
+  isLoading: boolean,
+  setFormData: Dispatch<SetStateAction<UserFormData>>
+  formData: UserFormData,
 }) => {
 
   const [premiumDetails, setPremiumDetails] = useState(null)
 
   const [isEditProfile, SetisEditProfile] = useState(false)
-  
+
   const [solvedCount, setSolvedCount] = useState(false)
   const [totalSubmissions, setTotalSubmissions] = useState(0)
-  const [totalProblems, setTotalProblems] = useState({difficulty:"",count:0})
+  const [totalProblems, setTotalProblems] = useState({ difficulty: "", count: 0 })
   const [problemCount, setproblemCount] = useState({ easy: 0, medium: 0, hard: 0 })
 
   const getSubcription = async () => {
@@ -185,16 +185,17 @@ const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }:{
   }, [])
   const run = async () => {
     const res = await acceptedUserProblems()
-    const acceptedData=res.data.acceptedData
+    const acceptedData = res.data.acceptedData
     setproblemCount(acceptedData.problemCount)
     setSolvedCount(acceptedData.datas.length)
     setTotalSubmissions(acceptedData.totalSubmissions)
     setTotalProblems(acceptedData.totalProblemsCount)
-    
+
     console.log(res.data.acceptedData, "run problemmmmm");
 
 
   }
+
 
 
 
@@ -215,24 +216,24 @@ const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }:{
             <div className="w-24 h-24 rounded-full bg-[#111] border-2 border-[#0ef] overflow-hidden">
               <img src={formData.personal.image} alt="Profile" className="w-full h-full object-cover" />
             </div>
-        
+
           </div>
 
           {/* Profile Info */}
           <div className="flex-grow text-center md:text-left">
             <h1 className="text-2xl font-bold neon-text">{formData.personal.displayName ? formData.personal.displayName : formData.personal.username}</h1>
             <p className="text-gray-400 text-sm"> {formData.personal.bio}</p>
-      <div className="mt-2 flex gap-2 cursor-pointer">
-         <FaLinkedinIn className='' onClick={() => router.push(formData.personal.linkedin)}/>
-        <FaGithub className='' onClick={() => router.push(formData.personal.github)}/>
-       </div>
+            <div className="mt-2 flex gap-2 cursor-pointer">
+              <FaLinkedinIn className='' onClick={() => router.push(formData.personal.linkedin)} />
+              <FaGithub className='' onClick={() => router.push(formData.personal.github)} />
+            </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-4">
               <StatBox value="14" label="Global Rank" color="text-[#0ef]" />
               <StatBox value={solvedCount} label="Problems Solved" color="text-green-400" />
               <StatBox value={totalSubmissions} label="Submissions" color="text-orange-400" />
             </div>
 
- 
+
           </div>
 
 
@@ -269,14 +270,14 @@ const ProfileHeader = ({ setIsLoading, isLoading, setFormData, formData }:{
   );
 };
 
-const StatBox = ({ value, label, color }:{value:number| string| boolean,label:string,color:string}) => (
+const StatBox = ({ value, label, color }: { value: number | string | boolean, label: string, color: string }) => (
   <div className="text-center">
     <div className={`text-xl font-bold ${color}`}>{value}</div>
     <div className="text-gray-400 text-xs">{label}</div>
   </div>
 );
 
-const ProgressBar = ({ label, value, max, color }:{label:string,value:number,max:number,color:string}) => {
+const ProgressBar = ({ label, value, max, color }: { label: string, value: number, max: number, color: string }) => {
   const percentage = Math.round((value / max) * 100);
 
   return (
@@ -300,7 +301,7 @@ const ProgressBar = ({ label, value, max, color }:{label:string,value:number,max
 
 
 
-  const ProfileTabs = ({ streak }:{streak:{lastActiveDate: string | null,currentStreak: number,higestStreak: number}}) => {
+const ProfileTabs = ({ streak }: { streak: { lastActiveDate: string | null, currentStreak: number, higestStreak: number } }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   return (
@@ -327,7 +328,7 @@ const ProgressBar = ({ label, value, max, color }:{label:string,value:number,max
   );
 };
 
-const OverviewTab = ({ streak }:{streak:{lastActiveDate: string | null,currentStreak: number,higestStreak: number}}) => {
+const OverviewTab = ({ streak }: { streak: { lastActiveDate: string | null, currentStreak: number, higestStreak: number } }) => {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -372,7 +373,7 @@ const RecentActivity = () => {
   );
 };
 
-const StatsSection = ({ streak }:{streak:{lastActiveDate: string | null,currentStreak: number,higestStreak: number}}) => {
+const StatsSection = ({ streak }: { streak: { lastActiveDate: string | null, currentStreak: number, higestStreak: number } }) => {
 
   const [submissions, setSubmissions] = useState([]);
 
@@ -478,7 +479,7 @@ const RecentSubmissions = () => {
                     <td className="px-4 py-2">{submission.language}</td>
                     <td className="px-4 py-2">{Math.round(submission.runTime)}</td>
                     <td className="px-4 py-2">{submission.memory}</td>
-                    <td className="px-4 py-2">{submission.createdAt ? new Date(submission.createdAt).toDateString(): "N/A"}</td>
+                    <td className="px-4 py-2">{submission.createdAt ? new Date(submission.createdAt).toDateString() : "N/A"}</td>
                     <td className="px-4 py-2">
                       <button className="text-neon-blue hover:underline">
                         <FaCode /> View
@@ -648,9 +649,9 @@ import { count } from 'console';
 
 
 
-const PremiumDetailsModal = ({ premiumDetails, onClose }:{
-  premiumDetails:{}
-  onClose:()=>void
+const PremiumDetailsModal = ({ premiumDetails, onClose }: {
+  premiumDetails: {}
+  onClose: () => void
 }) => {
   useEffect(() => {
     console.log("Modal received premiumDetails:", premiumDetails);
@@ -659,7 +660,7 @@ const PremiumDetailsModal = ({ premiumDetails, onClose }:{
   if (!premiumDetails) return null;
 
   // Format dates
-  const formatDate = (dateString:string) => {
+  const formatDate = (dateString: string) => {
 
 
     const date = new Date(dateString);

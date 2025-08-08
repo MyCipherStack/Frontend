@@ -62,9 +62,15 @@ const InterviewPortal = () => {
   };
 
   const schedule = async (e: React.FormEvent) => {
+    const now = new Date();
+    const selectedDate = new Date(`${formData.date}T${formData.time}`);
     e.preventDefault()
     if (!formData.position || !formData.interviewType || !formData.date || !formData.time || !formData.duration || !formData.notes) {
       return toastError("Please fill in all fields.");
+    }
+    if (selectedDate < now) {
+      toastError("Selected date and time cannot be in the past.");
+      return;
     }
 
     if (formData.isInvite) {
@@ -93,7 +99,7 @@ const InterviewPortal = () => {
       console.log(error);
     }
   }
-  
+
   useEffect(() => {
     const getData = async () => {
       const respones = await getUserInteviews()
@@ -112,7 +118,7 @@ const InterviewPortal = () => {
       setInterview(userCreatedInterview)
     }
   }, [tab, userCreatedInterview, userInterview])
-  
+
   const joinInterview = (id: string) => {
     router.push(`interview/${id}`)
   }
@@ -142,7 +148,7 @@ const InterviewPortal = () => {
                   <div>
                     <label className="block text-sm font-semibold text-gray-200 mb-2">Position</label>
                     <select name="position" value={formData.position} onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
+                      className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
                       <option value="">Select Position</option>
                       <option value="senior-dev">Senior Developer</option>
                       <option value="frontend-dev">Frontend Developer</option>
@@ -155,7 +161,7 @@ const InterviewPortal = () => {
                   <div>
                     <label className="block text-sm font-semibold text-gray-200 mb-2">Interview Type</label>
                     <select name="interviewType" value={formData.interviewType} onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
+                      className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
                       <option value="">Select Type</option>
                       <option value="technical">Technical Interview</option>
                       <option value="coding">Coding Challenge</option>
@@ -168,21 +174,21 @@ const InterviewPortal = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-200 mb-2">Date</label>
-                    <input type="date" name="date" value={formData.date} onChange={handleInputChange}
-                           className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white" />
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Datee</label>
+                    <input type="date" name="date" min={new Date().toString()} value={formData.date} onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white" />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-200 mb-2">Time</label>
                     <input type="time" name="time" value={formData.time} onChange={handleInputChange}
-                           className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white" />
+                      className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white" />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-200 mb-2">Duration</label>
                   <select name="duration" value={formData.duration} onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
+                    className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white">
                     <option value="30">30 minutes</option>
                     <option value="45">45 minutes</option>
                     <option value="60">60 minutes</option>
@@ -190,23 +196,23 @@ const InterviewPortal = () => {
                     <option value="120">2 hours</option>
                   </select>
                 </div>
-                
+
                 <InvitedUsers allowedUser={1} invitedUsers={invitedUsers} setInvitedUsers={setInvitedUsers} sessionType={sessionType} setSessionType={setSessionType} />
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-200 mb-2">Additional Notes</label>
                   <textarea name="notes" value={formData.notes} onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white h-32 resize-none"
-                            placeholder="Add any specific requirements, topics to cover, or special instructions..."></textarea>
+                    className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-700 text-white h-32 resize-none"
+                    placeholder="Add any specific requirements, topics to cover, or special instructions..."></textarea>
                 </div>
 
                 <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
                   <button type="button" onClick={() => setIsModalOpen(false)}
-                          className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-all duration-200 font-medium">
+                    className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-all duration-200 font-medium">
                     Cancel
                   </button>
                   <button onClick={schedule}
-                          className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
+                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
                     <FaRocket className="inline mr-2" />
                     Schedule Interview
                   </button>
@@ -222,13 +228,13 @@ const InterviewPortal = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full mb-6 shadow-lg">
               {/* <FaVideo className="mr-3" /> */}
-         
+
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-200 to-indigo-200 bg-clip-text text-transparent">
               Ace Your Interviews
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Experience the future of technical interviews with our AI-powered platform. 
+              Experience the future of technical interviews with our AI-powered platform.
               Real-time coding, system design challenges, and professional evaluation.
             </p>
           </div>
@@ -236,7 +242,7 @@ const InterviewPortal = () => {
           {/* Action Button */}
           <div className="flex justify-center mb-12">
             <button onClick={() => setIsModalOpen(true)}
-                    className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+              className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
               <FaRocket className="inline mr-3 group-hover:animate-bounce" />
               Create New Interview
             </button>
@@ -294,17 +300,17 @@ const InterviewPortal = () => {
           <div className="mb-8">
             <div className="bg-gray-800 rounded-2xl shadow-lg p-2 border border-gray-700 max-w-md mx-auto">
               <div className="flex">
-                <button onClick={() => SetTab('usersInterview')} 
-                        className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'usersInterview' 
-                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                          : 'text-gray-400 hover:text-white'}`}>
+                <button onClick={() => SetTab('usersInterview')}
+                  className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'usersInterview'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                    : 'text-gray-400 hover:text-white'}`}>
                   <FaEye className="inline mr-2" />
                   Scheduled for Me
                 </button>
-                <button onClick={() => SetTab('userCreatedInterview')} 
-                        className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'userCreatedInterview' 
-                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                          : 'text-gray-400 hover:text-white'}`}>
+                <button onClick={() => SetTab('userCreatedInterview')}
+                  className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'userCreatedInterview'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                    : 'text-gray-400 hover:text-white'}`}>
                   <FaEdit className="inline mr-2" />
                   Created by Me
                 </button>
@@ -375,8 +381,8 @@ const InterviewPortal = () => {
                       <FaCode className="text-blue-400 mr-2" />
                       <span className="text-sm font-mono text-gray-300">{interview.code}</span>
                     </div>
-                    <button onClick={() => joinInterview(interview.id)} 
-                            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
+                    <button onClick={() => joinInterview(interview.id)}
+                      className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
                       <FaPlay className="inline mr-2" />
                       Join
                     </button>
@@ -397,7 +403,7 @@ const InterviewPortal = () => {
                 You don't have any interviews scheduled yet. Create your first interview to get started.
               </p>
               <button onClick={() => setIsModalOpen(true)}
-                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl">
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl">
                 <FaRocket className="mr-3" />
                 Schedule Your First Interview
               </button>
@@ -431,7 +437,7 @@ const InterviewPortal = () => {
         </div>
 
         <ReportButton />
-        
+
         {/* Footer */}
         <footer className="bg-gray-900 border-t border-gray-800 mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

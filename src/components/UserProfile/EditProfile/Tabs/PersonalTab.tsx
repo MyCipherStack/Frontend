@@ -1,5 +1,8 @@
 import { FaCamera, FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { InputField } from "../Components/InputField";
+import { useState } from "react";
+import { toastError, toastSuccess } from "@/utils/toast";
+import { uploadImage } from "@/service/fileServices";
 
 export function PersonalTab({
   data,
@@ -18,23 +21,47 @@ export function PersonalTab({
   onChange: (field: string, value: string) => void;
 }) {
 
- const showWidget = () => {
-    
-    const widget = window.cloudinary.createUploadWidget({ 
-       cloudName: `dmvffxx3d`,
-       uploadPreset: `cipherStack`}, 
-    (error, result) => {
-      if (!error && result && result.event === "success") { 
-      console.log(result.info.url); 
-      onChange("image",result.info.url)
-    }
-    console.log(error);
-    
-  });
+  const showWidget = () => {
+
+    const widget = window.cloudinary.createUploadWidget({
+      cloudName: `dmvffxx3d`,
+      uploadPreset: `cipherStack`
+    },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+          console.log(result.info.url);
+          onChange("image", result.info.url)
+        }
+        console.log(error);
+
+      });
     widget.open()
   }
 
-  
+
+
+
+  const handleChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      toastError("file not selected")
+      return
+    }
+
+    try{
+      
+      toastSuccess("File uploading....")
+      const respones = await uploadImage(file)
+
+      console.log("url respones",respones.data.data);
+      
+      
+      onChange("image",respones.data.data)
+    }catch(error){
+      toastError("error in file upload")
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6">
@@ -45,12 +72,21 @@ export function PersonalTab({
             alt="Profile"
           />
 
-          <button onClick={()=>showWidget()}
+          {/* < button onClick={() => showWidget()}
             type="button"
             className="absolute bottom-0 right-0 bg-[#0ef] rounded-full p-2 hover:bg-opacity-90 transition-opacity"
           >
             <FaCamera className="text-black text-xs" />
-          </button>
+          </button> */}
+
+
+          <div className="absolute bottom-0 right-1  bg-[#0ef] rounded-full p-1 hover:bg-opacity-90 transition-opacity">
+
+            <label htmlFor="uploadImage">
+              <input className="size-5 hidden" accept="image/*" type="file" id="uploadImage" onChange={handleChange} />
+              <FaCamera className="text-black text-xs size-4" />
+            </label>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
