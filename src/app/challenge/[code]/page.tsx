@@ -46,7 +46,8 @@ const GroupChallenge = () => {
     memoryLimit: 0,
     hint: "",
     tags: "",
-    statement: "", inputFormat: "", outputFormat: "", 
+    statement: "", inputFormat: "", outputFormat: "",
+ 
   
 
   })
@@ -59,7 +60,7 @@ const GroupChallenge = () => {
     _id: "",
     challengeName: "",
     createdAt: "", duration: 30, joinCode: "", maxParticipants: 6, participants: "",
-    problems: [], status: "", type: ""
+    problems: [], status: "waiting", type: ""
   })
   const userData = useSelector((state: RootState) => state.auth.user)
   const [problems, setProblems] = useState([])
@@ -97,7 +98,7 @@ const GroupChallenge = () => {
       try {
         const response = await joinGroupChallenge(params.toString());
 
-console.log("login challenge data",response);
+    console.log("login challenge data",response);
 
 
         const challenge = response.data.challengeData
@@ -137,7 +138,7 @@ console.log("login challenge data",response);
           toastSuccess("updating leaderboard..........")
           console.log("update challenge data by starting",updatedChallengeData);
           
-          setChallengeData(updatedChallengeData.challegeData)
+          setChallengeData(updatedChallengeData.challengeData)
 
 
         })
@@ -198,7 +199,9 @@ console.log("login challenge data",response);
     const response = await startChallenge(challengeData._id!)
 
     // emit staring data to all participants
-    socket.emit("update-challenge-status", challengeData._id, response);
+    socket.emit("update-challenge-status", challengeData._id, response.data);
+
+
 
 
   };
@@ -249,7 +252,7 @@ console.log("login challenge data",response);
   }
   return (
     <>
-      {isHost && challengeData.status === "waiting" && (
+      {isHost && challengeData?.status === "waiting" && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
           <div className="bg-[#111111] rounded-xl border-2 border-[#0ef] shadow-lg shadow-[#0ef]/30 w-full max-w-sm p-8 flex flex-col items-center relative overflow-hidden">
             {/* Glow effect */}
@@ -320,7 +323,7 @@ console.log("login challenge data",response);
           </div>
         </div>
       )}
-      {challengeData.status == "waiting" && !isHost && (
+      {challengeData?.status == "waiting" && !isHost && (
 
         <div className="fixed inset-0 bg-black/85 flex items-center justify-center z-50 ">
           <div className="bg-[#111111] rounded-lg neon-border-danger w-full max-w-xs p-8 flex flex-col items-center">
@@ -379,7 +382,7 @@ console.log("login challenge data",response);
 
 
             <div className='inline'>
-              <Timer timerControler={true} id={challengeData._id} ></Timer>
+              <Timer timerControler={true} id={challengeData?._id!} ></Timer>
             </div>
 
             <span className="flex  gap-1 ">
@@ -410,7 +413,7 @@ console.log("login challenge data",response);
             <ProblemDescription
               problemDetails={problemDetails}
               language={language} setLanguage={setLanguage}
-              code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} pairEditor={false} challengeId={challengeData._id}
+              code={code} setCode={setCode} handleRunCode={handleRunCode} handleSubmitCode={handleSubmitCode} pairEditor={false} challengeId={challengeData?._id!}
             ></ProblemDescription>
 
           )}
@@ -479,7 +482,7 @@ console.log("login challenge data",response);
 
 
 
-          <LeaderBoardSideBar challengeTime={challengeData.duration} ProblemCount={problems.length} challengeName={challengeData.challengeName} />
+          <LeaderBoardSideBar challengeTime={challengeData?.duration} ProblemCount={problems?.length} challengeName={challengeData.challengeName} />
         </div>
       </div>
     </>

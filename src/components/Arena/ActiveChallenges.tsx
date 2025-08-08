@@ -44,6 +44,8 @@ const copyHandle=(code:string)=>{
     useEffect(()=>{
     const run=async()=>{
       const challenges=await getUserAciveChallenges(params.toString())
+      console.log("challenges",challenges);
+      
       setPrivateChallenges(challenges.data.privateChallenges)
       setPublicChallenges(challenges.data.publicChallenges.datas)
       setTotalPrivateCount(challenges.data.publicChallenges.totalCount)

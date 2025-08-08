@@ -79,7 +79,7 @@ export default function Arena() {
 
     const totalChallengeCout = response.data.allChallenge.leaderBoard.length
 
-    const win = res.reduce((acc: number, data) => data.challengeId.winner == data.userId ? acc + 1 : acc, 0)
+    const win = res.reduce((acc: number, data) => data.challengeId?.winner == data.userId ? acc + 1 : acc, 0)
     setWins(win)
 
   if( totalChallengeCout>0){
