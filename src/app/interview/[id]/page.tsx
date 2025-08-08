@@ -35,12 +35,12 @@ const InterviewViewPage = () => {
   const [isScreenSharing, setIsScreenSharing] = useState(false)
 
 
-const [oppName,setOppName]=useState("")
+  const [oppName, setOppName] = useState("")
 
   interface MessageType {
     text: string;
     userName: string;
-    time: string 
+    time: string
   }
 
   const [messages, setMessages] = useState<MessageType[]>([
@@ -50,13 +50,13 @@ const [oppName,setOppName]=useState("")
 
 
 
-  const user = useSelector((state:RootState) => state.auth.user)
+  const user = useSelector((state: RootState) => state.auth.user)
 
 
   // Chat functions
   const sendMessage = () => {
     console.log("sendmessage");
-    
+
     if (message.trim()) {
 
       setMessages([...messages, { userName: 'you', text: message, time: new Date().toLocaleDateString([], { hour: '2-digit', minute: '2-digit' }) }]);
@@ -111,7 +111,7 @@ const [oppName,setOppName]=useState("")
 
 
   const params = useParams()
-  const id = decodeURIComponent(params.id) 
+  const id = decodeURIComponent(params.id)
 
   const route = useRouter()
 
@@ -141,7 +141,7 @@ const [oppName,setOppName]=useState("")
 
 
   useEffect(() => {
-    const handleTrackType = ({ type }:{type:string}) => {
+    const handleTrackType = ({ type }: { type: string }) => {
       incomingTrackTypes.current.push(type); // correctly tracks 'camera' or 'screen'
     };
 
@@ -154,13 +154,13 @@ const [oppName,setOppName]=useState("")
 
   let alreadyInitialized = useRef(false)
 
-  socket.on("joined", async ({ roomId,oppName }) => {
+  socket.on("joined", async ({ roomId, oppName }) => {
     alreadyInitialized.current = false
     setOppName(oppName)
-    console.log("ishost", isHost,oppName);
+    console.log("ishost", isHost, oppName);
 
     if (isHost) {
-      initializeMedia(roomId, true,user?.name!)
+      initializeMedia(roomId, true, user?.name!)
 
     }
   })
@@ -268,7 +268,7 @@ const [oppName,setOppName]=useState("")
           isInitiator = response.data.interview.isHost
           // console.log( response.data.interview.isHost);
           setIsHost(isInitiator)
-          initializeMedia(response.data.interview.id, isInitiator);
+          initializeMedia(response.data.interview.id, isInitiator, user?.name!);
         } else {
           toastError("invalid interview or something wentwrong")
           route.back()
@@ -320,12 +320,12 @@ const [oppName,setOppName]=useState("")
 
 
 
-  const initializeMedia = async (roomId: string, isInitiator: boolean,userName:string) => {
+  const initializeMedia = async (roomId: string, isInitiator: boolean, userName: string) => {
     try {
 
       console.log("interiview joined emit");
 
-      socket.emit("join-interview", { roomId,userName })
+      socket.emit("join-interview", { roomId, userName })
 
 
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -587,7 +587,7 @@ const [oppName,setOppName]=useState("")
                 autoPlay
 
               />
-              <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">Interviewer{oppName}</div>
+              <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">{isHost ? oppName : "Interviewer"}</div>
             </div>
 
             {/* Participant Video */}
@@ -640,8 +640,8 @@ const [oppName,setOppName]=useState("")
               <FaDesktop className="text-xl" />
             </button>
 
-            <button onClick={()=>route.back()}
-             className="p-3 rounded-full border border-[#00f3ff] text-[#00f3ff] hover:bg-[#00f3ff] hover:bg-opacity-20 transition">
+            <button onClick={() => route.back()}
+              className="p-3 rounded-full border border-[#00f3ff] text-[#00f3ff] hover:bg-[#00f3ff] hover:bg-opacity-20 transition">
               <FaPhoneSlash className="text-xl" />
             </button>
 
@@ -668,11 +668,11 @@ const [oppName,setOppName]=useState("")
               </div>
             ))}
           </div> */}
-           <div className="chat-messages flex-1 overflow-y-auto mb-3">
+          <div className="chat-messages flex-1 overflow-y-auto mb-3">
             {messages.map((msg, index) => (
               <div key={index} className="message mb-3 ml-2">
                 <div className="flex items-center mb-1">
-                   <span className={`font-bold ${msg.sender === 'partner' ? 'text-blue-400' : 'text-[#0ef]'}`}>
+                  <span className={`font-bold ${msg.sender === 'partner' ? 'text-blue-400' : 'text-[#0ef]'}`}>
                     {msg.userName === 'you' ? 'you' : msg.userName}
                   </span>
                   <span className="text-xs text-gray-500 ml-2">{new Date(msg.time).toLocaleTimeString()}</span>
@@ -680,7 +680,7 @@ const [oppName,setOppName]=useState("")
                 <p className="text-gray-300">{msg.text}</p>
               </div>
             ))}
-          
+
           </div>
 
           {/* Message Input */}
