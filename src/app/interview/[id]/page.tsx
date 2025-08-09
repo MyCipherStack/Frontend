@@ -40,11 +40,12 @@ const InterviewViewPage = () => {
   interface MessageType {
     text: string;
     userName: string;
-    time: string
+    time: string;
+    sender?: string;
   }
 
   const [messages, setMessages] = useState<MessageType[]>([
-    { text: 'Interview session started', userName: "you", time: new Date() },
+    { text: 'Interview session started', userName: "you", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
 
   ]);
 
@@ -111,7 +112,7 @@ const InterviewViewPage = () => {
 
 
   const params = useParams()
-  const id = decodeURIComponent(params.id)
+  const id = decodeURIComponent(params.id as string)
 
   const route = useRouter()
 
@@ -154,16 +155,22 @@ const InterviewViewPage = () => {
 
   let alreadyInitialized = useRef(false)
 
-  socket.on("joined", async ({ roomId, oppName }) => {
-    alreadyInitialized.current = false
-    setOppName(oppName)
-    console.log("ishost", isHost, oppName);
+  // Handle when another user joins the room
+  useEffect(() => {
+    const handleUserJoined = ({ roomId, oppName }: { roomId: string, oppName: string }) => {
+      console.log("Another user joined:", oppName);
+      setOppName(oppName);
+      
+      // If we're already initialized, just update the opponent name
+      // The WebRTC connection will be established through the offer/answer flow
+    };
 
-    if (isHost) {
-      initializeMedia(roomId, true, user?.name!)
+    socket.on("joined", handleUserJoined);
 
-    }
-  })
+    return () => {
+      socket.off("joined", handleUserJoined);
+    };
+  }, []);
 
 
 
@@ -200,13 +207,25 @@ const InterviewViewPage = () => {
 
 
   const handlerAnswer = useCallback(async (data: RTCSessionDescriptionInit) => {
-
-    if (peerConnectionRef.current?.signalingState === "have-local-offer") {
-      await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(data));  //  this must happen only ONCE
-    } else {
-      console.warn("Unexpected signaling state:", peerConnectionRef.current?.signalingState);
+    const pc = peerConnectionRef.current;
+    
+    if (!pc) {
+      console.warn("PeerConnection not available for answer");
+      return;
     }
 
+    console.log("Handling answer, current signaling state:", pc.signalingState);
+    
+    if (pc.signalingState === "have-local-offer") {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(data));
+        console.log("Remote description set successfully");
+      } catch (error) {
+        console.error("Error setting remote description:", error);
+      }
+    } else {
+      console.warn("Cannot set remote description in state:", pc.signalingState);
+    }
   }, [])
 
 
@@ -222,7 +241,7 @@ const InterviewViewPage = () => {
       return;
     }
 
-    if (!pc.remoteDescription || pc.remoteDescription.type !== "stable") {
+    if (!pc.remoteDescription || pc.signalingState !== "stable") {
       console.log("Remote description not set yet, queueing candidate");
       pendingCandidatesRef.current.push(candidate);
     } else {
@@ -290,30 +309,38 @@ const InterviewViewPage = () => {
 
 
 
+    // Set up socket event listeners once
+    const handleOfferWrapper = (data: any) => {
+      if (roomId) {
+        handleOffer(data, roomId);
+      }
+    };
+
+    socket.on("offer", handleOfferWrapper);
+    socket.on("answer", handlerAnswer);
+    socket.on("candidate", handelCandidate);
+
     return () => {
       // Cleanup media streams
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
       }
-      // if (screenStreamRef.current) {
-      //   screenStreamRef.current.getTracks().forEach(track => track.stop());
-      // }
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
 
-      socket.off("offer", handleOffer)
+      // Clean up socket listeners
+      socket.off("offer", handleOfferWrapper);
+      socket.off("answer", handlerAnswer);
+      socket.off("candidate", handelCandidate);
 
-
-      socket.off("answer", handlerAnswer)
-
-
-      socket.off("candidate", handelCandidate)
-
-      peerConnectionRef.current?.close();
-
+      // Close peer connection
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
+        peerConnectionRef.current = null;
+      }
     };
-  }, [handleOffer, handlerAnswer, handelCandidate]);
+  }, [handleOffer, handlerAnswer, handelCandidate, roomId]);
 
 
 
@@ -329,8 +356,16 @@ const InterviewViewPage = () => {
 
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 }
+        },
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        }
       });
 
       const pc = new RTCPeerConnection(config)
@@ -338,46 +373,68 @@ const InterviewViewPage = () => {
       peerConnectionRef.current = pc
 
 
+      let isNegotiating = false;
+      
       pc.onnegotiationneeded = async () => {
+        if (isNegotiating) {
+          console.log("Already negotiating, skipping...");
+          return;
+        }
+        
         try {
+          isNegotiating = true;
+          console.log("Starting negotiation, signaling state:", pc.signalingState);
+          
+          if (pc.signalingState !== "stable") {
+            console.log("Not in stable state, waiting...");
+            return;
+          }
+          
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
+          console.log("Sending offer...");
           socket.emit("offer", { roomId, data: offer });
         } catch (err) {
           console.error("Negotiation failed", err);
+        } finally {
+          isNegotiating = false;
         }
       };
 
 
 
-      stream.getTracks().forEach(track => pc.addTrack(track, stream))
+      // Add tracks to peer connection
+      stream.getTracks().forEach(track => {
+        console.log("Adding track:", track.kind, track.label);
+        pc.addTrack(track, stream);
+      });
 
+      // Emit track type for video tracks
       stream.getVideoTracks().forEach(() => {
         socket.emit("track-type", { roomId, kind: "video", type: "camera" });
       });
 
-
-      // toggleScreenShare()
-
-      // STEP 1
-
-      // WANT TO CREAT A INITIATOR FOR AVOID colliction to handshake
+      // Force negotiation for the initiator after a short delay to ensure both sides are ready
       if (isInitiator) {
-        console.log("iam the host so i can offer the description");
-
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", { roomId, data: offer });
+        console.log("Host initiating connection...");
+        setTimeout(async () => {
+          if (pc.signalingState === "stable" && !isNegotiating) {
+            try {
+              isNegotiating = true;
+              const offer = await pc.createOffer();
+              await pc.setLocalDescription(offer);
+              console.log("Host sending initial offer");
+              socket.emit("offer", { roomId, data: offer });
+            } catch (err) {
+              console.error("Failed to create initial offer:", err);
+              isNegotiating = false;
+            }
+          }
+        }, 1000);
       }
 
 
-      socket.on("offer", (data) => handleOffer(data, roomId))
-
-
-      socket.on("answer", (data) => handlerAnswer(data, roomId))
-
-
-      socket.on("candidate", (data) => handelCandidate(data, roomId))
+      // Socket event listeners are set up in the main useEffect to avoid duplicates
 
 
 
@@ -385,30 +442,65 @@ const InterviewViewPage = () => {
 
 
 
-      /// Localy show same screen 
+      /// Locally show same screen 
       if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-
+        const localVideo = localVideoRef.current;
+        localVideo.srcObject = stream;
+        
+        // Local video should play immediately since it's muted
+        localVideo.play().catch((e) => {
+          console.error("Error playing local video:", e);
+          // Retry after a short delay
+          setTimeout(() => {
+            localVideo.play().catch(console.error);
+          }, 500);
+        });
       }
 
 
 
       pc.onicecandidate = (event) => {
-
         if (event.candidate) {
-          socket.emit("candidate", { roomId, data: event.candidate })
+          socket.emit("candidate", { roomId, data: event.candidate });
         }
-      }
+      };
+
+      // Handle signaling state changes
+      pc.onsignalingstatechange = () => {
+        console.log("Signaling state changed to:", pc.signalingState);
+        if (pc.signalingState === "stable") {
+          isNegotiating = false;
+        }
+      };
+
+      // Handle connection state changes
+      pc.onconnectionstatechange = () => {
+        console.log("Connection state changed to:", pc.connectionState);
+        if (pc.connectionState === "connected") {
+          console.log("✅ WebRTC connection established successfully");
+          toastSuccess("Connection established");
+        } else if (pc.connectionState === "failed") {
+          console.error("❌ WebRTC connection failed");
+          toastError("Connection failed - trying to reconnect...");
+          // Could implement reconnection logic here
+        }
+      };
+
+      // Handle ICE connection state changes
+      pc.oniceconnectionstatechange = () => {
+        console.log("ICE connection state:", pc.iceConnectionState);
+      };
 
 
 
       pc.ontrack = (event) => {
-        console.log(event, "event");
-        console.log(event.streams);
-
+        console.log( "event",event,);
+        console.log("stream",event.streams);
+        
         const stream = event.streams[0]
         const track = event.track
-
+        
+        console.log("track",track);
 
 
         if (track.kind === "video") {
@@ -416,6 +508,7 @@ const InterviewViewPage = () => {
           console.log(label, "label");
           const type = incomingTrackTypes.current.shift()
 
+          console.log("type",type);
 
 
           if (type === "screen") {
@@ -424,26 +517,56 @@ const InterviewViewPage = () => {
             console.log("screen");
 
             if (screenShareRef.current) {
-              screenShareRef.current.srcObject = stream
-              const screen = screenShareRef.current
-              setTimeout(() => {
-                screen.play().catch((e) => {
-                  console.log("Err playin screen", e)
-                })
-                toastError("loading screen.....")
-              }, 500)
-
+              const screenElement = screenShareRef.current;
+              screenElement.pause();
+              screenElement.srcObject = stream;
+              
+              const playScreen = async () => {
+                try {
+                  screenElement.load();
+                  await screenElement.play();
+                  console.log("Screen share playing successfully");
+                  toastSuccess("Screen share connected");
+                } catch (e) {
+                  console.error("Error playing screen share:", e);
+                  setTimeout(() => {
+                    screenElement.play().catch(console.error);
+                  }, 1000);
+                }
+              };
+              
+              screenElement.addEventListener('loadedmetadata', playScreen, { once: true });
+              setTimeout(playScreen, 500);
             }
           } else {
             // toastSuccess("camera")
 
             if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = stream
-              setTimeout(() => {
-                remoteVideoRef.current?.play().catch((e) =>
-                  console.error("Error playing remote video:", e)
-                );
-              }, 500);
+              // Stop any existing playback before setting new stream
+              const videoElement = remoteVideoRef.current;
+              videoElement.pause();
+              videoElement.srcObject = stream;
+              
+              // Wait for video to be ready before playing
+              const playVideo = async () => {
+                try {
+                  videoElement.load();
+                  await videoElement.play();
+                  console.log("Remote video playing successfully");
+                } catch (e) {
+                  console.error("Error playing remote video:", e);
+                  // Retry after a short delay
+                  setTimeout(() => {
+                    videoElement.play().catch(console.error);
+                  }, 1000);
+                }
+              };
+              
+              // Use loadedmetadata event to ensure video is ready
+              videoElement.addEventListener('loadedmetadata', playVideo, { once: true });
+              
+              // Fallback timeout
+              setTimeout(playVideo, 500);
             }
           }
         }
@@ -461,6 +584,17 @@ const InterviewViewPage = () => {
       localStreamRef.current = stream;
     } catch (err) {
       console.error('Error accessing media devices:', err);
+      if (err instanceof Error) {
+        if (err.name === 'NotAllowedError') {
+          toastError('Camera and microphone access denied. Please allow permissions and refresh.');
+        } else if (err.name === 'NotFoundError') {
+          toastError('No camera or microphone found. Please connect media devices.');
+        } else if (err.name === 'NotReadableError') {
+          toastError('Camera or microphone is already in use by another application.');
+        } else {
+          toastError('Error accessing media devices. Please check your camera and microphone.');
+        }
+      }
     }
   };
 
@@ -503,7 +637,7 @@ const InterviewViewPage = () => {
     const pc = peerConnectionRef.current
     // const localStream=localStreamRef.current
 
-    // if(!pc || !localStream) return
+    if(!pc) return
 
     if (!isScreenSharing) {
       try {
@@ -514,26 +648,49 @@ const InterviewViewPage = () => {
         pc.addTrack(screenTrack, screenStream)
 
         socket.emit("track-type", { roomId, kind: "video", type: "screen" });
+        
+        // Display screen share locally
         if (screenShareRef.current) {
-          // screenShareRef.current.srcObject=screenStream
+          screenShareRef.current.srcObject = screenStream;
+          screenShareRef.current.play().catch((e) => {
+            console.log("Error playing local screen share:", e);
+          });
         }
 
-        // screenShareRef.current=screenStream
-
-        // socket.emit("track-type", { roomId, kind: "video", type: "screen" });
         setIsScreenSharing(true)
 
 
 
 
         screenTrack.onended = () => {
-          screenShareRef.current!.srcObject = null;
-          // stopScreenShare()
+          if (screenShareRef.current) {
+            screenShareRef.current.srcObject = null;
+          }
+          setIsScreenSharing(false);
+          console.log("Screen sharing ended");
         }
       } catch (error) {
         console.log(error);
 
         toastError("error in sharing screen try again")
+      }
+    } else {
+      // Stop screen sharing
+      try {
+        const pc = peerConnectionRef.current;
+        if (pc && screenShareRef.current?.srcObject) {
+          const screenStream = screenShareRef.current.srcObject as MediaStream;
+          screenStream.getTracks().forEach(track => {
+            track.stop();
+            pc.removeTrack(pc.getSenders().find(sender => sender.track === track)!);
+          });
+          screenShareRef.current.srcObject = null;
+          setIsScreenSharing(false);
+          console.log("Screen sharing stopped manually");
+        }
+      } catch (error) {
+        console.error("Error stopping screen share:", error);
+        toastError("Error stopping screen share");
       }
     }
 
@@ -583,9 +740,9 @@ const InterviewViewPage = () => {
             <div className="col-span-2 h-[calc(55vh-80px)]  bg-black border border-[#00f3ff] object-contain rounded-lg relative">
               <video
                 ref={remoteVideoRef}
-                className="w-full h-full  rounded-lg"
+                className="w-full h-full rounded-lg"
                 autoPlay
-
+                playsInline
               />
               <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">{isHost ? oppName : "Interviewer"}</div>
             </div>
@@ -596,6 +753,8 @@ const InterviewViewPage = () => {
                 ref={localVideoRef}
                 className="w-full h-full object-contain rounded-lg"
                 autoPlay
+                muted
+                playsInline
               />
               <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">You</div>
             </div>
@@ -606,6 +765,7 @@ const InterviewViewPage = () => {
                 ref={screenShareRef}
                 className="w-full h-full object-cover rounded-lg"
                 autoPlay
+                playsInline
               />
               <div className="absolute bottom-4 left-4 text-sm text-[#00f3ff]">Screen Share</div>
               {isRecording && (
@@ -635,7 +795,7 @@ const InterviewViewPage = () => {
 
             <button
               onClick={toggleScreenShare}
-              className={`p-3 rounded-full border ${isRecording ? 'border-red-500 text-red-500' : 'border-[#00f3ff] text-[#00f3ff]'} hover:bg-[#00f3ff] hover:bg-opacity-20 transition`}
+              className={`p-3 rounded-full border ${isScreenSharing ? 'border-green-500 text-green-500' : 'border-[#00f3ff] text-[#00f3ff]'} hover:bg-[#00f3ff] hover:bg-opacity-20 transition`}
             >
               <FaDesktop className="text-xl" />
             </button>
@@ -672,7 +832,7 @@ const InterviewViewPage = () => {
             {messages.map((msg, index) => (
               <div key={index} className="message mb-3 ml-2">
                 <div className="flex items-center mb-1">
-                  <span className={`font-bold ${msg.sender === 'partner' ? 'text-blue-400' : 'text-[#0ef]'}`}>
+                  <span className={`font-bold ${msg.userName !== 'you' ? 'text-blue-400' : 'text-[#0ef]'}`}>
                     {msg.userName === 'you' ? 'you' : msg.userName}
                   </span>
                   <span className="text-xs text-gray-500 ml-2">{new Date(msg.time).toLocaleTimeString()}</span>
@@ -714,7 +874,14 @@ export default InterviewViewPage;
 
 
 
-const LockedModal = ({ setIsLocked, scheduledTime, timeRemaining, route }) => (
+interface LockedModalProps {
+  setIsLocked: (locked: boolean) => void;
+  scheduledTime: Date | null;
+  timeRemaining: string;
+  route: any;
+}
+
+const LockedModal = ({ setIsLocked, scheduledTime, timeRemaining, route }: LockedModalProps) => (
   <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
     <div className="bg-[#111111] border-2 border-yellow-500 rounded-lg p-6 max-w-md w-full">
       <div className="flex justify-between items-center mb-4">
