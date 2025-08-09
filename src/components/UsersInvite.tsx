@@ -1,7 +1,8 @@
 import { getAllUsersforUser } from "@/service/getDataService";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { FaPlus, FaSearch, FaTrash } from "react-icons/fa";
-
+import { Tooltip } from "react-tooltip";
+import 'react-tooltip/dist/react-tooltip.css';
 
 
 
@@ -123,13 +124,16 @@ const InvitedUsers = ({ allowedUser, invitedUsers, setInvitedUsers, sessionType,
                     </div>
                     <span className="text-gray-300">{user.name}</span>
                   </div>
-                  <div
+                  <div data-tooltip-id="invite_user" data-tooltip-content="invite"
+
                     onClick={() => toggleFriendInvite(user.name)}
                     className={`${invitedUsers.includes(user.name) ? 'text-[#0df]' : 'text-white-500'} hover:text-[#0df]`}
                   >
                     <FaPlus />
+                    
 
                   </div>
+                  <Tooltip id="invite_user"/>
                 </div>
               ))}
           </div>

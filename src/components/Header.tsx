@@ -21,6 +21,8 @@ import { userLogOutService } from "@/service/logoutServices";
 import SettingsModal from "./UserProfile/Settings/Settings";
 import { useRouter } from "next/navigation";
 import NotificationSystem from "./Notification";
+import { Tooltip } from "react-tooltip";
+import 'react-tooltip/dist/react-tooltip.css';
 
 const ProfileDropdown = ({ user, setIsSettings }: { user: any; setIsSettings: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -172,9 +174,12 @@ const Header = () => {
           <div className="flex space-x-10">
             {userData ? (
               <>
-                <div>
-                  <NotificationSystem />
+                <div data-tooltip-id="notif-di"  data-tooltip-content="notiications">
+
+                  <NotificationSystem   ></NotificationSystem>
+                
                 </div>
+                  <Tooltip id="notif-di" />
                 <div>
                   <ProfileDropdown user={userData} setIsSettings={setIsSettings} />
 
