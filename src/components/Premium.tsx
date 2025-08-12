@@ -9,7 +9,7 @@ import { toastError, toastSuccess } from '@/utils/toast';
 import { useEffect, useState } from 'react';
 import { FaCheckCircle, FaCrown, FaChartLine, FaRupeeSign } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-
+import { FourSquare } from 'react-loading-indicators';
 export interface Plan {
   _id: string;
   name: string;
@@ -171,9 +171,9 @@ export default function Premium() {
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-gradient-to-b from-[#0a0a0a] to-black min-h-screen flex items-center justify-center">
-        <div className="text-[#0ef] text-xl">Loading plans...</div>
-      </section>
+     <div className='flex items-center justify-center h-screen'>
+      <FourSquare color="#00ebff" size="small" text="Loading Plan..." textColor="#NaNNaNNaN" />
+     </div>
     );
   }
 

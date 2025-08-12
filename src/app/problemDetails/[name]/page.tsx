@@ -15,8 +15,9 @@ import { runProblemService, submitProblemService } from '@/service/problemServic
 import { RootState } from '@/store/store';
 import { IProblem, submissions, typeTestCase } from '@/types/problem';
 import { useParams } from 'next/navigation';
-import { useState, useEffect, useReducer } from 'react';
-import { FaHistory, FaBook } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaHistory } from 'react-icons/fa';
+import { FourSquare } from 'react-loading-indicators';
 import { useDispatch, useSelector } from 'react-redux';
 
 
@@ -27,7 +28,8 @@ const ProblemPage = () => {
   const [testCases, setTestCases] = useState<typeTestCase[]>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<string | number>(1);
   const [activeTab, setActiveTab] = useState('description');
-
+  const [dataFetched, setDataFetched] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [showTestCase, SetshowTestCase] = useState(true)
   const [submissionDetails, SetSubmissionDetails] = useState<submissions>({
     userId: "",
@@ -46,7 +48,7 @@ const ProblemPage = () => {
 
 
   const [problemDetails, SetproblemDetails] = useState<IProblem>({ starterCode: { "javascript": "" }, _id: "", title: "", testCases: [], difficulty: "", status: true, statement: "", inputFormat: "", outputFormat: "", constraints: "", hint: "", functionSignatureMeta: { name: "", parameters: [], returnType: { type: "" } }, timeLimit: 0, memoryLimit: 0, problemId: "", tags: "", updatedAt: "", acceptence: { submited: 0, accepted: 0 }, isPremium: false })
-  const params: { title: string } = useParams()
+  const params: { name: string } = useParams()
   const search = decodeURIComponent(params.name)
 
 
@@ -54,6 +56,8 @@ const ProblemPage = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    setDataFetched(false)
+
     const getProblemData = async () => {
       // const params=new URLSearchParams({page,limit,difficulty,status,search,category})
 
@@ -61,13 +65,13 @@ const ProblemPage = () => {
 
       const response = await getProblemDetails(params.toString());
       const problem = response.data.problem
-      console.log(problem,"problem detail in that coding page")
+      console.log(problem, "problem detail in that coding page")
       SetproblemDetails(problem)
       const testCases = problem.testCases as typeTestCase[]
       const testCase = testCases.filter(testCase => testCase.isSample)
       console.log(testCase);
       setTestCases(testCase)
-
+      setDataFetched(true)
 
 
     }
@@ -80,11 +84,14 @@ const ProblemPage = () => {
 
   const handleRunCode = async () => {
 
+    setIsLoading(true)
     const response = await runProblemService({ code, testCases, language, problemDetails })
     SetshowTestCase(false)
     setTestCases(response.data.testResult);
 
     setActiveTab("testresult")
+    setIsLoading(false)
+
 
   };
 
@@ -93,12 +100,16 @@ const ProblemPage = () => {
 
 
   const handleSubmitCode = async () => {
+    setIsLoading(true)
+
     const response = await submitProblemService({ code, testCases, language, problemDetails })
 
     console.log(response.data.submissions);
     SetSubmissionDetails(response.data.submissions)
     setActiveTab("submissions")
     setSubmissionTab("submissionDetail")
+    setIsLoading(false)
+
 
   };
 
@@ -119,20 +130,22 @@ const ProblemPage = () => {
 
   useEffect(() => {
 
+    setCode(problemDetails.starterCode[language])
 
-    setCode(problemDetails.starterCode['javascript'])
-
-    const storedProblem = storedProblems.filter(data => data.id == problemDetails._id)
-
+    const storedProblem = storedProblems.filter(data => data.id == problemDetails._id && data.language == language)
     if (storedProblem.length) {
-
       setCode(storedProblem[0].code)
     }
   }, [problemDetails])
 
 
+
+
   useEffect(() => {
+
     const storedProblem = storedProblems.filter(data => data.id == problemDetails._id && data.language == language)
+
+
     if (storedProblem.length > 0) {
       setCode(storedProblem[0].code)
 
@@ -143,33 +156,39 @@ const ProblemPage = () => {
   }, [language])
 
 
-  useEffect(() => {
 
+  useEffect(() => {
     const id = problemDetails._id
     if (id) {
       dispatch(addProblem({ id, language, code }))
     }
   }, [code])
 
+
+
+
   const resetCode = () => {
 
     dispatch(removeProblem({ id: problemDetails._id!, language, code }))
     setCode(problemDetails.starterCode[language])
-
 
   }
 
 
 
   return (
-    <div className="min-h-screen text-gray-100 flex flex-col relative">
+    <div className=" min-h-screen text-gray-100 flex flex-col relative">
       <Header></Header>
 
-
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 pt-18 pb-8 flex-grow text-sm">
-
+{isLoading &&  (
+  <div className="absolute top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center">
+  <FourSquare color="#00ebff" size="small" text="judging result" textColor="#NaNNaNNaN" />
+  </div> )
+}
+  
+  {/* Main Content */}
+  <div className="container mx-auto px-4 pt-18 pb-8 flex-grow text-sm">
+  
 
 
 
@@ -226,7 +245,7 @@ const ProblemPage = () => {
   <FaBook className=' inline'/> SOLUTIONS
   </span> */}
 
-          <Timer timerControler={true} />
+          <Timer timerControler={true} id={problemDetails._id!} />
         </div>
 
 

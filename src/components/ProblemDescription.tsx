@@ -152,7 +152,7 @@ const ProblemDescription = ({
                   </div>
                 )}
 
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                   <button className="text-gray-400 hover:text-neon-blue">
                     <FaBookmark />
                   </button>
@@ -162,7 +162,7 @@ const ProblemDescription = ({
                   <button className="text-gray-400 hover:text-neon-blue">
                     <FaThumbsDown />
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

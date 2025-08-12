@@ -3,7 +3,7 @@
 
 import { typeTestCase } from '@/types/problem';
 import React from 'react'
-import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
+import { FaCheckCircle, FaExclamationCircle, FaPlay, FaSpinner, FaTrash } from 'react-icons/fa'
 
 const Results = ({testCases,showTestCase}:{testCases: typeTestCase[]; showTestCase: boolean}) => {
   console.log(testCases,"results");
@@ -11,7 +11,10 @@ const Results = ({testCases,showTestCase}:{testCases: typeTestCase[]; showTestCa
     <>
   {showTestCase ?(
 
-<div className='text-2xl'>First run code</div>
+<div className='h-[500px] w-full flex items-center justify-center text-lg '>
+  <FaPlay className='animate-pulse text-2xl mr-4 '/>
+  <div>First run code</div>
+</div>
   ):(
 
     <div className="w-full ">
