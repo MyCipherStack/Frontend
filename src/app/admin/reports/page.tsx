@@ -35,7 +35,7 @@ const UserManagement = () => {
         const response = await getAllReports(params.toString());
         setTotalPages(response.data.reportsData.totalPages,)
         setTotalReports(response.data.reportsData.totalReports)
-        console.log(response.data.reportsData.reports);
+        console.log("reports",response.data.reportsData.reports);
 
         setReports(response.data.reportsData.reports)
 

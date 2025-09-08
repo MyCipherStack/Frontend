@@ -6,7 +6,15 @@ import { FaSearch, FaCheckCircle } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 
 
+
+
 const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) => void }) => {
+
+
+
+
+
+
   const [search, setSearch] = useState("")
   const [difficulty, setDifficulty] = useState("")
   const [status, setStatus] = useState("true")
@@ -15,6 +23,7 @@ const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) =>
   const [limit, setLimit] = useState("10")
   const [totalProblem, setTotalProblem] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
+
   const [Problem, setProblem] = useState([{ _id: "", title: "", tags: "", difficulty: "", status: "", category: "",
    acceptance:{submitted:1,accepted:1}
    }])
@@ -191,7 +200,7 @@ const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) =>
               </thead>
               <tbody>
                 {Problem.map((problem,index) => (
-                  <tr key={problem._id} onClick={() => openProblem(problem.title, problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm">
+                  <tr key={problem._id} onClick={() => openProblem(problem.title, problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm cursor-pointer">
                     <td className="py-3 px-4 ">
                       <FaCheckCircle />
                     </td>

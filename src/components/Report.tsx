@@ -56,6 +56,8 @@ const ReportButton = () => {
         const response = await getAllUsersforUser(params.toString());
         console.log(response.data.usersData.users, "users DAat in userinviate");
         setUsers(response.data.usersData.users)
+        console.log(response.data.usersData.users);
+        
 
       };
       if (isModalOpen) {

@@ -171,10 +171,10 @@ const Header = () => {
             </div>
           </div>
           { }
-          <div className="flex space-x-10">
+          <div className="flex space-x-3">
             {userData ? (
               <>
-                <div data-tooltip-id="notif-di"  data-tooltip-content="notiications">
+                <div className="mr-10" data-tooltip-id="notif-di"  data-tooltip-content="notifications">
 
                   <NotificationSystem   ></NotificationSystem>
                 
@@ -192,7 +192,7 @@ const Header = () => {
                   <button className="px-4 py-2 rounded border border-[#0ef] text-[#0ef] hover:bg-[#0ef] hover:text-black transition duration-300">
                     Login
                   </button></Link>
-                <button onClick={signInhandler} className="px-4 py-2 rounded bg-[#0ef] text-black hover:bg-[#0df] transition duration-300">
+                <button onClick={signInhandler} className=" rounded bg-[#0ef]  text-black hover:bg-[#0df] transition duration-300  sm:px-4  sm:py-2 md:px-5 md:py-2.5">
                   Sign Up
                 </button>
               </>
