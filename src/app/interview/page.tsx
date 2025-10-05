@@ -126,7 +126,7 @@ const InterviewPortal = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="min-h-screen bg-gray-950">
         {/* Create Interview Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -242,7 +242,7 @@ const InterviewPortal = () => {
           {/* Action Button */}
           <div className="flex justify-center mb-12">
             <button onClick={() => setIsModalOpen(true)}
-              className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+              className="group px-8 py-4 btn-bg">
               <FaRocket className="inline mr-3 group-hover:animate-bounce" />
               Create New Interview
             </button>
@@ -302,14 +302,14 @@ const InterviewPortal = () => {
               <div className="flex">
                 <button onClick={() => SetTab('usersInterview')}
                   className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'usersInterview'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                    ? 'btn-bg'
                     : 'text-gray-400 hover:text-white'}`}>
                   <FaEye className="inline mr-2" />
                   Scheduled for Me
                 </button>
                 <button onClick={() => SetTab('userCreatedInterview')}
                   className={`flex-1 py-3 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${tab === 'userCreatedInterview'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                    ? 'btn-bg'
                     : 'text-gray-400 hover:text-white'}`}>
                   <FaEdit className="inline mr-2" />
                   Created by Me
@@ -331,9 +331,9 @@ const InterviewPortal = () => {
                         {interview.interviewType}
                       </span>
                     </div>
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-blue-400">
+                    {/* <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-gray-400 hover:text-blue-400">
                       <FaEdit className="w-5 h-5" />
-                    </button>
+                    </button> */}
                   </div>
 
                   {/* Details */}
@@ -382,7 +382,7 @@ const InterviewPortal = () => {
                       <span className="text-sm font-mono text-gray-300">{interview.code}</span>
                     </div>
                     <button onClick={() => joinInterview(interview.id)}
-                      className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg">
+                      className="px-6 py-2 btn-bg rounded-3xl">
                       <FaPlay className="inline mr-2" />
                       Join
                     </button>
