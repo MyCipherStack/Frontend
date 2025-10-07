@@ -403,7 +403,7 @@ const InterviewPortal = () => {
                 You don't have any interviews scheduled yet. Create your first interview to get started.
               </p>
               <button onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl">
+                className="inline-flex items-center px-8 py-4  btn-bg">
                 <FaRocket className="mr-3" />
                 Schedule Your First Interview
               </button>

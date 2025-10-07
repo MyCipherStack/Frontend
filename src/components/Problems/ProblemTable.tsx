@@ -31,32 +31,30 @@ const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) =>
 
 
 
+useEffect(() => {
 
-  useEffect(() => {
+  const params = new URLSearchParams({ page, limit, difficulty, status, search, category });
 
-    const timeOut = setTimeout(() => {  //Debounce
+  const fetchData = async () => {
+    const response = await getAllProblems(params.toString());
+    const { totalPages, totalProblems, problems } = response.data.problemData;
 
-
-      const params = new URLSearchParams({ page, limit, difficulty, status, search, category })
-      const fetchData = async () => {
-        const response = await getAllProblems(params.toString());
-        setTotalPages(response.data.problemData.totalPages,)
-        setTotalProblem(response.data.problemData.totalProblems)
-        console.log(response.data.problemData.problems);
-
-        setProblem(response.data.problemData.problems)
-
-      };
+    setTotalPages(totalPages);
+    setTotalProblem(totalProblems);
+    setProblem(problems);
+  };
 
 
-      fetchData();
+  if (page === "1" && !search && !difficulty && !status && !category) {
+    fetchData();
+    return; // skip debounce
+  }
 
-    }, 500)
+  
+  const timeout = setTimeout(fetchData, 500);
+  return () => clearTimeout(timeout);
 
-
-    return () => clearTimeout(timeOut)
-
-  }, [page, difficulty, status, search, category])
+}, [page, difficulty, status, search, category]);
 
   const pageChange = (page: number) => {
     setPage(page + "")
