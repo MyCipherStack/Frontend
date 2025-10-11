@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import NotificationSystem from "./Notification";
 import { Tooltip } from "react-tooltip";
 import 'react-tooltip/dist/react-tooltip.css';
+import { ca } from "zod/v4/locales";
 
 const ProfileDropdown = ({ user, setIsSettings }: { user: any; setIsSettings: React.Dispatch<React.SetStateAction<boolean>> }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,11 +48,16 @@ const ProfileDropdown = ({ user, setIsSettings }: { user: any; setIsSettings: Re
   const dispatch = useDispatch()
 
   const logOutHandler = async () => {
-    dispatch(logOut())
-    await userLogOutService()
+    try{
+      await userLogOutService()
+
+      dispatch(logOut())
+    }catch(err){
+      console.error("Logout failed:", err)  
+    }
 
   }
-
+  
 
 
 
