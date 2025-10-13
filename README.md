@@ -30,7 +30,7 @@ It features **Group Coding Challenges, 1v1 Battles, Pair Coding Sessions, and In
 - **Modular design** separating domain, application, infrastructure, and interface layers.
 
 ### ☁️ Deployment
-- Hosted on **Oracle Free Cloud**.
+- Hosted on **AWS EC2**.
 - Backend containerized with **Docker** and deployed via **NGINX** reverse proxy.
 - HTTPS enabled with SSL certificates.
 
@@ -40,8 +40,6 @@ It features **Group Coding Challenges, 1v1 Battles, Pair Coding Sessions, and In
 
 ### **Backend** (Node.js + TypeScript)
 
-Backend Setup
-docker-compose up --build
 
 
 Frontend Setup
@@ -52,20 +50,4 @@ npm run dev
 
 
 
-**Backend .env**
 
-PORT=5000
-MONGO_URI=<your_mongodb_uri>
-REDIS_URL=<your_redis_url>
-JWT_SECRET=<your_jwt_secret>
-GOOGLE_CLIENT_ID=<your_client_id>
-GOOGLE_CLIENT_SECRET=<your_client_secret>
-OTP_EXPIRY_MINUTES=10
-JUDGE0_API_URL=<judge0_api_url>
-
-
-
-
-**Frontend .env**
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-NEXT_PUBLIC_JUDGE0_URL=https://judge0-ce.p.rapidapi.com
