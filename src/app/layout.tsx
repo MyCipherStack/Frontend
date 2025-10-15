@@ -19,7 +19,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Cipherstack",
   description: "CipherStack is a LeetCode-style competitive coding platform designed for learners, educators, and developers to improve their problem-solving skills collaboratively It features Group Coding Challenges, 1v1 Battles, Pair Coding Sessions, and Interview Challenges with real-time collaboration via voice, video, and screen sharing",
-
+  keywords:
+    "CipherStack, coding challenges, LeetCode alternative, coding interview, pair programming, 1v1 coding",
+  openGraph: {
+    title: "CipherStack | Competitive Coding Platform",
+    description:
+      "Join CipherStack to practice coding, compete in group challenges, and prepare for interviews with real-time collaboration.",
+    url: "https://www.cipherstack.site",
+    siteName: "CipherStack",
+  },
 };
 
 export default function RootLayout({
