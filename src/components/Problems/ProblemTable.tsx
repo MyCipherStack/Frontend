@@ -2,7 +2,7 @@
 
 import { getAllProblems } from "@/service/getDataService";
 import React, { useEffect, useState } from "react";
-import { FaSearch, FaCheckCircle } from "react-icons/fa";
+import { FaSearch, FaCheckCircle, FaCircle } from "react-icons/fa";
 import { Pagination } from "../Pagination";
 
 
@@ -17,7 +17,7 @@ const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) =>
 
   const [search, setSearch] = useState("")
   const [difficulty, setDifficulty] = useState("")
-  const [status, setStatus] = useState("true")
+  const [status, setStatus] = useState("")
   const [category, setCategory] = useState("")
   const [page, setPage] = useState("1")
   const [limit, setLimit] = useState("10")
@@ -102,9 +102,9 @@ useEffect(() => {
             </select>
             <select value={status} onChange={(e) => setStatus(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">Any Status</option>
-              <option value="active">Solved</option>
-              <option value="inactive">Attempted</option>
-              <option value="banned">Unsolved</option>
+              <option value="solved">Solved</option>
+              <option value="attempted">Attempted</option>
+              <option value="unsolved">Unsolved</option>
             </select>
             <select value={category} onChange={(e) => setCategory(e.target.value)} className="search-input px-4 py-2 rounded-md bg-opacity-50 bg-black border border-opacity-20 border-neon-blue text-text-primary focus:border-neon-blue focus:shadow-neon-blue focus:outline-none">
               <option value="">All Categories</option>
@@ -192,15 +192,14 @@ useEffect(() => {
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Difficulty</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Acceptance</th>
                   <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Tags</th>
-                  {/* <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Joined Date</th>
-                  <th className="text-left py-3 px-4 text-neon-blue bg-opacity-50 bg-black">Actions</th> */}
+                
                 </tr>
               </thead>
               <tbody>
                 {Problem.map((problem,index) => (
                   <tr key={problem._id} onClick={() => openProblem(problem.title, problem._id)} className="hover:bg-opacity-5 hover:bg-neon-blue border-b border-opacity-10 border-neon-blue text-sm cursor-pointer">
                     <td className="py-3 px-4 ">
-                      <FaCheckCircle />
+                      {problem.userStatus=="solved" ?  <FaCheckCircle className="text-green-500 w-7 h-4"  /> :<FaCircle className="text-gray-500 w-7 h-3" />}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
@@ -218,13 +217,7 @@ useEffect(() => {
                       <span className={`px-2 py-1  text-xs rounded`}>{Math.round((problem.acceptance.accepted/problem.acceptance.submitted)*100)}%</span>
                     </td>
                     <td className="py-3 px-4">{problem.tags}</td>
-                    <td className="py-3 px-4">
-                      <div className="flex gap-2">
-
-
-
-                      </div>  
-                    </td>
+      
                   </tr>
                 ))}
               </tbody>
