@@ -85,7 +85,7 @@ import { FaGithub, FaTwitter, FaLinkedin, FaDiscord, FaPaperPlane, FaTerminal } 
         {/* Bottom section */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2024 CipherStack. All rights reserved.
+            © 2025 CipherStack. All rights reserved.
           </p>
           <div className="flex space-x-6">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (

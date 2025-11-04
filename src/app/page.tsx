@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Premium from '@/components/Premium';
 import { useRouter } from 'next/navigation'; 
  
-import { FaCode, FaUsers, FaDatabase, FaProjectDiagram, FaMicrochip, FaCheckCircle, FaHeart } from 'react-icons/fa';
+import { FaCode, FaUsers, FaDatabase, FaProjectDiagram, FaMicrochip, FaCheckCircle, FaHeart, FaHandshake, FaUserTie } from 'react-icons/fa';
 export default function Home() {
   let router=useRouter()
 
@@ -83,6 +83,82 @@ export default function Home() {
       </section>
 
 
+
+      {/* Platform Features */}
+      <section className="py-16 border-t border-gray-900 bg-[#0a0a0a] relative overflow-hidden">
+        {/* subtle animated glows */}
+        <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full blur-3xl opacity-20"
+             style={{background:"radial-gradient(circle at 30% 30%, #0ef, transparent 60%)"}} />
+        <div className="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full blur-3xl opacity-20"
+             style={{background:"radial-gradient(circle at 70% 70%, #8b5cf6, transparent 60%)"}} />
+        <div className="container mx-auto px-6 relative">
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold mb-2">What you can do here</h2>
+            <p className="text-gray-400">Simple, friendly tools to learn faster with friends and teams.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Group Challenges */}
+            <div className="relative group rounded-xl p-[1px] bg-[linear-gradient(135deg,rgba(14,239,255,0.35),rgba(139,92,246,0.25))] [background-size:200%_200%] hover:bg-[position:100%_0] transition-all duration-500">
+              <div className="relative bg-[#111] rounded-[11px] p-6 h-full flex flex-col border border-gray-900/60 shadow-[0_0_0_rgba(0,0,0,0)] transform-gpu group-hover:-translate-y-1 group-hover:shadow-[0_10px_30px_rgba(14,239,255,0.15)] transition-all duration-300">
+              <div className="flex items-center gap-3 mb-3">
+                <FaHandshake className="text-2xl text-[#0ef] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" />
+                <h3 className="text-xl font-bold">Group Challenges</h3>
+              </div>
+              <p className="text-gray-400 mb-5">Team up or compete with friends on hand‑picked problems. Everything updates live, so it feels like a real event.</p>
+              <ul className="text-sm text-gray-300 space-y-2 mb-5 list-disc list-inside">
+                <li><span className="text-gray-200 font-medium">Live Leaderboard</span> – see ranks change as you code</li>
+                <li><span className="text-gray-200 font-medium">Weekly & Private Rooms</span> – open events or invite‑only</li>
+                <li><span className="text-gray-200 font-medium">Fair Scoring</span> – difficulty‑aware points and streaks</li>
+              </ul>
+              <div className="text-xs text-gray-500 mb-4">Tip: Start a private challenge to practice interview speed with your friends.</div>
+              <button onClick={() => router.push('/Arena')} className="px-4 py-2 rounded bg-[#0ef] text-black font-bold hover:bg-[#0df] transition duration-300 hover:shadow-[0_10px_20px_rgba(14,239,255,0.25)] hover:-translate-y-[1px] transform-gpu">
+                Explore Challenges
+              </button>
+              </div>
+            </div>
+
+            {/* Pair Programming */}
+            <div className="relative group rounded-xl p-[1px] bg-[linear-gradient(135deg,rgba(14,239,255,0.35),rgba(16,185,129,0.25))] [background-size:200%_200%] hover:bg-[position:100%_0] transition-all duration-500">
+              <div className="relative bg-[#111] rounded-[11px] p-6 h-full flex flex-col border border-gray-900/60 shadow-[0_0_0_rgba(0,0,0,0)] transform-gpu group-hover:-translate-y-1 group-hover:shadow-[0_10px_30px_rgba(16,185,129,0.15)] transition-all duration-300">
+              <div className="flex items-center gap-3 mb-3">
+                <FaUsers className="text-2xl text-[#0ef] transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
+                <h3 className="text-xl font-bold">Pair Programming</h3>
+              </div>
+              <p className="text-gray-400 mb-5">Work on the same code in real time. Great for learning together, mock interviews, or mentoring.</p>
+              <ul className="text-sm text-gray-300 space-y-2 mb-5 list-disc list-inside">
+                <li><span className="text-gray-200 font-medium">Shared Editor</span> – your cursor, their cursor, one file</li>
+                <li><span className="text-gray-200 font-medium">Easy Join</span> – create a room, share a short code, or invite by User ID (they’ll be notified)</li>
+                <li><span className="text-gray-200 font-medium">Any Problem</span> – use with arenas or practice sets</li>
+              </ul>
+              <div className="text-xs text-gray-500 mb-4">Tip: Pick a medium problem and switch roles every 10 minutes.</div>
+              <button onClick={() => router.push('/Arena')} className="px-4 py-2 rounded border border-gray-600 text-gray-200 hover:border-[#0ef] hover:text-[#0ef] transition duration-300 hover:shadow-[0_10px_20px_rgba(14,239,255,0.15)] hover:-translate-y-[1px] transform-gpu">
+                Start Pairing
+              </button>
+              </div>
+            </div>
+
+            {/* Interviews */}
+            <div className="relative group rounded-xl p-[1px] bg-[linear-gradient(135deg,rgba(14,239,255,0.35),rgba(244,63,94,0.2))] [background-size:200%_200%] hover:bg-[position:100%_0] transition-all duration-500">
+              <div className="relative bg-[#111] rounded-[11px] p-6 h-full flex flex-col border border-gray-900/60 shadow-[0_0_0_rgba(0,0,0,0)] transform-gpu group-hover:-translate-y-1 group-hover:shadow-[0_10px_30px_rgba(244,63,94,0.15)] transition-all duration-300">
+              <div className="flex items-center gap-3 mb-3">
+                <FaUserTie className="text-2xl text-[#0ef] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2" />
+                <h3 className="text-xl font-bold">Interviews</h3>
+              </div>
+              <p className="text-gray-400 mb-5">Run timed DSA rounds that feel like the real thing. Get a clear summary at the end.</p>
+              <ul className="text-sm text-gray-300 space-y-2 mb-5 list-disc list-inside">
+                <li><span className="text-gray-200 font-medium">Structured Rounds</span> – warm‑up, main, and follow‑ups</li>
+                <li><span className="text-gray-200 font-medium">Smart Hints</span> – gentle nudges without giving away solutions</li>
+                <li><span className="text-gray-200 font-medium">Shareable Report</span> – score, time, and notes in one link</li>
+              </ul>
+              <div className="text-xs text-gray-500 mb-4">Tip: Use interviews to measure progress every weekend.</div>
+              <button onClick={() => router.push('/interview')} className="px-4 py-2 rounded bg-[#0ef] text-black font-bold hover:bg-[#0df] transition duration-300 hover:shadow-[0_10px_20px_rgba(14,239,255,0.25)] hover:-translate-y-[1px] transform-gpu">
+                Practice Interviews
+              </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Featured Categories */}
       <section className="py-16 bg-gradient-to-b from-black to-[#0a0a0a]">

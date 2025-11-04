@@ -50,7 +50,8 @@ const ProfileDropdown = ({ user, setIsSettings }: { user: any; setIsSettings: Re
   const logOutHandler = async () => {
     try{
       await userLogOutService()
-
+      console.log("logout successfully");
+      
       dispatch(logOut())
     }catch(err){
       console.error("Logout failed:", err)  

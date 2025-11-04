@@ -8,7 +8,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   adminAuth:adminAuthReducer,
   timer:timeReducer,
-  userProblems:problemReducer
+  userProblems:problemReducer,
 });
 
 export default rootReducer;

@@ -24,7 +24,7 @@ const ProblemTable = ({ openProblem }:{ openProblem: (title:string,id:string) =>
   const [totalProblem, setTotalProblem] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
 
-  const [Problem, setProblem] = useState([{ _id: "", title: "", tags: "", difficulty: "", status: "", category: "",
+  const [Problem, setProblem] = useState([{ _id: "", title: "", tags: "", difficulty: "", status: "", category: "",userStatus:"",
    acceptance:{submitted:1,accepted:1}
    }])
 
