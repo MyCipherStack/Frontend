@@ -72,7 +72,7 @@ export default function Premium() {
           //   setCurrentPlanId(subscriptionResponse.data.plan._id);
           // }
         } catch (subscriptionError) {
-          // User might not have a subscription, which is fine
+          // User might not have a subscription
           console.log("No active subscription found");
         }
       } catch (error) {

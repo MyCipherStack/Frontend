@@ -5,14 +5,10 @@ export function middleware(req: NextRequest) {
 
 
   const token = req.cookies.get("refreshToken")
-  // const token = req.cookies.get("refreshToken")
   const accessToken = req.cookies.get("accessToken")
   const url = req.nextUrl.pathname
-  console.log(token, "middleware");
-  console.log(url, "middleware url");
+ 
   
-
-
   const publicPath = ["/", "/login", "/problems"]
 
   if (url.startsWith("/login") && token) {
@@ -34,26 +30,24 @@ export function middleware(req: NextRequest) {
   // }
   if (url.startsWith("/admin/login") && accessToken) {
 
-    console.log("start with /admin/login");
 
     return NextResponse.redirect(new URL("/admin/dashboard", req.url));
 
   }
   if (url.startsWith("/admin/login") && !accessToken) {
 
-    console.log("start with /admin/login");
 
     return NextResponse.next();
 
 
   }
   if (url.startsWith("/admin/") && !accessToken && !token) {
-    console.log("start with /admin with out token");
+ 
 
     return NextResponse.redirect(new URL("/admin/login", req.url));
   }
   if (url.startsWith("/admin/") && accessToken) {
-    console.log("start with /admin with token");
+  
     // return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     return NextResponse.next();
   }

@@ -173,7 +173,7 @@ export default function AuthPage() {
           {!otpComponent && (
             <div className="max-w-sm mx-auto">
               {/* Compact Signup Card */}
-              <div className="bg-[#111111] rounded-lg neon-border relative">
+              <div className="bg-[#111111]  rounded-lg neon-border relative overflow-hidden">
                 {/* Terminal Header */}
                 <div className="bg-black px-4 py-2 relative terminal-dots">
                   <div className="text-right text-xs text-gray-400 font-mono">

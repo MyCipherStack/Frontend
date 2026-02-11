@@ -7,28 +7,29 @@ import { store } from "@/store/store"
 
 
 axios.interceptors.request.use(
-    (config:InternalAxiosRequestConfig<unknown>)=>{
-        config.baseURL=process.env.NEXT_PUBLIC_BACKEND_URL
+    (config: InternalAxiosRequestConfig<unknown>) => {
+        config.baseURL = process.env.NEXT_PUBLIC_BACKEND_URL
         return config
-    },(error)=>Promise.reject(error)
+    }, (error) => Promise.reject(error)
 )
 
 
 
 axios.interceptors.response.use(
-    (response)=>response,
-    (error)=>{
-console.log(error);
-        
-        if(error.response && error.response.status===401){
-            console.log(error.response);
-            
+    (response) => response,
+    (error) => {
+        console.log(error);
+
+        const orginalRequst = error.config
+        if (error.response && error.response.status === 401 && !orginalRequst.url?.startsWith("/api/admin") && !orginalRequst.url?.startsWith("/api/user/login")) {
+            // console.log(error.response);
+
             store.dispatch(logOut())
             toastError(error.response.message || "Unauthorized access Login to continue")
-            setTimeout(()=>{
-                window.location.href="/login"
+            setTimeout(() => {
+                window.location.href = "/login"
 
-            },600)
+            }, 600)
         }
         return Promise.reject(error)
     },

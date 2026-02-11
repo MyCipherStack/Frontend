@@ -45,3 +45,11 @@ next-env.d.ts
 public/sw.js.map
 public/workbox-*.js
 public/fallback-*.js
+
+
+
+
+src/app/week
+
+src/app/dotworld
+src/app/practice

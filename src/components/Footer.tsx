@@ -24,13 +24,11 @@ import { FaGithub, FaTwitter, FaLinkedin, FaDiscord, FaPaperPlane, FaTerminal } 
           <div>
             <h4 className="text-white font-bold mb-4">Resources</h4>
             <ul className="space-y-2">
-              {['Problems', 'Contests', 'Articles', 'Discussions'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-gray-400 hover:text-[#0ef] text-sm">
-                    {item}
+                <li>
+                  <Link href="/problems" className="text-gray-400 hover:text-[#0ef] text-sm">
+                    Problems
                   </Link>
                 </li>
-              ))}
             </ul>
           </div>
 
@@ -52,7 +50,7 @@ import { FaGithub, FaTwitter, FaLinkedin, FaDiscord, FaPaperPlane, FaTerminal } 
           <div>
             <h4 className="text-white font-bold mb-4">Connect</h4>
             <div className="flex space-x-4 mb-6">
-              <Link href="#" className="text-gray-400 hover:text-[#0ef]">
+              <Link href="/" className="text-gray-400 hover:text-[#0ef]">
                 <FaGithub className="text-xl" />
               </Link>
               <Link href="#" className="text-gray-400 hover:text-[#0ef]">
@@ -85,7 +83,7 @@ import { FaGithub, FaTwitter, FaLinkedin, FaDiscord, FaPaperPlane, FaTerminal } 
         {/* Bottom section */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2025 CipherStack. All rights reserved.
+            © 2026 CipherStack. All rights reserved.
           </p>
           <div className="flex space-x-6">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
