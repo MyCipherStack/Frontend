@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+    turbopack: {},
   reactStrictMode: false, // only while debugging
 }
 
