@@ -52,7 +52,7 @@ const [trigger,setTrigger]=useState(false)
     }else status="active"
     console.log(status);
     
-    const alert=await confirmationAlert(`change the status to Active${status}`)
+    const alert=await confirmationAlert(`change the status to ${status}`)
    
 
 if(alert){
