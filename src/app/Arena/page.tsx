@@ -149,7 +149,7 @@ export default function Arena() {
   }
 
   // Battle Requests Component
-  <BattleRequests />
+  // <BattleRequests />
 
 
 
