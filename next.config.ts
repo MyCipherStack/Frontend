@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+    images: {
+    domains: [],  // image domain
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
